@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function Makes() {
 
   const [makes, setMakes] = useState([])
-
-  const { id } = useParams();
 
   useEffect(() => {
     loadMakes()
   }, []);
 
   const loadMakes = async () => {
-    const result = await axios.get("http://localhost:8080/makes");
+    const result = await axios.get("http://localhost:8080/catalog");
     setMakes(result.data);
   };
 
@@ -26,7 +24,7 @@ export default function Makes() {
     <div>
       <ul class="nav">
         <li class="nav-item">
-          <Link class="nav-link active" aria-current="page" to={"/AddMake"}>Add Make</Link>
+          <Link class="nav-link active" aria-current="page" to={"/catalog/addMake"}>Add Make</Link>
         </li>
       </ul>
       <div className='container'>
@@ -35,12 +33,10 @@ export default function Makes() {
 
           {makes.map((make, index) => (
             <ul className="list-group list-group-flush" key={index}>
-              <Link className="list-group-item" to={`/viewmake/${make.id}`}>{make.name}</Link>
+              <Link className="list-group-item" to={`/catalog/${make.name}`}>{make.name}</Link>
             </ul>
           ))
           }
-
-
         </div>
       </div>
     </div>

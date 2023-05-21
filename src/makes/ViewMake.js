@@ -4,39 +4,34 @@ import { Link, useParams } from 'react-router-dom'
 
 export default function ViewUser() {
 
-    const [make, setMake] = useState({
-        name: ''
-    });
+    const [models, setModels] = useState([]);
 
-    const { id } = useParams();
+    const { make } = useParams();
 
     useEffect(() => {
-        loadMake()
+        loadModels()
     }, []);
 
-    const loadMake = async () => {
-        const result = await axios.get(`http://localhost:8080/make/${id}`);
-        setMake(result.data);
+    const loadModels = async () => {
+        const result = await axios.get(`http://localhost:8080/catalog/${make}`);
+        setModels(result.data);
     }
 
     return (
-        <div className='container'>
-            <div className='row'>
-                <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
-                    <h2 className='text-center m-4'>Make Details</h2>
-                    <div className='card'>
-                        <div className='card-header'>
-                            Details of make id : {make.id}
-                            <ul className='list-group list-group-flush'>
-                                <li className='list-group-item'>
-                                    <b>Name:</b>
-                                    {make.name}
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <Link className='btn btn-primary my-2' to={'/makes'}>Back to Makes</Link>
-                </div>
+        <div>
+            <ul class="nav">
+                <li class="nav-item">
+                    <Link class="nav-link active" aria-current="page" to={`/catalog/${make}/addModel`}
+                    >Add Model</Link>
+                </li>
+            </ul>
+            <div className='container'>
+                {models.map((model, index) => (
+                    <ul className="list-group list-group-flush" key={index}>
+                        <Link className="list-group-item" to={`/catalog/${make}/${model.name}`}>{model.name}</Link>
+                    </ul>
+                ))
+                }
             </div>
         </div>
     )
