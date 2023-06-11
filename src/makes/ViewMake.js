@@ -26,6 +26,13 @@ export default function ViewUser() {
                 </li>
             </ul>
             <div className='container'>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{make}</li>
+                    </ol>
+                </nav>
                 {models.map((model, index) => (
                     <ul className="list-group list-group-flush" key={index}>
                         <Link className="list-group-item" to={`/catalog/${make}/${model.name}`}>{model.name}</Link>

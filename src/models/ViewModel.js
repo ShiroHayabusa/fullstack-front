@@ -26,6 +26,14 @@ export default function ViewModel() {
                 </li>
             </ul>
             <div className='container'>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
+                        <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
+                        <li class="breadcrumb-item active" aria-current="page">{model}</li>
+                    </ol>
+                </nav>
                 {generations.map((generation, index) => (
                     <ul className="list-group list-group-flush" key={index}>
                         <Link className="list-group-item" to={`/catalog/${make}/${model}/${generation.id}`}>{generation.name}</Link>

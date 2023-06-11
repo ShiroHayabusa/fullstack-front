@@ -11,7 +11,7 @@ export default function AddTrim() {
     });
 
     const { name } = trim;
-    const { make, model, generation, facelift } = useParams();
+    const { make, model, generation, bodystyle } = useParams();
 
     const onInputChange = (e) => {
         setTrim({ ...trim, [e.target.name]: e.target.value });
@@ -19,8 +19,8 @@ export default function AddTrim() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:8080/catalog/" + make + "/" + model + "/" + generation + "/" + facelift + "/addTrim", trim);
-        navigate('/catalog/' + make + "/" + model + "/" + generation + "/" + facelift);
+        await axios.post("http://localhost:8080/catalog/" + make + "/" + model + "/" + generation + "/" + bodystyle + "/addTrim", trim);
+        navigate('/catalog/' + make + "/" + model + "/" + generation + "/" + bodystyle);
     };
 
     return (
@@ -41,7 +41,7 @@ export default function AddTrim() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generation}/${facelift}`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generation}/${bodystyle}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

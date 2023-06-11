@@ -28,8 +28,15 @@ export default function Makes() {
         </li>
       </ul>
       <div className='container'>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+
+          </ol>
+        </nav>
         <div className='py-4'>
-        
+
 
           {makes.map((make, index) => (
             <ul className="list-group list-group-flush" key={index}>

@@ -23,6 +23,7 @@ import EditFacelift from './facelifts/EditFacelift';
 import ViewFacelift from './facelifts/ViewFacelift';
 
 import AddBodystyle from './bodystyles/AddBodystyle';
+import AddBodystyle2 from './bodystyles/AddBodystyle';
 import EditBodystyle from './bodystyles/EditBodystyle';
 import ViewBodystyle from './bodystyles/ViewBodystyle';
 
@@ -53,23 +54,23 @@ function App() {
 
           <Route exact path='/catalog/:make/:model/addGeneration' element={<AddGeneration/>} />
           <Route exact path='/editmodel/:id' element={<EditGeneration />} />
-          <Route exact path='/catalog/:make/:model/:generation' element={<ViewGeneration />} />
+          <Route exact path='/catalog/:make/:model/:generationId' element={<ViewGeneration />} />
 
           <Route exact path='/catalog/:make/:model/:generation/addFacelift' element={<AddFacelift/>} />
           <Route exact path='/editmodel/:id' element={<EditFacelift />} />
-          <Route exact path='/catalog/:make/:model/:generation/:facelift' element={<ViewFacelift />} />
 
           <Route exact path='/catalog/:make/:model/:generation/addBodystyle' element={<AddBodystyle/>} />
           <Route exact path='/editmodel/:id' element={<EditBodystyle />} />
-          <Route exact path='/catalog/:make/:model/:generation/:facelift/:bodystyle' element={<ViewBodystyle />} />
+          <Route exact path='/catalog/:make/:model/:generation/:bodystyleId' element={<ViewBodystyle />} />
 
-          <Route exact path='/catalog/:make/:model/:generation/:facelift/:bodystyle/addTrim' element={<AddTrim/>} />
+          <Route exact path='/catalog/:make/:model/:generation/:bodystyle/addTrim' element={<AddTrim/>} />
           <Route exact path='/editmodel/:id' element={<EditTrim />} />
-          <Route exact path='/catalog/:make/:model/:generation/:facelift/:bodystyle/:trim' element={<ViewTrim />} />
+          <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId' element={<ViewTrim />} />
 
           <Route exact path='/adduser' element={<AddUser />} />
           <Route exact path='/edituser/:id' element={<EditUser />} />
           <Route exact path='/viewuser/:id' element={<ViewUser />} />
+
         </Routes>
       </Router>
     </div>
