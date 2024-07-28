@@ -1,0 +1,19 @@
+.columns {
+    display: flex;
+    flex-wrap: wrap; /* Для автоматического переноса колонок */
+  }
+  
+  .column {
+    flex: 1;
+    margin-right: 10px; /* Расстояние между колонками */
+    min-width: 200px; /* Минимальная ширина колонки */
+  }
+  
+  .item {
+    margin-bottom: 10px; /* Расстояние между элементами */
+  }
+  
+  .list-group-item {
+    list-style-type: none;
+  }
+  
