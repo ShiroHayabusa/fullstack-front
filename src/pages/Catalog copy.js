@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom';
-import ColumnListMakes from '../components/ColumnListMakes';
 
 export default function Makes() {
 
@@ -40,11 +39,24 @@ export default function Makes() {
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+
           </ol>
         </nav>
-        <h2>Catalog</h2>
         <div className='py-4'>
-          <ColumnListMakes groupedItems={groupedList} itemsPerColumn={6} />
+          {
+            Object.values(groupedList).map((item, index) => {
+              return (
+                <ul className='list-group list-group-flush' key={index}>
+                  <h3 className='border-bottom'>{item[0].name[0]}</h3>
+                  {item.map((item, index) => (
+                    <li className='list-group-item' key={index} data={item}>
+                      <Link to={`/catalog/${item.name}`}>{item.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )
+            })
+          }
         </div>
       </div>
     </div>

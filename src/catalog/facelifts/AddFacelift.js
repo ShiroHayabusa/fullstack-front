@@ -1,0 +1,84 @@
+import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom';
+
+export default function AddFacelift() {
+
+    let navigate = useNavigate();
+
+    const [facelift, setFacelift] = useState({
+        name: "",
+        description: ""
+    });
+
+    const { name, description } = facelift;
+    const { make, model, generation } = useParams();
+
+    const [generationEntity, setGenerationEntity] = useState({
+        name: ''
+    });
+
+    const loadGenerationEntity = async () => {
+        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generation}`);
+        setGenerationEntity(result.data);
+    }
+
+    useEffect(() => {
+        loadGenerationEntity();
+    }, [])
+
+    const onInputChange = (e) => {
+        setFacelift({ ...facelift, [e.target.name]: e.target.value });
+    };
+
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addFacelift`, facelift);
+        navigate(`/catalog/${make}/${model}/${generation}`);
+    };
+
+    return (
+        <div className='container'>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generation}`}>{generationEntity.name}</Link></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add bodystyle</li>
+                </ol>
+            </nav>
+            <div className='row'>
+                <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
+                    <h2 className='text-center m-4'>Add facelift</h2>
+                    <form onSubmit={(e) => onSubmit(e)}>
+                        <div className='mb-3'>
+                            <label htmlFor='Name' className='form-label'>Name</label>
+                            <input
+                                type={'text'}
+                                className='form-control'
+                                placeholder='Enter facelift'
+                                name='name'
+                                value={name}
+                                onChange={(e) => onInputChange(e)}
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <textarea
+                                type={'text'}
+                                className='form-control'
+                                placeholder='Enter description'
+                                name='description'
+                                value={description}
+                                onChange={(e) => onInputChange(e)}
+                            />
+                        </div>
+                        <button type='submit' className="btn btn-outline-primary">Submit</button>
+                        <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generation}`}>Cancel</Link>
+                    </form>
+                </div>
+            </div>
+        </div>
+    )
+}
