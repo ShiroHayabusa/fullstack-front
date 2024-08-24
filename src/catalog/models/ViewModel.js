@@ -34,11 +34,12 @@ export default function ViewModel() {
                         <li class="breadcrumb-item active" aria-current="page">{model}</li>
                     </ol>
                 </nav>
+                <div className="row row-cols-1 row-cols-md-3 g-3">
                 {generations.map((generation, index) => (
                     //   <ul className="list-group list-group-flush" key={index}>
                     //       <Link className="list-group-item" to={`/catalog/${make}/${model}/${generation.id}`}>{generation.name}</Link>
                     //   </ul>
-                    <div className="row row-cols-1 row-cols-md-2 g-4">
+                    
                         <div className="col">
                             <div className="card">
                                 <img
@@ -49,13 +50,14 @@ export default function ViewModel() {
                                     <h5 className="card-title">
                                         <Link to={`/catalog/${make}/${model}/${generation.id}`}>{generation.name}</Link>
                                     </h5>
-                                    <p className="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                    <p className="card-text">{generation.years}</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    
                 ))
                 }
+                </div>
             </div>
         </div>
     )

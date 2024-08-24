@@ -74,7 +74,9 @@ export default function EditGeneration() {
         const formData = new FormData();
         formData.append('name', generationEntity.name);
         formData.append('years', generationEntity.years);
-        formData.append('body', generationEntity.body);
+        if (generationEntity.body) {
+            formData.append('body', generationEntity.body);
+        }
         formData.append('description', generationEntity.description);
         if (selectedFile) {
             formData.append('photo', selectedFile);

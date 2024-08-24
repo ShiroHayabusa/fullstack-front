@@ -94,7 +94,7 @@ export default function EditEngine() {
                         </div>
                         <img
                             style={{ width: '40px', height: 'auto' }}
-                            src={`https://newloripinbucket.s3.amazonaws.com/image/${engine.name || 'defaultMake'}/${engine?.photo?.name || 'defaultImage.jpg'}`}
+                            src={`https://newloripinbucket.s3.amazonaws.com/image/engines/${engine.name || 'defaultMake'}/${engine?.photo?.name || 'defaultImage.jpg'}`}
                             className="mb-3"
                             alt="...">
                         </img>

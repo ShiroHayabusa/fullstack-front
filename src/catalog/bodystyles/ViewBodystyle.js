@@ -37,10 +37,10 @@ export default function ViewBodystyle() {
         <div>
             <ul class="nav">
 
-                    <Link class="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/addTrim`}
-                    >Add Trim</Link>
-                    <Link class="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`}
-                    >Edit bodystyle</Link>
+                <Link class="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/addTrim`}
+                >Add Trim</Link>
+                <Link class="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`}
+                >Edit bodystyle</Link>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
@@ -53,19 +53,23 @@ export default function ViewBodystyle() {
                         <li class="breadcrumb-item active" aria-current="page">{bodystyle.name}</li>
                     </ol>
                 </nav>
+
                 {trims.map((trim, index) => (
-                    //  <ul className="list-group list-group-flush" key={index}>
-                    //      <Link className="list-group-item" to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`}>{trim.name}</Link>
-                    //  </ul>
-                    <div className="row row-cols-1 row-cols-md-2 g-4">
-                        <div className="col">
-                            <div className="card">
-                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`}></img>
+                    <div className="card mb-3" >
+                        <div className="row g-0">
+                            <div className="col-md-4">
+                                <img
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`}
+                                    className="img-fluid rounded-start"
+                                ></img>
+                            </div>
+                            <div className="col-md-8">
                                 <div className="card-body">
                                     <h5 className="card-title">
                                         <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`}>{trim.name}</Link>
                                     </h5>
-                                    <p className="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                    <p className="card-text">{trim.years}</p>
+                                    <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
                                 </div>
                             </div>
                         </div>
@@ -74,5 +78,6 @@ export default function ViewBodystyle() {
                 }
             </div>
         </div>
+
     )
 }

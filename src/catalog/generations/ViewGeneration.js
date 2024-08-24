@@ -71,12 +71,13 @@ export default function ViewGeneration() {
                             to={`/catalog/${make}/${model}/${generationId}/${facelift.id}/editFacelift`}
                         >Edit facelift</Link>
                         <div className="">
-                            {bodystyles.map((bodystyle, index) => (
-                                facelift.name === bodystyle.facelift.name ? (
-                                    // <ul className="list-group list-group-flush" key={index}>
-                                    //     <Link className="list-group-item text-capitalize" to={`/catalog/${make}/${model}/${generationId}/${bodystyle.id}`}>{bodystyle.name}</Link>
-                                    // </ul>
-                                    <div className="row row-cols-1 row-cols-md-2 g-4">
+                            <div className="row row-cols-1 row-cols-md-3 g-3">
+                                {bodystyles.map((bodystyle, index) => (
+                                    facelift.name === bodystyle.facelift.name ? (
+                                        // <ul className="list-group list-group-flush" key={index}>
+                                        //     <Link className="list-group-item text-capitalize" to={`/catalog/${make}/${model}/${generationId}/${bodystyle.id}`}>{bodystyle.name}</Link>
+                                        // </ul>
+
                                         <div className="col">
                                             <div className="card">
                                                 <img
@@ -87,14 +88,15 @@ export default function ViewGeneration() {
                                                     <h5 className="card-title">
                                                         <Link to={`/catalog/${make}/${model}/${generationId}/${bodystyle.id}`}>{bodystyle.name}</Link>
                                                     </h5>
-                                                    <p className="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                                    <p className="card-text">{bodystyle.years}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ) : (<div></div>)
-                            ))
-                            }
+
+                                    ) : (<div></div>)
+                                ))
+                                }
+                            </div>
                         </div>
                     </div>
                 ))

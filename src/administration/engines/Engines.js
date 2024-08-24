@@ -54,7 +54,7 @@ export default function Engines() {
                                     <td className='text-start'>
                                         <img
                                             style={{ width: '40px', height: 'auto' }}
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/${engine.name || 'defaultEngine'}/${engine?.photo?.name || 'defaultImage.jpg'}`}
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/engines/${engine.name || 'defaultEngine'}/${engine?.photo?.name || 'defaultImage.jpg'}`}
                                             className="card-img-top"
                                             alt="...">
                                         </img>
