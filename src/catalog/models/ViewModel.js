@@ -28,9 +28,9 @@ export default function ViewModel() {
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                        <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
+                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{model}</li>
                     </ol>
                 </nav>
@@ -48,7 +48,7 @@ export default function ViewModel() {
                                     alt="..."></img>
                                 <div className="card-body">
                                     <h5 className="card-title">
-                                        <Link to={`/catalog/${make}/${model}/${generation.id}`}>{generation.name}</Link>
+                                        <a href={`/catalog/${make}/${model}/${generation.id}`} className="text-decoration-none">{generation.name}</a>
                                     </h5>
                                     <p className="card-text">{generation.years}</p>
                                 </div>

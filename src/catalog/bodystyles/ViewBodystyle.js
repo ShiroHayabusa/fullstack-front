@@ -45,12 +45,12 @@ export default function ViewBodystyle() {
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                        <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
-                        <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
-                        <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}`}>{bodystyle.generation.name}</Link></li>
-                        <li class="breadcrumb-item active" aria-current="page">{bodystyle.name}</li>
+                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${bodystyle.generation.id}`} className="text-decoration-none">{bodystyle.generation.name}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{bodystyle.bodytype?.name}</li>
                     </ol>
                 </nav>
 

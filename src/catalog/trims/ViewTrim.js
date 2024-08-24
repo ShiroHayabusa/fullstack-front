@@ -9,6 +9,12 @@ export default function ViewTrim() {
         bodystyle: ''
     });
 
+    const sections = [
+        { key: 'Home', content: 'Home', link: true },
+        { key: 'Store', content: 'Store', link: true },
+        { key: 'Shirt', content: 'T-Shirt', active: true },
+    ]
+
     const { make, model, generationId, bodystyleId, trimId } = useParams();
 
     useEffect(() => {
@@ -22,6 +28,7 @@ export default function ViewTrim() {
     }
 
     return (
+
         <div>
             <ul className="nav">
                 <li className="nav-item">
@@ -31,17 +38,19 @@ export default function ViewTrim() {
             </ul>
 
             <div className='container'>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`}>{trim.bodystyle.generation?.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{trim.bodystyle.name}</Link></li>
-                    <li class="breadcrumb-item active" aria-current="page">{trim.name}</li>
-                </ol>
-            </nav>
+
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{trim.bodystyle.generation?.name}</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{trim.bodystyle.name}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{trim.name}</li>
+                    </ol>
+                </nav>
                 <div className="h5 pb-1 mb-4 text-black border-bottom border-black text-start">
                     {make + ' ' + model + ' ' + trim.name}
                 </div>

@@ -21,6 +21,7 @@ export default function Administration() {
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Catalog</div>
                         <Link className="list-group-item text-start" to='/administration/countries'>Countries</Link>
                         <Link className="list-group-item text-start" to='/administration/bodies'>Bodies</Link>
+                        <Link className="list-group-item text-start" to='/administration/bodytypes'>Bodytypes</Link>
                         <Link className="list-group-item text-start" to='/administration/titles'>Titles</Link>
                         <Link className="list-group-item text-start" to='/administration/engines'>Engines</Link>
                         <Link className="list-group-item text-start" to='/administration/transmissions'>Transmissions</Link>

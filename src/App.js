@@ -60,6 +60,10 @@ import AddDrivetrain from './administration/drivetrains/AddDrivetrain';
 import EditDrivetrain from './administration/drivetrains/EditDrivetrain';
 import Drivetrains from './administration/drivetrains/Drivetrains';
 
+import AddBodytype from './administration/bodytypes/AddBodytype';
+import EditBodytype from './administration/bodytypes/EditBodytype';
+import Bodytypes from './administration/bodytypes/Bodytypes';
+
 import AddSpot from './spots/AddSpot';
 import EditSpot from './spots/EditSpot';
 import Spots from './spots/Spots';
@@ -135,6 +139,10 @@ function App() {
           <Route exact path='/administration/drivetrains/addDrivetrain' element={<AddDrivetrain />} />
           <Route exact path='/administration/drivetrains/editDrivetrain/:id' element={<EditDrivetrain />} />
           <Route exact path='/administration/drivetrains' element={<Drivetrains />} />
+
+          <Route exact path='/administration/bodytypes/addBodytype' element={<AddBodytype />} />
+          <Route exact path='/administration/bodytypes/editBodytype/:id' element={<EditBodytype />} />
+          <Route exact path='/administration/bodytypes' element={<Bodytypes />} />
 
           <Route exact path='/spots/addSpot' element={<AddSpot />} />
           <Route exact path='/spots/editSpot' element={<EditSpot />} />

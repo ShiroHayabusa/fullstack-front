@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ColumnListModels from '../../components/ColumnListModels'
+import '../../components/ColumnContainer.css'
 
 export default function ViewMake() {
 
@@ -34,11 +35,15 @@ export default function ViewMake() {
     };
 
     const groupedList = models.reduce((acc, obj) => {
-        const k = obj.name.charAt(0).toUpperCase();
-        acc[k] = acc[k] || [];
-        acc[k].push(obj);
+        const firstLetter = obj.name.charAt(0).toUpperCase();
+        if (!acc[firstLetter]) {
+            acc[firstLetter] = [];
+        }
+        acc[firstLetter].push(obj);
         return acc;
-    }, {})
+    }, {});
+
+    const sortedKeys = Object.keys(groupedList).sort();
 
     const makePhotoName = makeDetails && makeDetails.photo ? makeDetails.photo.name : 'placeholder.jpg';
     const photoURL = `https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${makePhotoName}`;
@@ -54,8 +59,8 @@ export default function ViewMake() {
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><a href="/">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/catalog">Catalog</a></li>
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{make}</li>
                     </ol>
                 </nav>
@@ -69,7 +74,24 @@ export default function ViewMake() {
                     />
                 </div>
                 <div className='py-4'>
-                    <ColumnListModels groupedItems={groupedList} itemsPerColumn={6} make={make} />
+                    <div className="column-container">
+                        {sortedKeys.map((letter) => (
+                            <div key={letter} className="column-group">
+                                <h4>{letter}</h4>
+                                <ul className="list-group">
+                                    {groupedList[letter].map((model) => (
+                                        <li className="list-group-item border-0" key={model.id}>
+                                            <a href={`/catalog/${make}/${model.name}`} className="text-decoration-none">
+                                                <p>
+                                                    {model.name}
+                                                </p>
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

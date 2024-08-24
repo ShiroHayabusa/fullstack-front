@@ -1,0 +1,38 @@
+.column-container {
+    column-count: 6; /* Adjust 6 to the desired number of columns */
+    column-gap: 1rem; /* Gap between columns */
+  }
+  
+  .column-container > div {
+    break-inside: avoid; /* Prevent column break inside each item */
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 1200px) {
+    .column-container {
+      column-count: 2; /* 2 колонки на экранах шириной до 1200px */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .column-container {
+      column-count: 1; /* 1 колонка на экранах шириной до 768px */
+    }
+  }
+
+  .column-group {
+    text-align: left; /* Выровнять текст по левому краю */
+  }
+
+  .column-group ul {
+    list-style: none; /* Убрать маркеры списка */
+    padding: 0; /* Убрать внутренние отступы */
+    margin: 0; /* Убрать внешние отступы */
+  }
+  
+  /* Убедитесь, что элементы списка тоже выровнены по левому краю */
+  .column-group li {
+    padding: 0;
+    margin: 0;
+  }
+

@@ -6,16 +6,16 @@ export default function AddBodystyle() {
 
     let navigate = useNavigate();
     const { make, model, generation } = useParams();
-    const [bsnameList, setBsnameList] = useState([]);
+    const [bodytypeList, setBodytypeList] = useState([]);
     const [faceliftList, setFaceliftList] = useState([]);
     const [marketList, setMarketList] = useState([]);
     const [bodystyle, setBodystyle] = useState({
         facelift: "",
-        name: "",
+        bodytype: "",
         years: "",
         description: ""
     });
-    const { years, description } = bodystyle;
+    const { facelift, bodytype, years, description } = bodystyle;
     const [error, setError] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -24,7 +24,7 @@ export default function AddBodystyle() {
     });
 
     useEffect(() => {
-        fetchBsnameData();
+        fetchBodytypeData();
         fetchFaceliftData();
         fetchMarketData();
         loadGenerationEntity();
@@ -43,14 +43,14 @@ export default function AddBodystyle() {
         setBodystyle({ ...bodystyle, [e.target.name]: e.target.value });
     };
 
-    const fetchBsnameData = () => {
+    const fetchBodytypeData = () => {
         axios
-            .get('http://localhost:8080/catalog/' + make + "/" + model + "/" + generation + '/bodystyleNameList')
+            .get('http://localhost:8080/administration/bodytypes')
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
-                    setBsnameList(data)
+                    setBodytypeList(data)
                 } else {
                     //error handle section 
                 }
@@ -91,13 +91,14 @@ export default function AddBodystyle() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        if (!bodystyle.facelift || !bodystyle.name || !selectedFile) {
+        if (!bodystyle.facelift || !bodystyle.bodytype || !selectedFile) {
             setError('Please provide facelift, bodystyle and upload an image.');
             return;
         }
         const formData = new FormData();
         formData.append('name', bodystyle.name);
         formData.append('facelift', bodystyle.facelift);
+        formData.append('bodytype', bodystyle.bodytype);
         formData.append('photo', selectedFile);
         formData.append('years', bodystyle.years);
         formData.append('description', bodystyle.description);
@@ -130,6 +131,7 @@ export default function AddBodystyle() {
             <form onSubmit={(e) => onSubmit(e)}>
                 <h2 className="mb-3">Add bodystyle</h2>
                 {error && <div className="alert alert-danger">{error}</div>}
+
                 <select onChange={onChange} name='facelift' className="form-select mt-5 mb-5">
                     <option value={"default"}>
                         Select facelift
@@ -141,13 +143,13 @@ export default function AddBodystyle() {
                     ))}
                 </select>
 
-                <select onChange={onChange} name='name' className="form-select mt-5 mb-5">
+                <select onChange={onChange} name='bodytype' className="form-select mt-5 mb-5">
                     <option defaultValue>
-                        Select bodystyle
+                        Select bodytype
                     </option>
-                    {bsnameList.map((item) => (
-                        <option className='text-capitalize' key={item.id} value={item} >
-                            {item}
+                    {bodytypeList.map((item) => (
+                        <option className='text-capitalize' key={item.id} value={item.id} >
+                            {item.name}
                         </option>
                     ))}
                 </select>
@@ -162,6 +164,7 @@ export default function AddBodystyle() {
                         </option>
                     ))}
                 </select>
+
                 <input
                     type={'text'}
                     className='form-control'
