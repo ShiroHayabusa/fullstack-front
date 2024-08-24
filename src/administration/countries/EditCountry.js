@@ -94,7 +94,7 @@ export default function EditCountry() {
                         </div>
                         <img
                             style={{ width: '40px', height: 'auto' }}
-                            src={`https://newloripinbucket.s3.amazonaws.com/image/${country.name || 'defaultMake'}/${country?.flag?.name || 'defaultImage.jpg'}`}
+                            src={`https://newloripinbucket.s3.amazonaws.com/image/countries/${country.name || 'defaultMake'}/${country?.flag?.name || 'defaultImage.jpg'}`}
                             className="mb-3"
                             alt="...">
                         </img>

@@ -62,7 +62,7 @@ export default function ViewTrim() {
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" aria-current="page" href="#">Photo</a>
-                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/${make || 'defaultMake'}/${model || 'defaultModel'}/${trim.bodystyle.generation?.name || 'defaultGeneration'}/${trim.bodystyle?.facelift?.name || 'defaultBodystyle'}/${trim?.bodystyle?.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`} className="img-thumbnail"></img>
+                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${trim.bodystyle.generation?.name || 'defaultGeneration'}/${trim.bodystyle?.facelift?.name || 'defaultBodystyle'}/${trim?.bodystyle?.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`} className="img-thumbnail"></img>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="#">Video</a>

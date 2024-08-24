@@ -60,7 +60,7 @@ export default function ViewBodystyle() {
                     <div className="row row-cols-1 row-cols-md-2 g-4">
                         <div className="col">
                             <div className="card">
-                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`}></img>
+                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`}></img>
                                 <div className="card-body">
                                     <h5 className="card-title">
                                         <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`}>{trim.name}</Link>

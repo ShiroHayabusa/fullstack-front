@@ -41,7 +41,7 @@ export default function ViewMake() {
     }, {})
 
     const makePhotoName = makeDetails && makeDetails.photo ? makeDetails.photo.name : 'placeholder.jpg';
-    const photoURL = `https://newloripinbucket.s3.amazonaws.com/image/${make}/${makePhotoName}`;
+    const photoURL = `https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${makePhotoName}`;
 
     return (
         <div>

@@ -147,7 +147,7 @@ export default function EditMake() {
                         </div>
                         <img
                             style={{ width: '40px', height: 'auto' }}
-                            src={`https://newloripinbucket.s3.amazonaws.com/image/${makeEntity.name || 'defaultMake'}/${makeEntity?.photo?.name || 'defaultImage.jpg'}`}
+                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${makeEntity.name || 'defaultMake'}/${makeEntity?.photo?.name || 'defaultImage.jpg'}`}
                             className="mb-3"
                             alt="...">
                         </img>

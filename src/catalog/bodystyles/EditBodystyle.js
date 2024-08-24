@@ -30,7 +30,9 @@ export default function EditBodystyle() {
                 const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`);
                 setBodystyleEntity({
                     name: response.data.name,
-                    facelift: response.data.facelift?.id || "",
+                    generation: response.data.generation,
+                    facelift: response.data.facelift?.id,
+                    faceliftName: response.data.facelift?.name,
                     years: response.data.years,
                     market: response.data.market?.id || "",
                     description: response.data.description,
@@ -210,7 +212,7 @@ export default function EditBodystyle() {
                         </div>
                         <img
                             style={{ width: '40px', height: 'auto' }}
-                            src={`https://newloripinbucket.s3.amazonaws.com/image/${make || 'defaultMake'}/${model || 'defaultModel'}/${generationId || 'defaultGeneration'}/${bodystyleId || 'defaultBodystyle'}/${bodystyleEntity?.photo?.name || 'defaultImage.jpg'}`}
+                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${bodystyleEntity.generation?.name}/${bodystyleEntity.faceliftName}/${bodystyleEntity.name}/${bodystyleEntity?.photo?.name}`}
                             className="mb-3"
                             alt="...">
                         </img>

@@ -42,7 +42,7 @@ export default function ViewModel() {
                         <div className="col">
                             <div className="card">
                                 <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/${make || 'defaultMake'}/${model || 'defaultModel'}/${generation.name || 'defaultGeneration'}/${generation?.photo?.name || 'defaultImage.jpg'}`}
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${generation.name || 'defaultGeneration'}/${generation?.photo?.name || 'defaultImage.jpg'}`}
                                     className="card-img-top"
                                     alt="..."></img>
                                 <div className="card-body">

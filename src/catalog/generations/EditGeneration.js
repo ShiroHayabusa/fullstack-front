@@ -160,7 +160,7 @@ export default function EditGeneration() {
                         </div>
                         <img
                             style={{ width: '40px', height: 'auto' }}
-                            src={`https://newloripinbucket.s3.amazonaws.com/image/${make || 'defaultMake'}/${model || 'defaultModel'}/${generationEntity.name || 'defaultGeneration'}/${generationEntity?.photo?.name || 'defaultImage.jpg'}`}
+                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${generationEntity.name || 'defaultGeneration'}/${generationEntity?.photo?.name || 'defaultImage.jpg'}`}
                             className="mb-3"
                             alt="...">
                         </img>
