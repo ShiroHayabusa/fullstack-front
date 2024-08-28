@@ -59,7 +59,7 @@ export default function ViewBodystyle() {
                         <div className="row g-0">
                             <div className="col-md-4">
                                 <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`}
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.bodytype?.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`}
                                     className="img-fluid rounded-start"
                                 ></img>
                             </div>

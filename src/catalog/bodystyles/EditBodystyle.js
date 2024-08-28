@@ -8,7 +8,7 @@ export default function EditBodystyle() {
     let navigate = useNavigate();
 
     const [bodystyleEntity, setBodystyleEntity] = useState({
-        name: "",
+        bodytype: "",
         facelift: "",
         years: "",
         market: "",
@@ -18,7 +18,7 @@ export default function EditBodystyle() {
 
     const [faceliftList, setFaceliftList] = useState([]);
     const [marketList, setMarketList] = useState([]);
-    const [bsnameList, setBsnameList] = useState([]);
+    const [bodytypeList, setBodytypeList] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -29,9 +29,10 @@ export default function EditBodystyle() {
             try {
                 const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`);
                 setBodystyleEntity({
-                    name: response.data.name,
+                    bodytype: response.data.bodytype?.id || "",
+                    bodytypeName: response.data.bodytype?.name,
                     generation: response.data.generation,
-                    facelift: response.data.facelift?.id,
+                    facelift: response.data.facelift?.id || "",
                     faceliftName: response.data.facelift?.name,
                     years: response.data.years,
                     market: response.data.market?.id || "",
@@ -62,10 +63,10 @@ export default function EditBodystyle() {
             }
         }
 
-        const fetchBsnameList = async () => {
+        const fetchBodytypeList = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/bodystyleNameList`);
-                setBsnameList(response.data);
+                const response = await axios.get(`http://localhost:8080/administration/bodytypes`);
+                setBodytypeList(response.data);
                 console.log("bsnames:", response.data);
             } catch (error) {
                 console.log('Error fetching bodystylenames:', error);
@@ -73,16 +74,16 @@ export default function EditBodystyle() {
         }
 
         fetchBodystyleEntity();
-        fetchBsnameList();
+        fetchBodytypeList();
         fetchFaceliftList();
         fetchMarketList();
-    }, [bodystyleId]);
+    }, [make, model, generationId, bodystyleId]);
 
     const onInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setBodystyleEntity({
             ...bodystyleEntity,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         });
     };
 
@@ -93,16 +94,16 @@ export default function EditBodystyle() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        if (!bodystyleEntity.name || !bodystyleEntity.facelift) {
-            setError('Please provide both a bodystyle name and a facelift.');
+        if (!bodystyleEntity.bodytype || !bodystyleEntity.facelift) {
+            setError('Please provide both a bodytype and a facelift.');
             return;
         }
 
         const formData = new FormData();
-        formData.append('name', bodystyleEntity.name);
+        formData.append('bodytypeId', bodystyleEntity.bodytype);
         formData.append('faceliftId', bodystyleEntity.facelift);
         formData.append('years', bodystyleEntity.years)
-        formData.append('market', bodystyleEntity.market);
+        formData.append('marketId', bodystyleEntity.market);
         formData.append('description', bodystyleEntity.description);
         if (selectedFile) {
             formData.append('photo', selectedFile);
@@ -130,8 +131,8 @@ export default function EditBodystyle() {
                     <li class="breadcrumb-item"><a href='/catalog'>Catalog</a></li>
                     <li class="breadcrumb-item"><a href={`/catalog/${make}`}>{make}</a></li>
                     <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`}>{model}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`}>{generationId}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.name}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`}>{bodystyleEntity.generation?.name}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.bodytypeName}</a></li>
 
                     <li class="breadcrumb-item active" aria-current="page">Edit bodystyle</li>
                 </ol>
@@ -144,16 +145,16 @@ export default function EditBodystyle() {
                     <form onSubmit={onSubmit}>
                         <select
                             onChange={onInputChange}
-                            name='name'
+                            name='bodytype'
                             className="form-select mt-5 mb-5"
-                            value={bodystyleEntity.name}
+                            value={bodystyleEntity.bodytype}
                         >
                             <option value={"default"}>
                                 Select bodystyle
                             </option>
-                            {bsnameList.map((bsName) => (
-                                <option key={bsName.id} value={bsName} >
-                                    {bsName}
+                            {bodytypeList.map((bodytype) => (
+                                <option key={bodytype.id} value={bodytype.id} >
+                                    {bodytype.name}
                                 </option>
                             ))}
                         </select>
@@ -212,7 +213,7 @@ export default function EditBodystyle() {
                         </div>
                         <img
                             style={{ width: '40px', height: 'auto' }}
-                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${bodystyleEntity.generation?.name}/${bodystyleEntity.faceliftName}/${bodystyleEntity.name}/${bodystyleEntity?.photo?.name}`}
+                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${bodystyleEntity.generation?.name}/${bodystyleEntity.faceliftName}/${bodystyleEntity.bodytypeName}/${bodystyleEntity?.photo?.name}`}
                             className="mb-3"
                             alt="...">
                         </img>

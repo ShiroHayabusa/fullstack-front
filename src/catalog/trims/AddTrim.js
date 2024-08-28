@@ -20,15 +20,7 @@ export default function AddTrim() {
         maxSpeed: "",
         acceleration: "",
         uniq: false,
-        length: "",
-        height: "",
-        width: "",
-        base: "",
         weight: "",
-        power: "",
-        torque: "",
-        engineVolume: "",
-        fuel: "",
         electric: false,
         hybrid: false,
         battery: "",
@@ -36,8 +28,7 @@ export default function AddTrim() {
     });
 
     const { name, altName, description, engine, transmission, body, drivetrain, years, tuner, amount, maxSpeed, acceleration,
-        uniq, length, height, width, base, weight, power,
-        torque, engineVolume, fuel, electric, hybrid, battery, range } = trim;
+        uniq, weight, electric, hybrid, battery, range } = trim;
 
     const [bodystyleEntity, setBodystyleEntity] = useState({
         name: '',
@@ -188,7 +179,7 @@ export default function AddTrim() {
                     <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
                     <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
                     <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`}>{bodystyleEntity.generation.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.name}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.bodytype?.name}</Link></li>
                     <li class="breadcrumb-item active" aria-current="page">Add trim</li>
                 </ol>
             </nav>
@@ -304,38 +295,7 @@ export default function AddTrim() {
                                 value={acceleration}
                                 onChange={(e) => onChange(e)}
                             />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter length'
-                                name='length'
-                                value={length}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter height'
-                                name='height'
-                                value={height}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter width'
-                                name='width'
-                                value={width}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter base'
-                                name='base'
-                                value={base}
-                                onChange={(e) => onChange(e)}
-                            />
+                           
                             <input
                                 type={'text'}
                                 className='form-control'
@@ -344,30 +304,7 @@ export default function AddTrim() {
                                 value={weight}
                                 onChange={(e) => onChange(e)}
                             />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter power'
-                                name='power'
-                                value={power}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter torque'
-                                name='torque'
-                                value={torque}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter engineVolume'
-                                name='engineVolume'
-                                value={engineVolume}
-                                onChange={(e) => onChange(e)}
-                            />
+                            
                             <input
                                 type={'text'}
                                 className='form-control'

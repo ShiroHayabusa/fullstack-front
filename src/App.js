@@ -64,6 +64,14 @@ import AddBodytype from './administration/bodytypes/AddBodytype';
 import EditBodytype from './administration/bodytypes/EditBodytype';
 import Bodytypes from './administration/bodytypes/Bodytypes';
 
+import AddEngineType from './administration/engineTypes/AddEngineType';
+import EditEngineType from './administration/engineTypes/EditEngineType';
+import EngineTypes from './administration/engineTypes/EngineTypes';
+
+import AddFuel from './administration/fuels/AddFuel';
+import EditFuel from './administration/fuels/EditFuel';
+import Fuels from './administration/fuels/Fuels';
+
 import AddSpot from './spots/AddSpot';
 import EditSpot from './spots/EditSpot';
 import Spots from './spots/Spots';
@@ -143,6 +151,14 @@ function App() {
           <Route exact path='/administration/bodytypes/addBodytype' element={<AddBodytype />} />
           <Route exact path='/administration/bodytypes/editBodytype/:id' element={<EditBodytype />} />
           <Route exact path='/administration/bodytypes' element={<Bodytypes />} />
+
+          <Route exact path='/administration/engineTypes/addEngineType' element={<AddEngineType />} />
+          <Route exact path='/administration/engineTypes/editEngineType/:id' element={<EditEngineType />} />
+          <Route exact path='/administration/engineTypes' element={<EngineTypes />} />
+
+          <Route exact path='/administration/fuels/addFuel' element={<AddFuel />} />
+          <Route exact path='/administration/fuels/editFuel/:id' element={<EditFuel />} />
+          <Route exact path='/administration/fuels' element={<Fuels />} />
 
           <Route exact path='/spots/addSpot' element={<AddSpot />} />
           <Route exact path='/spots/editSpot' element={<EditSpot />} />

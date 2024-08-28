@@ -9,12 +9,6 @@ export default function ViewTrim() {
         bodystyle: ''
     });
 
-    const sections = [
-        { key: 'Home', content: 'Home', link: true },
-        { key: 'Store', content: 'Store', link: true },
-        { key: 'Shirt', content: 'T-Shirt', active: true },
-    ]
-
     const { make, model, generationId, bodystyleId, trimId } = useParams();
 
     useEffect(() => {
@@ -47,7 +41,7 @@ export default function ViewTrim() {
                         <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
                         <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
                         <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{trim.bodystyle.generation?.name}</a></li>
-                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{trim.bodystyle.name}</a></li>
+                        <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{trim.bodystyle.bodytype?.name}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{trim.name}</li>
                     </ol>
                 </nav>
@@ -71,7 +65,7 @@ export default function ViewTrim() {
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" aria-current="page" href="#">Photo</a>
-                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${trim.bodystyle.generation?.name || 'defaultGeneration'}/${trim.bodystyle?.facelift?.name || 'defaultBodystyle'}/${trim?.bodystyle?.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`} className="img-thumbnail"></img>
+                                <img src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${trim.bodystyle.generation?.name || 'defaultGeneration'}/${trim.bodystyle?.facelift?.name || 'defaultBodystyle'}/${trim?.bodystyle?.bodytype?.name}/${trim.name}/${trim?.photo?.name || 'defaultImage.jpg'}`} className="img-thumbnail"></img>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="#">Video</a>

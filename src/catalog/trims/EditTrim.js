@@ -20,15 +20,7 @@ export default function EditTrim() {
         maxSpeed: "",
         acceleration: "",
         uniq: false,
-        length: "",
-        height: "",
-        width: "",
-        base: "",
         weight: "",
-        power: "",
-        torque: "",
-        engineVolume: "",
-        fuel: "",
         electric: false,
         hybrid: false,
         battery: "",
@@ -71,15 +63,7 @@ export default function EditTrim() {
                 maxSpeed: response.data.maxSpeed,
                 acceleration: response.data.acceleration,
                 uniq: response.data.uniq,
-                length: response.data.length,
-                height: response.data.height,
-                width: response.data.width,
-                base: response.data.base,
                 weight: response.data.weight,
-                power: response.data.power,
-                torque: response.data.torque,
-                engineVolume: response.data.engineVolume,
-                fuel: response.data.fuel,
                 electric: response.data.electric,
                 hybrid: response.data.hybrid,
                 battery: response.data.battery,
@@ -398,68 +382,13 @@ export default function EditTrim() {
                                 value={trim.acceleration}
                                 onChange={onInputChange}
                             />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter length'
-                                name='length'
-                                value={trim.length}
-                                onChange={onInputChange}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter height'
-                                name='height'
-                                value={trim.height}
-                                onChange={onInputChange}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter width'
-                                name='width'
-                                value={trim.width}
-                                onChange={onInputChange}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter base'
-                                name='base'
-                                value={trim.base}
-                                onChange={onInputChange}
-                            />
+
                             <input
                                 type={'text'}
                                 className='form-control'
                                 placeholder='Enter weight'
                                 name='weight'
                                 value={trim.weight}
-                                onChange={onInputChange}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter power'
-                                name='power'
-                                value={trim.power}
-                                onChange={onInputChange}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter torque'
-                                name='torque'
-                                value={trim.torque}
-                                onChange={onInputChange}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter engineVolume'
-                                name='engineVolume'
-                                value={trim.engineVolume}
                                 onChange={onInputChange}
                             />
                             <input
