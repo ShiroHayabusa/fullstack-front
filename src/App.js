@@ -47,6 +47,8 @@ import Markets from './administration/markets/Markets';
 import AddEngine from './administration/engines/AddEngine';
 import EditEngine from './administration/engines/EditEngine';
 import Engines from './administration/engines/Engines';
+import ListEngine from './administration/engines/ListEngine';
+import ViewEngine from './administration/engines/ViewEngine';
 
 import AddTransmission from './administration/transmissions/AddTransmission';
 import EditTransmission from './administration/transmissions/EditTransmission';
@@ -132,9 +134,12 @@ function App() {
           <Route exact path='/administration/markets/editMarket/:id' element={<EditMarket />} />
           <Route exact path='/administration/markets' element={<Markets />} />
 
-          <Route exact path='/administration/engines/addEngine' element={<AddEngine />} />
-          <Route exact path='/administration/engines/editEngine/:id' element={<EditEngine />} />
+          <Route exact path='/administration/engines/:make/addEngine' element={<AddEngine />} />
+          <Route exact path='/administration/engines/:make/:engineId/editEngine' element={<EditEngine />} />
           <Route exact path='/administration/engines' element={<Engines />} />
+          <Route exact path='/administration/engines/:make' element={<ListEngine />} />
+          <Route exact path='/administration/engines/:make/:engineId' element={<ViewEngine />} />
+          
 
           <Route exact path='/administration/transmissions/addTransmission' element={<AddTransmission />} />
           <Route exact path='/administration/transmissions/editTransmission/:id' element={<EditTransmission />} />
