@@ -48,7 +48,8 @@ export default function AddModel() {
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><a href="/">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                    <li className="breadcrumb-item active" aria-current="page">{make}</li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}`}>{make}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add model</li>
                 </ol>
             </nav>
             <div className='row'>

@@ -237,13 +237,13 @@ export default function EditTrim() {
         <div className='container'>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`}>{bodystyleEntity.generation.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`}>{trim.name}</Link></li>
+                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`} className="text-decoration-none">{trim.name}</Link></li>
                     <li class="breadcrumb-item active" aria-current="page">Edit trim</li>
                 </ol>
             </nav>
@@ -251,36 +251,38 @@ export default function EditTrim() {
                 <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
                     <h2 className='text-center m-4'>Edit trim</h2>
                     <form onSubmit={onSubmit}>
-                        <div className='mb-3'>
-                            <label htmlFor='Name' className='form-label'>Name</label>
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter trim'
                                 name='name'
                                 value={trim.name}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter altName'
                                 name='altName'
                                 value={trim.altName}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter description'
                                 name='description'
                                 value={trim.description}
                                 onChange={onInputChange}
                             />
+
                             <select
                                 onChange={onInputChange}
                                 name='engine'
-                                className="form-select mt-5 mb-5"
+                                className="form-select mt-3 mb-3"
                                 value={trim.engine}
                             >
                                 <option value={"default"}>
@@ -292,10 +294,11 @@ export default function EditTrim() {
                                     </option>
                                 ))}
                             </select>
+
                             <select
                                 onChange={onInputChange}
                                 name='transmission'
-                                className="form-select mt-5 mb-5"
+                                className="form-select mt-3 mb-3"
                                 value={trim.transmission}
                             >
                                 <option value={"default"}>
@@ -307,10 +310,11 @@ export default function EditTrim() {
                                     </option>
                                 ))}
                             </select>
+
                             <select
                                 onChange={onInputChange}
                                 name='body'
-                                className="form-select mt-5 mb-5"
+                                className="form-select mt-3 mb-3"
                                 value={trim.body}
                             >
                                 <option value={"default"}>
@@ -322,9 +326,10 @@ export default function EditTrim() {
                                     </option>
                                 ))}
                             </select>
+
                             <select onChange={onInputChange}
                                 name='drivetrain'
-                                className="form-select mt-5 mb-5"
+                                className="form-select mt-3 mb-3"
                                 value={trim.drivetrain}
                             >
                                 <option value={"default"}>
@@ -336,9 +341,10 @@ export default function EditTrim() {
                                     </option>
                                 ))}
                             </select>
+
                             <select onChange={onInputChange}
                                 name='tuner'
-                                className="form-select mt-5 mb-5"
+                                className="form-select mt-3 mb-3"
                                 value={trim.tuner}
                             >
                                 <option value={"default"}>
@@ -350,33 +356,37 @@ export default function EditTrim() {
                                     </option>
                                 ))}
                             </select>
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter years of production'
                                 name='years'
                                 value={trim.years}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter amount'
                                 name='amount'
                                 value={trim.amount}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter maximum speed'
                                 name='maxSpeed'
                                 value={trim.maxSpeed}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter acceleration'
                                 name='acceleration'
                                 value={trim.acceleration}
@@ -385,23 +395,25 @@ export default function EditTrim() {
 
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter weight'
                                 name='weight'
                                 value={trim.weight}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter battery'
                                 name='battery'
                                 value={trim.battery}
                                 onChange={onInputChange}
                             />
+
                             <input
                                 type={'text'}
-                                className='form-control'
+                                className='form-control mt-3 mb-3'
                                 placeholder='Enter range'
                                 name='range'
                                 value={trim.range}
@@ -411,7 +423,7 @@ export default function EditTrim() {
                             <div className='mb-3'>
                                 <input
                                     type="file"
-                                    className="form-control"
+                                    className="form-control mt-3 mb-3"
                                     name='photo'
                                     onChange={handleFileChange}
                                 />
@@ -456,7 +468,6 @@ export default function EditTrim() {
                                 <label className="form-check-label" for="flexSwitchCheckDefault">Hybrid</label>
                             </div>
 
-                        </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
                         <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`}>Cancel</Link>
                     </form>

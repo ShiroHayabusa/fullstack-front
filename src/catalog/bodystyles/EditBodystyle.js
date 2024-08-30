@@ -143,10 +143,11 @@ export default function EditBodystyle() {
                     {error && <div className="alert alert-danger">{error}</div>}
                     {success && <div className="alert alert-success">{success}</div>}
                     <form onSubmit={onSubmit}>
+
                         <select
                             onChange={onInputChange}
                             name='bodytype'
-                            className="form-select mt-5 mb-5"
+                            className="form-select mt-3 mb-3"
                             value={bodystyleEntity.bodytype}
                         >
                             <option value={"default"}>
@@ -159,17 +160,15 @@ export default function EditBodystyle() {
                             ))}
                         </select>
 
-                        <div className='mb-3'>
-                            <label htmlFor='years' className='form-label'>Years</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter years'
-                                name='years'
-                                value={bodystyleEntity.years}
-                                onChange={onInputChange}
-                            />
-                        </div>
+                        <input
+                            type='text'
+                            className='form-control'
+                            placeholder='Enter years'
+                            name='years'
+                            value={bodystyleEntity.years}
+                            onChange={onInputChange}
+                        />
+
                         <select
                             onChange={onInputChange}
                             name="facelift"
@@ -201,30 +200,30 @@ export default function EditBodystyle() {
                                 </option>
                             ))}
                         </select>
-                        <div className='mb-3'>
-                            <textarea
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter description'
-                                name='description'
-                                value={bodystyleEntity.description}
-                                onChange={onInputChange}
-                            />
-                        </div>
+
+                        <textarea
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter description'
+                            name='description'
+                            value={bodystyleEntity.description}
+                            onChange={onInputChange}
+                        />
+
                         <img
                             style={{ width: '40px', height: 'auto' }}
                             src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${bodystyleEntity.generation?.name}/${bodystyleEntity.faceliftName}/${bodystyleEntity.bodytypeName}/${bodystyleEntity?.photo?.name}`}
-                            className="mb-3"
+                            className="mt-3 mb-3"
                             alt="...">
                         </img>
-                        <div className='mb-3'>
-                            <input
-                                type='file'
-                                className='form-control'
-                                name='photo'
-                                onChange={handleFileChange}
-                            />
-                        </div>
+
+                        <input
+                            type='file'
+                            className='form-control mt-3 mb-3'
+                            name='photo'
+                            onChange={handleFileChange}
+                        />
+
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
                         <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>Cancel</Link>

@@ -62,7 +62,7 @@ export default function AddTrim() {
 
     const fetchEngineData = () => {
         axios
-            .get('http://localhost:8080/administration/engines')
+            .get(`http://localhost:8080/administration/engines/${make}`)
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -174,12 +174,12 @@ export default function AddTrim() {
         <div className='container'>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`}>{bodystyleEntity.generation.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.bodytype?.name}</Link></li>
+                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
                     <li class="breadcrumb-item active" aria-current="page">Add trim</li>
                 </ol>
             </nav>
@@ -187,190 +187,198 @@ export default function AddTrim() {
                 <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
                     <h2 className='text-center m-4'>Add trim</h2>
                     <form onSubmit={(e) => onSubmit(e)}>
-                        <div className='mb-3'>
-                            <label htmlFor='Name' className='form-label'>Name</label>
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter trim'
-                                name='name'
-                                value={name}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter altName'
-                                name='altName'
-                                value={altName}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter description'
-                                name='description'
-                                value={description}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <select onChange={onChange} name='engine' className="form-select mt-5 mb-5">
-                                <option value={"default"}>
-                                    Select engine
-                                </option>
-                                {engineList.map((item) => (
-                                    <option key={item.id} value={item.id} >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <select onChange={onChange} name='transmission' className="form-select mt-5 mb-5">
-                                <option value={"default"}>
-                                    Select transmission
-                                </option>
-                                {transmissionList.map((item) => (
-                                    <option key={item.id} value={item.id} >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <select onChange={onChange} name='body' className="form-select mt-5 mb-5">
-                                <option value={"default"}>
-                                    Select body
-                                </option>
-                                {bodyList.map((item) => (
-                                    <option key={item.id} value={item.id} >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <select onChange={onChange} name='drivetrain' className="form-select mt-5 mb-5">
-                                <option value={"default"}>
-                                    Select drivetrain
-                                </option>
-                                {drivetrainList.map((item) => (
-                                    <option key={item.id} value={item.id} >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <select onChange={onChange} name='tuner' className="form-select mt-5 mb-5">
-                                <option value={"default"}>
-                                    Select tuner
-                                </option>
-                                {tunerList.map((item) => (
-                                    <option key={item.id} value={item.id} >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter years of production'
-                                name='years'
-                                value={years}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter amount'
-                                name='amount'
-                                value={amount}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter maximum speed'
-                                name='maxSpeed'
-                                value={maxSpeed}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter acceleration'
-                                name='acceleration'
-                                value={acceleration}
-                                onChange={(e) => onChange(e)}
-                            />
-                           
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter weight'
-                                name='weight'
-                                value={weight}
-                                onChange={(e) => onChange(e)}
-                            />
-                            
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter battery'
-                                name='battery'
-                                value={battery}
-                                onChange={(e) => onChange(e)}
-                            />
-                            <input
-                                type={'text'}
-                                className='form-control'
-                                placeholder='Enter range'
-                                name='range'
-                                value={range}
-                                onChange={(e) => onChange(e)}
-                            />
 
-                            <div className='mb-3'>
-                                <input
-                                    type="file"
-                                    className="form-control"
-                                    name='photo'
-                                    onChange={handleFileChange}
-                                />
-                            </div>
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter trim'
+                            name='name'
+                            value={name}
+                            onChange={(e) => onChange(e)}
+                        />
 
-                            <div className="form-check form-switch mb-3">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    role="switch"
-                                    id="flexSwitchCheckDefault"
-                                    name="uniq"
-                                    checked={uniq}
-                                    onChange={onChange}
-                                />
-                                <label className="form-check-label" for="flexSwitchCheckDefault">Uniq</label>
-                            </div>
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter altName'
+                            name='altName'
+                            value={altName}
+                            onChange={(e) => onChange(e)}
+                        />
 
-                            <div className="form-check form-switch mb-3">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    role="switch"
-                                    id="flexSwitchCheckDefault"
-                                    name="electric"
-                                    checked={electric}
-                                    onChange={onChange}
-                                />
-                                <label className="form-check-label" for="flexSwitchCheckDefault">Electric</label>
-                            </div>
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter description'
+                            name='description'
+                            value={description}
+                            onChange={(e) => onChange(e)}
+                        />
 
-                            <div className="form-check form-switch mb-3">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    role="switch"
-                                    id="flexSwitchCheckDefault"
-                                    name="hybrid"
-                                    checked={hybrid}
-                                    onChange={onChange}
-                                />
-                                <label className="form-check-label" for="flexSwitchCheckDefault">Hybrid</label>
-                            </div>
+                        <select onChange={onChange} name='engine' className="form-select mt-3 mb-3">
+                            <option value={"default"}>
+                                Select engine
+                            </option>
+                            {engineList.map((item) => (
+                                <option key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
 
+                        <select onChange={onChange} name='transmission' className="form-select mt-3 mb-3">
+                            <option value={"default"}>
+                                Select transmission
+                            </option>
+                            {transmissionList.map((item) => (
+                                <option key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select onChange={onChange} name='body' className="form-select mt-3 mb-3">
+                            <option value={"default"}>
+                                Select body
+                            </option>
+                            {bodyList.map((item) => (
+                                <option key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select onChange={onChange} name='drivetrain' className="form-select mt-3 mb-3">
+                            <option value={"default"}>
+                                Select drivetrain
+                            </option>
+                            {drivetrainList.map((item) => (
+                                <option key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select onChange={onChange} name='tuner' className="form-select mt-3 mb-3">
+                            <option value={"default"}>
+                                Select tuner
+                            </option>
+                            {tunerList.map((item) => (
+                                <option key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter years of production'
+                            name='years'
+                            value={years}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter amount'
+                            name='amount'
+                            value={amount}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter maximum speed'
+                            name='maxSpeed'
+                            value={maxSpeed}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter acceleration'
+                            name='acceleration'
+                            value={acceleration}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter weight'
+                            name='weight'
+                            value={weight}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter battery'
+                            name='battery'
+                            value={battery}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter range'
+                            name='range'
+                            value={range}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type="file"
+                            className="form-control mt-3 mb-3"
+                            name='photo'
+                            onChange={handleFileChange}
+                        />
+
+                        <div className="form-check form-switch mb-3">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="uniq"
+                                name="uniq"
+                                checked={uniq}
+                                onChange={onChange}
+                            />
+                            <label className="form-check-label" for="uniq">Uniq</label>
                         </div>
+
+                        <div className="form-check form-switch mb-3">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="electric"
+                                name="electric"
+                                checked={electric}
+                                onChange={onChange}
+                            />
+                            <label className="form-check-label" for="electric">Electric</label>
+                        </div>
+
+                        <div className="form-check form-switch mb-3">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="flexSwitchCheckDefault"
+                                name="hybrid"
+                                checked={hybrid}
+                                onChange={onChange}
+                            />
+                            <label className="form-check-label" for="flexSwitchCheckDefault">Hybrid</label>
+                        </div>
+
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
                         <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>Cancel</Link>
                     </form>

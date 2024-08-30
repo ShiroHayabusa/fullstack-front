@@ -66,7 +66,7 @@ export default function ViewBodystyle() {
                             <div className="col-md-8">
                                 <div className="card-body">
                                     <h5 className="card-title">
-                                        <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`}>{trim.name}</Link>
+                                        <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`} className="text-decoration-none">{trim.name}</Link>
                                     </h5>
                                     <p className="card-text">{trim.years}</p>
                                     <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>

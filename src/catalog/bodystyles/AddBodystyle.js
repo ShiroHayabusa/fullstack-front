@@ -114,8 +114,6 @@ export default function AddBodystyle() {
         }
     };
 
-
-
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
@@ -128,75 +126,76 @@ export default function AddBodystyle() {
                     <li class="breadcrumb-item active" aria-current="page">Add bodystyle</li>
                 </ol>
             </nav>
-            <form onSubmit={(e) => onSubmit(e)}>
-                <h2 className="mb-3">Add bodystyle</h2>
-                {error && <div className="alert alert-danger">{error}</div>}
+            <div className='row'>
+                <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
+                    <h2 className='text-center m-4'>Add bodystyle</h2>
+                    <form onSubmit={(e) => onSubmit(e)}>
+                        {error && <div className="alert alert-danger">{error}</div>}
 
-                <select onChange={onChange} name='facelift' className="form-select mt-5 mb-5">
-                    <option value={"default"}>
-                        Select facelift
-                    </option>
-                    {faceliftList.map((item) => (
-                        <option key={item.id} value={item.id} >
-                            {item.name}
-                        </option>
-                    ))}
-                </select>
+                        <select onChange={onChange} name='facelift' className="form-select mt-3 mb-3">
+                            <option value={"default"}>
+                                Select facelift
+                            </option>
+                            {faceliftList.map((item) => (
+                                <option key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
 
-                <select onChange={onChange} name='bodytype' className="form-select mt-5 mb-5">
-                    <option defaultValue>
-                        Select bodytype
-                    </option>
-                    {bodytypeList.map((item) => (
-                        <option className='text-capitalize' key={item.id} value={item.id} >
-                            {item.name}
-                        </option>
-                    ))}
-                </select>
+                        <select onChange={onChange} name='bodytype' className="form-select mt-3 mb-3">
+                            <option defaultValue>
+                                Select bodytype
+                            </option>
+                            {bodytypeList.map((item) => (
+                                <option className='text-capitalize' key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
 
-                <select onChange={onChange} name='market' className="form-select mt-5 mb-5">
-                    <option defaultValue>
-                        Select market
-                    </option>
-                    {marketList.map((item) => (
-                        <option className='text-capitalize' key={item.id} value={item.id} >
-                            {item.name}
-                        </option>
-                    ))}
-                </select>
+                        <select onChange={onChange} name='market' className="form-select mt-3 mb-3">
+                            <option defaultValue>
+                                Select market
+                            </option>
+                            {marketList.map((item) => (
+                                <option className='text-capitalize' key={item.id} value={item.id} >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
 
-                <input
-                    type={'text'}
-                    className='form-control'
-                    placeholder='Enter years of production'
-                    name='years'
-                    value={years}
-                    onChange={(e) => onChange(e)}
-                />
-                <div>
-                    <p></p>
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter years of production'
+                            name='years'
+                            value={years}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <textarea
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter description'
+                            name='description'
+                            value={description}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type="file"
+                            className="form-control mt-3 mb-3"
+                            name='photo'
+                            onChange={handleFileChange}
+                        />
+
+                        <button type='submit' className="btn btn-outline-primary">Submit</button>
+                        <Link className="btn btn-outline-danger mx-2"
+                            to={`/catalog/${make}/${model}/${generation}`}>Cancel</Link>
+                    </form >
                 </div>
-                <input
-                    type={'text'}
-                    className='form-control'
-                    placeholder='Enter description'
-                    name='description'
-                    value={description}
-                    onChange={(e) => onChange(e)}
-                />
-                <div className='mt-3 mb-3'>
-                    <input
-                        type="file"
-                        className="form-control"
-                        name='photo'
-                        onChange={handleFileChange}
-                    />
-                </div>
-
-                <button type='submit' className="btn btn-outline-primary">Submit</button>
-                <Link className="btn btn-outline-danger mx-2"
-                    to={`/catalog/${make}/${model}/${generation}`}>Cancel</Link>
-            </form >
+            </div>
         </div>
     );
 }
