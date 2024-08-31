@@ -2,37 +2,37 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom';
 
-export default function Fuels() {
+export default function TransmissionTypes() {
 
-    const [fuels, setFuels] = useState([]);
+    const [transmissionTypes, setTransmissionTypes] = useState([]);
 
     useEffect(() => {
-        loadFuels()
+        loadTransmissionTypes()
     }, []);
 
-    const loadFuels = async () => {
-        const result = await axios.get("http://localhost:8080/administration/fuels");
-        setFuels(result.data);
+    const loadTransmissionTypes = async () => {
+        const result = await axios.get("http://localhost:8080/administration/transmissionTypes");
+        setTransmissionTypes(result.data);
     };
 
-    const deleteFuel = async (id) => {
-        await axios.delete(`http://localhost:8080/administration/fuels/${id}`);
-        loadFuels();
+    const deleteTransmissionType = async (id) => {
+        await axios.delete(`http://localhost:8080/administration/transmissionTypes/${id}`);
+        loadTransmissionTypes();
     }
 
     return (
         <div>
             <ul class="nav">
                 <li class="nav-item">
-                    <Link class="nav-link active" aria-current="page" to='/administration/fuels/addFuel'>Add fuel</Link>
+                    <Link class="nav-link active" aria-current="page" to='/administration/transmissionTypes/addTransmissionType'>Add transmission type</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Fuels</li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Transmission types</li>
                     </ol>
                 </nav>
 
@@ -46,16 +46,16 @@ export default function Fuels() {
                     </thead>
                     <tbody class="table-group-divider">
                         {
-                            fuels.map((fuel, index) => (
+                            transmissionTypes.map((transmissionType, index) => (
                                 <tr>
-                                    <th scope="row" key={index}>{fuel.id}</th>
-                                    <td className='text-start'>{fuel.name}</td>
+                                    <th scope="row" key={index}>{transmissionType.id}</th>
+                                    <td className='text-start'>{transmissionType.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/fuels/editFuel/${fuel.id}`}
+                                            to={`/administration/transmissionTypes/editTransmissionType/${transmissionType.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
-                                            onClick={() => deleteFuel(fuel.id)}
+                                            onClick={() => deleteTransmissionType(transmissionType.id)}
                                         >Delete</button>
                                     </td>
                                 </tr>

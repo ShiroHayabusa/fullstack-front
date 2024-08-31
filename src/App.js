@@ -53,10 +53,14 @@ import ViewEngine from './administration/engines/ViewEngine';
 import AddTransmission from './administration/transmissions/AddTransmission';
 import EditTransmission from './administration/transmissions/EditTransmission';
 import Transmissions from './administration/transmissions/Transmissions';
+import ListTransmission from './administration/transmissions/ListTransmission';
+import ViewTransmission from './administration/transmissions/ViewTransmission';
 
 import AddBody from './administration/bodies/AddBody';
 import EditBody from './administration/bodies/EditBody';
 import Bodies from './administration/bodies/Bodies';
+import ListBody from './administration/bodies/ListBody';
+import ViewBody from './administration/bodies/ViewBody';
 
 import AddDrivetrain from './administration/drivetrains/AddDrivetrain';
 import EditDrivetrain from './administration/drivetrains/EditDrivetrain';
@@ -69,6 +73,10 @@ import Bodytypes from './administration/bodytypes/Bodytypes';
 import AddEngineType from './administration/engineTypes/AddEngineType';
 import EditEngineType from './administration/engineTypes/EditEngineType';
 import EngineTypes from './administration/engineTypes/EngineTypes';
+
+import AddTransmissionType from './administration/transmissionTypes/AddTransmissionType';
+import EditTransmissionType from './administration/transmissionTypes/EditTransmissionType';
+import TransmissionTypes from './administration/transmissionTypes/TransmissionTypes';
 
 import AddFuel from './administration/fuels/AddFuel';
 import EditFuel from './administration/fuels/EditFuel';
@@ -141,13 +149,17 @@ function App() {
           <Route exact path='/administration/engines/:make/:engineId' element={<ViewEngine />} />
           
 
-          <Route exact path='/administration/transmissions/addTransmission' element={<AddTransmission />} />
-          <Route exact path='/administration/transmissions/editTransmission/:id' element={<EditTransmission />} />
+          <Route exact path='/administration/transmissions/:make/addTransmission' element={<AddTransmission />} />
+          <Route exact path='/administration/transmissions/:make/:transmissionId/editTransmission' element={<EditTransmission />} />
           <Route exact path='/administration/transmissions' element={<Transmissions />} />
+          <Route exact path='/administration/transmissions/:make' element={<ListTransmission />} />
+          <Route exact path='/administration/transmissions/:make/:transmissionId' element={<ViewTransmission />} />
 
-          <Route exact path='/administration/bodies/addBody' element={<AddBody />} />
-          <Route exact path='/administration/bodies/editBody/:id' element={<EditBody />} />
+          <Route exact path='/administration/bodies/:make/addBody' element={<AddBody />} />
+          <Route exact path='/administration/bodies/:make/:bodyId/editBody' element={<EditBody />} />
           <Route exact path='/administration/bodies' element={<Bodies />} />
+          <Route exact path='/administration/bodies/:make' element={<ListBody />} />
+          <Route exact path='/administration/bodies/:make/:bodyId' element={<ViewBody />} />
 
           <Route exact path='/administration/drivetrains/addDrivetrain' element={<AddDrivetrain />} />
           <Route exact path='/administration/drivetrains/editDrivetrain/:id' element={<EditDrivetrain />} />
@@ -160,6 +172,10 @@ function App() {
           <Route exact path='/administration/engineTypes/addEngineType' element={<AddEngineType />} />
           <Route exact path='/administration/engineTypes/editEngineType/:id' element={<EditEngineType />} />
           <Route exact path='/administration/engineTypes' element={<EngineTypes />} />
+
+          <Route exact path='/administration/transmissionTypes/addTransmissionType' element={<AddTransmissionType />} />
+          <Route exact path='/administration/transmissionTypes/editTransmissionType/:id' element={<EditTransmissionType />} />
+          <Route exact path='/administration/transmissionTypes' element={<TransmissionTypes />} />
 
           <Route exact path='/administration/fuels/addFuel' element={<AddFuel />} />
           <Route exact path='/administration/fuels/editFuel/:id' element={<EditFuel />} />

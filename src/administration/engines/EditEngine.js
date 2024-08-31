@@ -127,11 +127,11 @@ export default function EditEngine() {
         <div className='container'>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/engines'>Engines</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}`}>{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}/${engineId}`}>{engine.name}</a></li>
+                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li class="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
+                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Edit engine</li>
                 </ol>
             </nav>
@@ -142,99 +142,82 @@ export default function EditEngine() {
                     {success && <div className="alert alert-success">{success}</div>}
                     <form onSubmit={onSubmit}>
 
-                        <div className='mb-3'>
-                            <label htmlFor='Name' className='form-label'>Engine</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter engine name'
-                                name='name'
-                                value={engine.name}
-                                onChange={onInputChange}
-                            />
-                        </div>
-                        <div className='mb-3'>
-                            <select
-                                onChange={onInputChange}
-                                name='engineType'
-                                className="form-select mt-5 mb-5"
-                                value={engine.engineType}
-                            >
-                                <option value={"default"}>
-                                    Select engine type
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter engine name'
+                            name='name'
+                            value={engine.name}
+                            onChange={onInputChange}
+                        />
+
+                        <select
+                            onChange={onInputChange}
+                            name='engineType'
+                            className="form-select mt-3 mb-3"
+                            value={engine.engineType}
+                        >
+                            <option value={"default"}>
+                                Select engine type
+                            </option>
+                            {engineTypes.map((engineType) => (
+                                <option key={engineType.id} value={engineType.id} >
+                                    {engineType.name}
                                 </option>
-                                {engineTypes.map((engineType) => (
-                                    <option key={engineType.id} value={engineType.id} >
-                                        {engineType.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                            ))}
+                        </select>
 
-                        <div className='mb-3'>
-                            <label className='form-label'>Displacement</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter displacement'
-                                name='displacement'
-                                value={engine.displacement}
-                                onChange={onInputChange}
-                            />
-                        </div>
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter displacement'
+                            name='displacement'
+                            value={engine.displacement}
+                            onChange={onInputChange}
+                        />
 
-                        <div className='mb-3'>
-                            <label className='form-label'>Power</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter power'
-                                name='power'
-                                value={engine.power}
-                                onChange={onInputChange}
-                            />
-                        </div>
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter power'
+                            name='power'
+                            value={engine.power}
+                            onChange={onInputChange}
+                        />
 
-                        <div className='mb-3'>
-                            <label className='form-label'>Torque</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter torque'
-                                name='torque'
-                                value={engine.torque}
-                                onChange={onInputChange}
-                            />
-                        </div>
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter torque'
+                            name='torque'
+                            value={engine.torque}
+                            onChange={onInputChange}
+                        />
 
-                        <div className='mb-3'>
-                            <select
-                                onChange={onInputChange}
-                                name='fuel'
-                                className="form-select mt-5 mb-5"
-                                value={engine.fuel}
-                            >
-                                <option value={"default"}>
-                                    Select fuel
+                        <select
+                            onChange={onInputChange}
+                            name='fuel'
+                            className="form-select mt-3 mb-3"
+                            value={engine.fuel}
+                        >
+                            <option value={"default"}>
+                                Select fuel
+                            </option>
+                            {fuels.map((fuel) => (
+                                <option key={fuel.id} value={fuel.id} >
+                                    {fuel.name}
                                 </option>
-                                {fuels.map((fuel) => (
-                                    <option key={fuel.id} value={fuel.id} >
-                                        {fuel.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                            ))}
+                        </select>
 
-                        <div className='mb-3'>
-                            <textarea
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter description'
-                                name='description'
-                                value={engine.description}
-                                onChange={onInputChange}
-                            />
-                        </div>
+                        <textarea
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter description'
+                            name='description'
+                            value={engine.description}
+                            onChange={onInputChange}
+                        />
 
                         <img
                             style={{ width: '40px', height: 'auto' }}
@@ -242,16 +225,16 @@ export default function EditEngine() {
                             className="mb-3"
                             alt="...">
                         </img>
-                        <div className='mb-3'>
-                            <input
-                                type='file'
-                                className='form-control'
-                                name='photo'
-                                onChange={handleFileChange}
-                            />
-                        </div>
+
+                        <input
+                            type='file'
+                            className='form-control mt-3 mb-3'
+                            name='photo'
+                            onChange={handleFileChange}
+                        />
+
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/engines`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/administration/engines/${make}/${engineId}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

@@ -24,10 +24,11 @@ export default function Administration() {
                         <Link className="list-group-item text-start" to='/administration/bodytypes'>Bodytypes</Link>
                         <Link className="list-group-item text-start" to='/administration/titles'>Titles</Link>
                         <Link className="list-group-item text-start" to='/administration/engines'>Engines</Link>
+                        <Link className="list-group-item text-start" to='/administration/engineTypes'>Engine types</Link>
                         <Link className="list-group-item text-start" to='/administration/transmissions'>Transmissions</Link>
+                        <Link className="list-group-item text-start" to='/administration/transmissionTypes'>Transmission types</Link>
                         <Link className="list-group-item text-start" to='/administration/drivetrains'>Drivetrains</Link>
                         <Link className="list-group-item text-start" to='/administration/markets'>Markets</Link>
-                        <Link className="list-group-item text-start" to='/administration/engineTypes'>Engine types</Link>
                         <Link className="list-group-item text-start" to='/administration/fuels'>Fuels</Link>
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Autosport</div>
                         <Link className="list-group-item text-start" to='/administration/races'>Races</Link>

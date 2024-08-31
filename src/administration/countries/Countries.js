@@ -30,8 +30,8 @@ export default function Countries() {
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
+                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Countries</li>
                     </ol>
                 </nav>

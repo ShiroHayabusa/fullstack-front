@@ -1,32 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom';
 import '../../components/ColumnContainer.css'
 
 export default function Engines() {
 
     const [makes, setMakes] = useState([])
-    const [engines, setEngines] = useState([]);
 
     useEffect(() => {
         loadMakes();
-        loadEngines()
     }, []);
 
     const loadMakes = async () => {
         const result = await axios.get("http://localhost:8080/catalog");
         setMakes(result.data);
     };
-
-    const loadEngines = async () => {
-        const result = await axios.get("http://localhost:8080/administration/engines");
-        setEngines(result.data);
-    };
-
-    const deleteEngine = async (id) => {
-        await axios.delete(`http://localhost:8080/administration/engines/${id}`);
-        loadEngines();
-    }
 
     const groupedList = makes.reduce((acc, obj) => {
         const firstLetter = obj.name.charAt(0).toUpperCase();

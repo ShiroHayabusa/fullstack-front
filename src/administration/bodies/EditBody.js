@@ -4,11 +4,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export default function EditBody() {
 
-    const { id } = useParams(); // Assuming the body ID is passed as a route parameter
+    const { make, bodyId } = useParams();
     let navigate = useNavigate();
 
     const [body, setBody] = useState({
-        name: ""
+        name: "",
+        description: ""
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -17,9 +18,10 @@ export default function EditBody() {
         // Fetch the current details of the body
         const fetchBody = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodies/${id}`);
+                const response = await axios.get(`http://localhost:8080/administration/bodies/${make}/${bodyId}`);
                 setBody({
-                    name: response.data.name
+                    name: response.data.name,
+                    description: response.data.description
                 });
                 console.log("body:", response.data)
             } catch (error) {
@@ -28,7 +30,7 @@ export default function EditBody() {
         };
 
         fetchBody();
-    }, [id]);
+    }, []);
 
     const onInputChange = (e) => {
         setBody({ ...body, [e.target.name]: e.target.value });
@@ -42,14 +44,16 @@ export default function EditBody() {
         }
 
         const formData = new FormData();
-        formData.append('name', body.name);
+        Object.keys(body).forEach(key => {
+            formData.append(key, body[key]);
+        });
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/bodies/${id}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/bodies/${make}/${bodyId}`, formData);
             if (response.status === 200) {
                 setSuccess('Body updated successfully');
                 setError('');
-                navigate('/administration/bodies');
+                navigate(`/administration/bodies/${make}/${bodyId}`);
             }
         } catch (error) {
             setError('Error updating body: ' + error.message);
@@ -72,19 +76,27 @@ export default function EditBody() {
                     {error && <div className="alert alert-danger">{error}</div>}
                     {success && <div className="alert alert-success">{success}</div>}
                     <form onSubmit={onSubmit}>
-                        <div className='mb-3'>
-                            <label htmlFor='Name' className='form-label'>Body</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter body name'
-                                name='name'
-                                value={body.name}
-                                onChange={onInputChange}
-                            />
-                        </div>
+
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter body name'
+                            name='name'
+                            value={body.name}
+                            onChange={onInputChange}
+                        />
+
+                        <textarea
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter description'
+                            name='description'
+                            value={body.description}
+                            onChange={onInputChange}
+                        />
+
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/bodies`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/administration/bodies/${make}/${bodyId}`}>Cancel</Link>
                     </form>
                 </div>
             </div>
