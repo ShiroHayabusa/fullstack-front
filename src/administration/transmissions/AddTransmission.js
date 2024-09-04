@@ -50,7 +50,7 @@ export default function AddTransmission() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        if (!name || !selectedFile) {
+        if (!name) {
             setError('Please provide an transmission name and upload photo.');
             return;
         }

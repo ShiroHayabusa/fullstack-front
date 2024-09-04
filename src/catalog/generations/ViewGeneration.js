@@ -54,7 +54,7 @@ export default function ViewGeneration() {
                 {facelifts.map((facelift) => (
                     <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary" key={facelift.id}>
                         {facelift.name}
-                        <Link to={`/catalog/${make}/${model}/${generationId}/${facelift.id}/editFacelift`} className="ms-3">Edit facelift</Link>
+                        <Link to={`/catalog/${make}/${model}/${generationId}/${facelift.id}/editFacelift`} className="ms-3 text-decoration-none">Edit facelift</Link>
                         <div className="mt-3">
                             <div className="row row-cols-1 row-cols-md-3 g-3">
                                 {bodystyles.filter(bodystyle => bodystyle.facelift.name === facelift.name).map((bodystyle) => (

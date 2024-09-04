@@ -78,7 +78,7 @@ export default function AddTrim() {
 
     const fetchTransmissionData = () => {
         axios
-            .get('http://localhost:8080/administration/transmissions')
+            .get(`http://localhost:8080/administration/transmissions/${make}`)
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -94,7 +94,7 @@ export default function AddTrim() {
 
     const fetchBodyData = () => {
         axios
-            .get('http://localhost:8080/administration/bodies')
+            .get(`http://localhost:8080/administration/bodies/${make}`)
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {

@@ -86,11 +86,11 @@ export default function EditFacelift() {
         <div className='container'>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog'>Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/`}>{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`}>{model}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`}>{generationEntity.name}</a></li>
+                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Edit facelift</li>
                 </ol>
             </nav>

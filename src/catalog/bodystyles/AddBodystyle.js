@@ -9,13 +9,20 @@ export default function AddBodystyle() {
     const [bodytypeList, setBodytypeList] = useState([]);
     const [faceliftList, setFaceliftList] = useState([]);
     const [marketList, setMarketList] = useState([]);
+    
     const [bodystyle, setBodystyle] = useState({
         facelift: "",
         bodytype: "",
+        market: "",
         years: "",
-        description: ""
+        description: "",
+        length: "",
+        width: "",
+        height: "",
+        base: ""
     });
-    const { facelift, bodytype, years, description } = bodystyle;
+
+    const { facelift, bodytype, market, years, description, length, width, height, base } = bodystyle;
     const [error, setError] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -95,13 +102,29 @@ export default function AddBodystyle() {
             setError('Please provide facelift, bodystyle and upload an image.');
             return;
         }
+
         const formData = new FormData();
-        formData.append('name', bodystyle.name);
-        formData.append('facelift', bodystyle.facelift);
-        formData.append('bodytype', bodystyle.bodytype);
-        formData.append('photo', selectedFile);
-        formData.append('years', bodystyle.years);
-        formData.append('description', bodystyle.description);
+
+        Object.keys(bodystyle).forEach(key => {
+            formData.append(key, bodystyle[key]);
+        });
+
+        if (selectedFile) {
+            formData.append('photo', selectedFile);
+        }
+
+        if (bodystyle.facelift) {
+            formData.append('faceliftId', bodystyle.facelift);
+        }
+
+        if (bodystyle.bodytype) {
+            formData.append('bodytypeId', bodystyle.bodytype);
+        }
+
+        if (bodystyle.market) {
+            formData.append('marketId', bodystyle.market);
+        }
+
         try {
             const response =
                 await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addBodystyle`, formData);
@@ -118,11 +141,11 @@ export default function AddBodystyle() {
         <div className='container'>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`}>{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`}>{model}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generation}`}>{generationEntity.name}</Link></li>
+                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generation}`} className="text-decoration-none">{generationEntity.name}</Link></li>
                     <li class="breadcrumb-item active" aria-current="page">Add bodystyle</li>
                 </ol>
             </nav>
@@ -180,6 +203,42 @@ export default function AddBodystyle() {
                             placeholder='Enter description'
                             name='description'
                             value={description}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter length'
+                            name='length'
+                            value={length}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter wifth'
+                            name='width'
+                            value={width}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter height'
+                            name='height'
+                            value={height}
+                            onChange={(e) => onChange(e)}
+                        />
+
+                        <input
+                            type={'text'}
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter base'
+                            name='base'
+                            value={base}
                             onChange={(e) => onChange(e)}
                         />
 

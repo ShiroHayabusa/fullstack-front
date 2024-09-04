@@ -13,7 +13,10 @@ export default function EditBodystyle() {
         years: "",
         market: "",
         description: "",
-        photo: ""
+        length: "",
+        width: "",
+        height: "",
+        base: ""
     });
 
     const [faceliftList, setFaceliftList] = useState([]);
@@ -37,7 +40,11 @@ export default function EditBodystyle() {
                     years: response.data.years,
                     market: response.data.market?.id || "",
                     description: response.data.description,
-                    photo: response.data.photo
+                    photo: response.data.photo,
+                    length: response.data.length,
+                    width: response.data.width,
+                    height: response.data.height,
+                    base: response.data.base
                 });
                 console.log("bodystyle:", response.data)
             } catch (error) {
@@ -100,13 +107,25 @@ export default function EditBodystyle() {
         }
 
         const formData = new FormData();
-        formData.append('bodytypeId', bodystyleEntity.bodytype);
-        formData.append('faceliftId', bodystyleEntity.facelift);
-        formData.append('years', bodystyleEntity.years)
-        formData.append('marketId', bodystyleEntity.market);
-        formData.append('description', bodystyleEntity.description);
+
+        Object.keys(bodystyleEntity).forEach(key => {
+            formData.append(key, bodystyleEntity[key]);
+        });
+
         if (selectedFile) {
             formData.append('photo', selectedFile);
+        }
+
+        if (bodystyleEntity.bodytype) {
+            formData.append('bodytypeId', bodystyleEntity.bodytype);
+        }
+
+        if (bodystyleEntity.facelift) {
+            formData.append('faceliftId', bodystyleEntity.facelift);
+        }
+        
+        if (bodystyleEntity.market) {
+            formData.append('marketId', bodystyleEntity.market);
         }
 
         try {
@@ -127,12 +146,12 @@ export default function EditBodystyle() {
         <div className='container'>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog'>Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}`}>{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`}>{model}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`}>{bodystyleEntity.generation?.name}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>{bodystyleEntity.bodytypeName}</a></li>
+                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation?.name}</a></li>
+                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytypeName}</a></li>
 
                     <li class="breadcrumb-item active" aria-current="page">Edit bodystyle</li>
                 </ol>
@@ -207,6 +226,42 @@ export default function EditBodystyle() {
                             placeholder='Enter description'
                             name='description'
                             value={bodystyleEntity.description}
+                            onChange={onInputChange}
+                        />
+
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter length'
+                            name='length'
+                            value={bodystyleEntity.length}
+                            onChange={onInputChange}
+                        />
+
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter wifth'
+                            name='width'
+                            value={bodystyleEntity.width}
+                            onChange={onInputChange}
+                        />
+
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter height'
+                            name='height'
+                            value={bodystyleEntity.height}
+                            onChange={onInputChange}
+                        />
+
+                        <input
+                            type='text'
+                            className='form-control mt-3 mb-3'
+                            placeholder='Enter base'
+                            name='base'
+                            value={bodystyleEntity.base}
                             onChange={onInputChange}
                         />
 
