@@ -40,7 +40,7 @@ export default function AddTrim() {
     const [bodyList, setBodyList] = useState([]);
     const [drivetrainList, setDrivetrainList] = useState([]);
     const [tunerList, setTunerList] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     const loadBodystyleEntity = async () => {
         const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`);
@@ -54,7 +54,7 @@ export default function AddTrim() {
         fetchBodyData();
         fetchDrivetrainData();
         fetchTunerData();
-    }, []);
+    }, [make, model, generationId, bodystyleId]);
 
     const onChange = (e) => {
         setTrim({ ...trim, [e.target.name]: e.target.value });
@@ -141,7 +141,7 @@ export default function AddTrim() {
     };
 
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        setSelectedFiles([...event.target.files]);
     };
 
     const onSubmit = async (e) => {
@@ -154,9 +154,10 @@ export default function AddTrim() {
         Object.keys(trim).forEach(key => {
             formData.append(key, trim[key]);
         });
-        if (selectedFile) {
-            formData.append('photo', selectedFile);
-        }
+
+        selectedFiles.forEach(file => {
+            formData.append('photos', file);
+        });
 
         try {
             const response =
@@ -336,11 +337,12 @@ export default function AddTrim() {
                         <input
                             type="file"
                             className="form-control mt-3 mb-3"
-                            name='photo'
+                            name='photos'
                             onChange={handleFileChange}
+                            multiple
                         />
 
-                        <div className="form-check form-switch mb-3">
+                        <div className="form-check form-switch mb-3 text-start">
                             <input
                                 className="form-check-input"
                                 type="checkbox"
@@ -353,7 +355,7 @@ export default function AddTrim() {
                             <label className="form-check-label" for="uniq">Uniq</label>
                         </div>
 
-                        <div className="form-check form-switch mb-3">
+                        <div className="form-check form-switch mb-3 text-start">
                             <input
                                 className="form-check-input"
                                 type="checkbox"
@@ -366,7 +368,7 @@ export default function AddTrim() {
                             <label className="form-check-label" for="electric">Electric</label>
                         </div>
 
-                        <div className="form-check form-switch mb-3">
+                        <div className="form-check form-switch mb-3 text-start">
                             <input
                                 className="form-check-input"
                                 type="checkbox"
