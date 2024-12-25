@@ -35,8 +35,10 @@ export default function Administration() {
                         <Link className="list-group-item text-start" to='/administration/series'>Series</Link>
                         <Link className="list-group-item text-start" to='/administration/tracks'>Tracks</Link>
                         <Link className="list-group-item text-start" to='/administration/classes'>Classes</Link>
-                        <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Other</div>
+                        <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Users</div>
                         <Link className="list-group-item text-start" to='/administration/users'>Users</Link>
+                        <Link className="list-group-item text-start" to='/administration/roles'>Roles</Link>
+                        <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Other</div>
                         <Link className="list-group-item text-start" to='/administration/persons'>Persons</Link>
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Bucket</div>
                         <Link className="list-group-item text-start" to='/administration/check-bucket-availability'>Bucket availability</Link>

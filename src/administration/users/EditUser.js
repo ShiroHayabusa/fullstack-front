@@ -1,45 +1,88 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export default function EditUser() {
-
-    let navigate = useNavigate();
-
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const [user, setUser] = useState({
         name: "",
         username: "",
-        email: ""
+        email: "",
+        roleIds: [] // Инициализируем roleIds
     });
 
-    const { name, username, email } = user;
+    const [allRoles, setAllRoles] = useState([]); // Все доступные роли
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        loadUser();
+        loadRoles();
+    }, []);
+
+    const loadUser = async () => {
+        setLoading(true);
+        setError("");
+        try {
+            const result = await axios.get(`http://localhost:8080/administration/users/${id}`);
+            const userData = result.data;
+
+            // Гарантируем, что roleIds существует
+            setUser({
+                ...userData,
+                roleIds: userData.roleIds || []
+            });
+        } catch (error) {
+            console.error("Error loading user:", error);
+            setError("Failed to load user data. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadRoles = async () => {
+        try {
+            const result = await axios.get("http://localhost:8080/administration/roles");
+            setAllRoles(result.data); // Убедитесь, что сервер возвращает список ролей
+        } catch (error) {
+            console.error("Error loading roles:", error);
+            setError("Failed to load roles. Please try again.");
+        }
+    };
 
     const onInputChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
 
-    useEffect(() => {
-        loadUser();
-    }, []);
+    const onRoleChange = (roleId) => {
+        if (user.roleIds.includes(roleId)) {
+            setUser({ ...user, roleIds: user.roleIds.filter((id) => id !== roleId) });
+        } else {
+            setUser({ ...user, roleIds: [...user.roleIds, roleId] });
+        }
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.put(`http://localhost:8080/user/${id}`, user);
-        navigate('/');
-    };
 
-    const loadUser = async () => {
-        const result = await axios.get(`http://localhost:8080/user/${id}`);
-        setUser(result.data);
-    }
+        try {
+            await axios.put(`http://localhost:8080/administration/users/editUser/${id}`, user);
+            navigate('/administration/users');
+        } catch (error) {
+            console.error("Error updating user:", error);
+            setError("Failed to update user. Please try again.");
+        }
+    };
 
     return (
         <div className='container'>
             <div className='row'>
                 <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
                     <h2 className='text-center m-4'>Edit User</h2>
+                    {loading && <div className="alert alert-info">Loading user data...</div>}
+                    {error && <div className="alert alert-danger">{error}</div>}
                     <form onSubmit={(e) => onSubmit(e)}>
                         <div className='mb-3'>
                             <label htmlFor='Name' className='form-label'>Name</label>
@@ -48,8 +91,9 @@ export default function EditUser() {
                                 className='form-control'
                                 placeholder='Enter your name'
                                 name='name'
-                                value={name}
-                                onChange={(e) => onInputChange(e)}
+                                value={user.name}
+                                onChange={onInputChange}
+                                disabled={loading}
                             />
                         </div>
                         <div className='mb-3'>
@@ -59,26 +103,51 @@ export default function EditUser() {
                                 className='form-control'
                                 placeholder='Enter your username'
                                 name='username'
-                                value={username}
-                                onChange={(e) => onInputChange(e)}
+                                value={user.username}
+                                onChange={onInputChange}
+                                disabled={loading}
                             />
                         </div>
                         <div className='mb-3'>
                             <label htmlFor='Email' className='form-label'>Email</label>
                             <input
-                                type={'text'}
+                                type={'email'}
                                 className='form-control'
                                 placeholder='Enter your email'
                                 name='email'
-                                value={email}
-                                onChange={(e) => onInputChange(e)}
+                                value={user.email}
+                                onChange={onInputChange}
+                                disabled={loading}
                             />
                         </div>
-                        <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to='/'>Cancel</Link>
+                        <div className='mb-3'>
+                            <label className='form-label'>Assign Roles</label>
+                            <div>
+                                {allRoles.map((role) => (
+                                    <div key={role.id} className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id={`role-${role.id}`}
+                                            checked={user.roleIds && user.roleIds.includes(role.id)} // Проверяем наличие roleIds
+                                            onChange={() => onRoleChange(role.id)}
+                                        />
+                                        <label className="form-check-label" htmlFor={`role-${role.id}`}>
+                                            {role.name}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <button type='submit' className="btn btn-outline-primary" disabled={loading}>
+                            Submit
+                        </button>
+                        <Link className="btn btn-outline-danger mx-2" to='/administration/users'>
+                            Cancel
+                        </Link>
                     </form>
                 </div>
             </div>
         </div>
-    )
+    );
 }

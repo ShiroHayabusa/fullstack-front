@@ -1,7 +1,29 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { React, useEffect, useState } from "react";
+import { Link, useNavigate} from 'react-router-dom'
 
 export default function Navbar() {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/user/profile', { credentials: 'include' })
+            .then(res => {
+                if (!res.ok) throw new Error("User not logged in");
+                return res.json();
+            })
+            .then(data => setUser(data))
+            .catch(() => setUser(null));
+    }, []);
+
+    const handleLoginClick = () => {
+        navigate('/login'); // Перенаправляем на страницу логина
+    };
+
+    const handleProfileClick = () => {
+        navigate('/api/user/profile'); // Перенаправляем на страницу профиля
+    };
+
+
     return (
         <div>
             <nav className="navbar bg-dark" data-bs-theme="dark">
@@ -12,7 +34,21 @@ export default function Navbar() {
                         <Link class="nav-link text-white" to='/spots'>Spots</Link>
                         <Link class="nav-link text-white" to='/autosport'>Autosport</Link>
                         <Link class="nav-link text-white" to='/administration'>Administration</Link>
+                        <div>
+                        {user ? (
+                            <div onClick={handleProfileClick} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                                <img
+                                    src={user.avatarUrl || "/default-avatar.png"}
+                                    alt="Avatar"
+                                />
+                                <span>{user.username || user.name}</span>
+                            </div>
+                        ) : (
+                            <button onClick={handleLoginClick}>Log in</button>
+                        )}
+                    </div>
                     </nav>
+
                     <button className="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"

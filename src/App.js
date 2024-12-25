@@ -3,7 +3,7 @@ import './App.css';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Navbar from './layout/Navbar';
 import Home from './pages/Home';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import Makes from './pages/Catalog';
 import AddMake from './catalog/makes/AddMake'
@@ -29,10 +29,14 @@ import AddTrim from './catalog/trims/AddTrim';
 import EditTrim from './catalog/trims/EditTrim';
 import ViewTrim from './catalog/trims/ViewTrim';
 
-import AddUser from './administration/users/AddUser';
 import EditUser from './administration/users/EditUser';
 import ViewUser from './administration/users/ViewUser';
 import Users from './administration/users/Users';
+
+import AddRole from './administration/roles/AddRole';
+import EditRole from './administration/roles/EditRole';
+import ViewRole from './administration/roles/ViewRole';
+import Roles from './administration/roles/Roles';
 
 import Administration from './administration/Administration';
 
@@ -89,6 +93,9 @@ import Spots from './spots/Spots';
 import Autosport from './autosport/Autosport';
 import ImageUpload from './pages/ImageUpload';
 import BucketAvailabilityChecker from './administration/BucketAvailabilityChecker';
+import Dashboard from './users/Dashboard';
+import Login from './users/Login';
+import Profile from './users/Profile';
 
 
 
@@ -99,6 +106,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route exact path='/' element={<Home />} />
+          <Route exact path='/login' element={<Login />} />
+          <Route exact path='/api/user/profile' element={<Profile />} />
 
           <Route exact path='/catalog' element={<Makes />} />
           <Route exact path='/catalog/addMake' element={<AddMake />} />
@@ -124,10 +133,14 @@ function App() {
           <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId/editTrim' element={<EditTrim />} />
           <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId' element={<ViewTrim />} />
 
-          <Route exact path='/administration/users/adduser' element={<AddUser />} />
-          <Route exact path='/edituser/:id' element={<EditUser />} />
-          <Route exact path='/viewuser/:id' element={<ViewUser />} />
+          <Route exact path='/administration/users/editUser/:id' element={<EditUser />} />
+          <Route exact path='/administration/users/viewUser/:id' element={<ViewUser />} />
           <Route exact path='/administration/users' element={<Users />} />
+
+          <Route exact path='/administration/roles/addRole' element={<AddRole />} />
+          <Route exact path='/administration/roles/editRole/:id' element={<EditRole />} />
+          <Route exact path='/administration/roles/viewRole/:id' element={<ViewRole />} />
+          <Route exact path='/administration/roles' element={<Roles />} />
 
           <Route exact path='/administration' element={<Administration />} />
 
@@ -186,6 +199,9 @@ function App() {
           <Route exact path='/spots/' element={<Spots />} />
 
           <Route exact path='/autosport' element={<Autosport />} />
+
+
+          
 
         </Routes>
       </Router>

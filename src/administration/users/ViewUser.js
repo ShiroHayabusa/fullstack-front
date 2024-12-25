@@ -1,25 +1,29 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 export default function ViewUser() {
-
     const [user, setUser] = useState({
         name: '',
         username: '',
-        email: ''
+        email: '',
+        roles: [] // Инициализация ролей как массива строк
     });
 
     const { id } = useParams();
 
     useEffect(() => {
-        loadUser()
+        loadUser();
     }, []);
 
     const loadUser = async () => {
-        const result = await axios.get(`http://localhost:8080/user/${id}`);
-        setUser(result.data);
-    }
+        try {
+            const result = await axios.get(`http://localhost:8080/administration/users/${id}`);
+            setUser(result.data);
+        } catch (error) {
+            console.error('Error loading user:', error);
+        }
+    };
 
     return (
         <div className='container'>
@@ -31,23 +35,25 @@ export default function ViewUser() {
                             Details of user id : {user.id}
                             <ul className='list-group list-group-flush'>
                                 <li className='list-group-item'>
-                                    <b>Name:</b>
-                                    {user.name}
+                                    <b>Name:</b> {user.name}
                                 </li>
                                 <li className='list-group-item'>
-                                    <b>Username:</b>
-                                    {user.username}
+                                    <b>Username:</b> {user.username}
                                 </li>
                                 <li className='list-group-item'>
-                                    <b>Email:</b>
-                                    {user.email}
+                                    <b>Email:</b> {user.email}
+                                </li>
+                                <li className='list-group-item'>
+                                    <b>Roles:</b> {user.roles.length > 0 ? user.roles.join(', ') : 'No roles assigned'}
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <Link className='btn btn-primary my-2' to={'/'}>Back to Home</Link>
+                    <Link className='btn btn-primary my-2' to='/administration/users'>
+                        Back to Users
+                    </Link>
                 </div>
             </div>
         </div>
-    )
+    );
 }
