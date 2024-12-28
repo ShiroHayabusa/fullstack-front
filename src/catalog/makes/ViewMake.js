@@ -18,10 +18,7 @@ export default function ViewMake() {
 
     const loadModels = async () => {
         const result = await axios.get(`http://localhost:8080/catalog/${make}`);
-
         setModels(result.data);
-
-
     }
 
     const loadMakeDetails = async () => {
@@ -64,14 +61,24 @@ export default function ViewMake() {
                         <li className="breadcrumb-item active" aria-current="page">{make}</li>
                     </ol>
                 </nav>
-                <h2>{make}</h2>
-                <div>
-                    <img
-                        src={photoURL}
-                        style={{ width: '100px', height: 'auto' }}
-                        alt={`${make} logo`}
-                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/100'; }} // Fallback image
-                    />
+                <div class="card border-0 border-bottom mb-3" >
+                    <div class="row g-0">
+                        <div class="col-md-2 mb-3">
+                            <img
+                                src={photoURL}
+                                style={{ width: '200px', height: 'auto' }}
+                                alt={`${make} logo`}
+                                className='img-fluid mt-3'
+                                onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/100'; }} // Fallback image 
+                            />
+                        </div>
+                        <div class="col-md-10">
+                            <div class="card-body">
+                                <h3 class="card-title text-start">{make}</h3>
+                                <p class="card-text text-start">{makeDetails?.description}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className='py-4'>
                     <div className="column-container">

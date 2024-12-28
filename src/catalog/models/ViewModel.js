@@ -27,11 +27,11 @@ export default function ViewModel() {
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
-                        <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{model}</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                        <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">{model}</li>
                     </ol>
                 </nav>
                 <div className="row row-cols-1 row-cols-md-3 g-3">

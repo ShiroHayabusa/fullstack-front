@@ -95,7 +95,7 @@ export default function EditMake() {
 
     return (
         <div className='container'>
-            <nav aria-label="breadcrumb">
+            <nav className='mt-2' aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
@@ -141,6 +141,7 @@ export default function EditMake() {
                                 className='form-control'
                                 placeholder='Enter description'
                                 name='description'
+                                style={{ height: '200px' }}
                                 value={makeEntity.description}
                                 onChange={onInputChange}
                             />
@@ -169,7 +170,7 @@ export default function EditMake() {
                                 checked={makeEntity.tuner}
                                 onChange={onInputChange}
                             />
-                            <label className="form-check-label" for="flexSwitchCheckDefault">Tuner</label>
+                            <label className="form-check-label text-start w-100" htmlFor="flexSwitchCheckDefault">Tuner</label>
                         </div>
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>

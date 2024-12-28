@@ -103,6 +103,7 @@ export default function EditModel() {
                                 className='form-control'
                                 placeholder='Enter description'
                                 name='description'
+                                style={{ height: '200px' }}
                                 value={modelEntity.description}
                                 onChange={onInputChange}
                             />

@@ -35,7 +35,20 @@ const Profile = () => {
     };
 
     const handleLogout = () => {
-        window.location.href = 'http://localhost:8080/logout';
+        const googleLogoutUrl = 'https://accounts.google.com/Logout';
+    
+        // Завершаем сессию на сервере
+        fetch('http://localhost:8080/logout', {
+            method: 'POST',
+            credentials: 'include',
+        })
+            .then(() => {
+                // Перенаправляем на URL выхода Google
+                window.location.href = googleLogoutUrl;
+            })
+            .catch((error) => {
+                console.error('Logout error:', error);
+            });
     };
 
     if (isNewUser) {

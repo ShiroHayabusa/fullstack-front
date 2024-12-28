@@ -67,7 +67,7 @@ export default function AddGeneration() {
 
     return (
         <div className='container'>
-            <nav aria-label="breadcrumb">
+            <nav className='mt-2' aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>

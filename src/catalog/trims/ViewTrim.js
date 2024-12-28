@@ -16,16 +16,17 @@ export default function ViewTrim() {
     };
 
     const handleNextPhoto = () => {
-        if (currentPhotoIndex < trim.photos.length - 1) {
-            setCurrentPhotoIndex(currentPhotoIndex + 1); // Переход к следующей фотографии
-        }
+        setCurrentPhotoIndex((prevIndex) =>
+            prevIndex === trim.photos.length - 1 ? 0 : prevIndex + 1
+        );
     };
 
     const handlePrevPhoto = () => {
-        if (currentPhotoIndex > 0) {
-            setCurrentPhotoIndex(currentPhotoIndex - 1); // Переход к предыдущей фотографии
-        }
+        setCurrentPhotoIndex((prevIndex) =>
+            prevIndex === 0 ? trim.photos.length - 1 : prevIndex - 1
+        );
     };
+
     const [trim, setTrim] = useState({
         name: '',
         bodystyle: '',
@@ -190,28 +191,29 @@ export default function ViewTrim() {
                     </div>
                     {/* Bootstrap Modal */}
                     <Modal show={showModal} onHide={handleCloseModal} size="lg">
-                        <Modal.Header closeButton>
-                            <Modal.Title>Фото {currentPhotoIndex + 1}</Modal.Title>
-                        </Modal.Header>
                         <Modal.Body>
                             <div className="d-flex justify-content-center">
                                 <img
                                     src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${trim.photos[currentPhotoIndex].name}`}
-                                    alt={`Фото ${currentPhotoIndex + 1}`}
                                     className="img-fluid"
                                 />
                             </div>
                         </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handlePrevPhoto}>
-                                ← Предыдущее
-                            </Button>
-                            <Button variant="secondary" onClick={handleNextPhoto}>
-                                Следующее →
-                            </Button>
-                            <Button variant="primary" onClick={handleCloseModal}>
-                                Закрыть
-                            </Button>
+                        <Modal.Footer className="d-flex justify-content-between">
+                            <span>
+                                Photo {currentPhotoIndex + 1} of {trim.photos.length}
+                            </span>
+                            <div>
+                                <Button variant="secondary" onClick={handlePrevPhoto} className="me-2">
+                                    ← Previous
+                                </Button>
+                                <Button variant="secondary" onClick={handleNextPhoto} className="me-2">
+                                    Next →
+                                </Button>
+                                <Button variant="primary" onClick={handleCloseModal}>
+                                    Close
+                                </Button>
+                            </div>
                         </Modal.Footer>
                     </Modal>
                 </div>

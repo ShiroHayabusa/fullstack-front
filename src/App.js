@@ -2,6 +2,7 @@
 import './App.css';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Navbar from './layout/Navbar';
+import Footer from './layout/Footer';
 import Home from './pages/Home';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -89,6 +90,7 @@ import Fuels from './administration/fuels/Fuels';
 import AddSpot from './spots/AddSpot';
 import EditSpot from './spots/EditSpot';
 import Spots from './spots/Spots';
+import ViewSpot from './spots/ViewSpot';
 
 import Autosport from './autosport/Autosport';
 import ImageUpload from './pages/ImageUpload';
@@ -96,6 +98,7 @@ import BucketAvailabilityChecker from './administration/BucketAvailabilityChecke
 import Dashboard from './users/Dashboard';
 import Login from './users/Login';
 import Profile from './users/Profile';
+
 
 
 
@@ -195,8 +198,9 @@ function App() {
           <Route exact path='/administration/fuels' element={<Fuels />} />
 
           <Route exact path='/spots/addSpot' element={<AddSpot />} />
-          <Route exact path='/spots/editSpot' element={<EditSpot />} />
+          <Route exact path='/spots/editSpot/:id' element={<EditSpot />} />
           <Route exact path='/spots/' element={<Spots />} />
+          <Route exact path='/spots/:id' element={<ViewSpot />} />
 
           <Route exact path='/autosport' element={<Autosport />} />
 
@@ -204,6 +208,7 @@ function App() {
           
 
         </Routes>
+        <Footer />
       </Router>
     </div>
   );

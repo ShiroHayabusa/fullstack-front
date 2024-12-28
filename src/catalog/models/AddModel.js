@@ -44,7 +44,7 @@ export default function AddModel() {
 
     return (
         <div className='container'>
-            <nav aria-label="breadcrumb">
+            <nav className='mt-2' aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>

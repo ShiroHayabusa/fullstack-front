@@ -34,12 +34,16 @@ export default function EditUser() {
                 ...userData,
                 roleIds: userData.roleIds || []
             });
+
         } catch (error) {
             console.error("Error loading user:", error);
             setError("Failed to load user data. Please try again.");
         } finally {
             setLoading(false);
         }
+        console.log("User roleIds:", user.roleIds);
+        console.log("All roles:", allRoles);
+        console.log("User:", user);
     };
 
     const loadRoles = async () => {
@@ -129,7 +133,7 @@ export default function EditUser() {
                                             className="form-check-input"
                                             type="checkbox"
                                             id={`role-${role.id}`}
-                                            checked={user.roleIds && user.roleIds.includes(role.id)} // Проверяем наличие roleIds
+                                            checked={user.roleIds.includes(role.id)}
                                             onChange={() => onRoleChange(role.id)}
                                         />
                                         <label className="form-check-label" htmlFor={`role-${role.id}`}>
@@ -139,6 +143,7 @@ export default function EditUser() {
                                 ))}
                             </div>
                         </div>
+
                         <button type='submit' className="btn btn-outline-primary" disabled={loading}>
                             Submit
                         </button>

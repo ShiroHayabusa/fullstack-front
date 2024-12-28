@@ -54,42 +54,48 @@ export default function ViewBodystyle() {
                         <li class="breadcrumb-item active" aria-current="page">{bodystyle.bodytype?.name}</li>
                     </ol>
                 </nav>
-
-                {trims.map((trim, index) => {
-                    const mainPhoto = Array.isArray(trim.photos) && trim.photos.length > 0
-                        ? trim.photos.find((photo) => photo.isMain)
-                        : {};
-                    return (
-                        <div className="card mb-3" key={index} >
-                            <div className="row g-0">
-                                <div className="col-md-4">
-                                    <img
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.bodytype?.name}/${trim.name}/${mainPhoto.name || 'defaultImage.jpg'}`}
-                                        className="img-fluid rounded-start"
-                                        style={{ maxWidth: '100%', height: 'auto' }}
-                                        onError={(e) => {
-                                            e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Путь к резервному изображению
-                                        }}
-                                    ></img>
-                                </div>
-                                <div className="col-md-8">
-                                    <div className="card-body">
-                                        <h5 className="card-title">
-                                            <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`} className="text-decoration-none">{trim.name}</Link>
-                                        </h5>
-                                        <p className="card-text">{trim.years}</p>
-                                        <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
+                <div className="row row-cols-1 row-cols-sm-2">
+                    <div className='col-md-8'>
+                        {trims.map((trim, index) => {
+                            const mainPhoto = Array.isArray(trim.photos) && trim.photos.length > 0
+                                ? trim.photos.find((photo) => photo.isMain)
+                                : {};
+                            return (
+                                <div className="card mb-3" key={index}>
+                                    <div className="row g-0">
+                                        <div className="col-md-3 text-start">
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.bodytype?.name}/${trim.name}/${mainPhoto.name || 'defaultImage.jpg'}`}
+                                                className="img-fluid"
+                                                style={{ maxWidth: '100%', objectFit: 'cover' }}
+                                                onError={(e) => {
+                                                    e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Путь к резервному изображению
+                                                }}
+                                            ></img>
+                                        </div>
+                                        <div className="col-md-9 text-start">
+                                            <div className="card-body">
+                                                <h5 className="card-title">
+                                                    <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`} className="text-decoration-none">{trim.name}</Link>
+                                                </h5>
+                                                <p className="card-text">{trim.years}</p>
+                                                <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                    );
+                            );
 
-                })}
+                        })}
+                    </div>
+                    <div className='col-md-4'>
+                        sadasdasd
+                    </div>
 
+                </div>
             </div>
         </div>
 
-    )
+    );
 }

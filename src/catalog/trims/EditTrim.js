@@ -180,19 +180,86 @@ export default function EditTrim() {
             .catch((error) => console.log(error));
     };
 
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-    }
+    const handleSetMain = async (photoId) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/setMainPhoto/${photoId}`,
+            );
+
+            if (response.status === 200) {
+                // Update the photos in trim to reflect the new main photo
+                const updatedPhotos = trim.photos.map((photo) =>
+                    photo.id === photoId
+                        ? { ...photo, isMain: true }
+                        : { ...photo, isMain: false }
+                );
+                setTrim({ ...trim, photos: updatedPhotos });
+            }
+        } catch (err) {
+            console.error("Error marking photo as main:", err.message);
+        }
+    };
+
+    const handleDelete = async (photoId) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/deletePhoto/${photoId}`
+            );
+
+            if (response.status === 200) {
+                // Update the photos in trim locally
+                const updatedPhotos = trim.photos.filter((photo) => photo.id !== photoId);
+                setTrim({ ...trim, photos: updatedPhotos });
+            }
+        } catch (err) {
+            console.error("Error deleting photo:", err.message);
+        }
+    };
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+
+        if (!file) {
+            setError("Please select a valid file.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("photo", file);
+
+        try {
+            const response = await axios.put(
+                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/addPhoto`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            if (response.status === 200 || response.status === 201) {
+                const uploadedPhoto = response.data; // Backend returns the Photo object, including the name
+                setTrim((prevTrim) => ({
+                    ...prevTrim,
+                    photos: [...prevTrim.photos, uploadedPhoto],
+                }));
+                setError("");
+                setSelectedFile(null);
+            }
+        } catch (err) {
+            console.error("Error uploading photo:", err.message);
+            setError("Failed to upload photo. Please try again.");
+        } finally {
+            event.target.value = ""; // Сбрасываем input для загрузки следующего файла
+        }
+
+    };
 
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        //  if (!bodystyle.facelift || !bodystyle.name || !selectedFile) {
-        //      setError('Please provide facelift, bodystyle and upload an image.');
-        //      return;
-        //  }
         const formData = new FormData();
-
         formData.append('uniq', trim.uniq ? 'true' : 'false');
         formData.append('electric', trim.electric ? 'true' : 'false');
         formData.append('hybrid', trim.hybrid ? 'true' : 'false');
@@ -427,15 +494,6 @@ export default function EditTrim() {
                             onChange={onInputChange}
                         />
 
-                        <div className='mb-3'>
-                            <input
-                                type="file"
-                                className="form-control mt-3 mb-3"
-                                name='photo'
-                                onChange={handleFileChange}
-                            />
-                        </div>
-
                         <div className="form-check form-switch mb-3 text-start">
                             <input
                                 className="form-check-input"
@@ -475,55 +533,62 @@ export default function EditTrim() {
                             <label className="form-check-label" for="flexSwitchCheckDefault">Hybrid</label>
                         </div>
 
-                        <button type='submit' className="btn btn-outline-primary">Submit</button>
+                        <button type='submit' className="btn btn-outline-primary">Save</button>
                         <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`}>Cancel</Link>
                     </form>
                 </div>
                 <div className='col'>
 
+                    {trim.photos && trim.photos.length > 0 && (
+                        <div >
+                            {trim.photos.map((photo, index) => (
+                                <div key={index} className='mb-2'>
+                                    <img
+                                        key={index}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${photo.name}`}
+                                        alt={photo.name}
+                                        className="img-fluid mb-2"
 
-                    <h1>Trim Photos</h1>
-                    <AddPhoto
-                        make={make}
-                        model={model}
-                        generationId={generationId}
-                        bodystyleId={bodystyleId}
-                        trimId={trimId}
-                        trim={trim}
-                        setTrim={setTrim}
-                    />
+                                    />
+                                    {!photo.isMain && (
+                                        <div>
+                                            <button type="button" className="btn btn-outline-primary"
+                                                style={{
+                                                    '--bs-btn-padding-y': '.25rem',
+                                                    '--bs-btn-padding-x': '.5rem',
+                                                    '--bs-btn-font-size': '.75rem',
+                                                }}
+                                                onClick={() => handleSetMain(photo.id)}
+                                            >
+                                                Set as main
+                                            </button>
 
-                    <h2>Current Photos</h2>
-                    <div>
-                        {trim.photos?.map((photo) => (
-                            <div key={photo.id}>
-                                <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${photo.name}`}
-                                    alt={`photo ${photo.id}`}
-                                    style={{ maxWidth: '50%', height: 'auto' }}
+                                            <button type="button" className="btn btn-outline-danger mx-2"
+                                                style={{
+                                                    '--bs-btn-padding-y': '.25rem',
+                                                    '--bs-btn-padding-x': '.5rem',
+                                                    '--bs-btn-font-size': '.75rem',
+                                                }}
+                                                onClick={() => handleDelete(photo.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            <div class="mb-3">
+                                <label for="formFileSm" class="form-label text-start d-block">Add new photo:</label>
+                                <input
+                                    className="form-control form-control-sm"
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
                                 />
-                                <DeletePhoto
-                                    make={make}
-                                    model={model}
-                                    generationId={generationId}
-                                    bodystyleId={bodystyleId}
-                                    trimId={trimId}
-                                    photoId={photo.id}
-                                    trim={trim}
-                                    setTrim={setTrim}
-                                />
-                                <SetMainPhoto
-                                    make={make}
-                                    model={model}
-                                    generationId={generationId}
-                                    bodystyleId={bodystyleId}
-                                    trimId={trimId}
-                                    photoId={photo.id}
-                                    trim={trim}
-                                    setTrim={setTrim} />
+                                {error && <p className="text-danger">{error}</p>}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
