@@ -115,14 +115,31 @@ export default function ViewSpot() {
         }
     };
 
+    const deleteSpot = async () => {
+        const confirmDelete = window.confirm(
+            'Are you sure you want to delete this spot? This action cannot be undone.'
+        );
+        if (confirmDelete) {
+            try {
+                await axios.delete(`http://localhost:8080/spots/deleteSpot/${id}`);
+                alert('Spot deleted successfully');
+                window.location.href = '/spots';
+            } catch (error) {
+                console.error('Failed to delete spot:', error);
+                alert('An error occurred while deleting the spot.');
+            }
+        }
+    };
+
     return (
         <div>
-            <ul className="nav">
-                <li className="nav-item">
-                    <Link className="nav-link active" to={`/spots/editSpot/${id}`}>
-                        Edit Spot
-                    </Link>
-                </li>
+            <ul className="nav mt-2 mb-2">
+                <Link className="nav-link active" to={`/spots/editSpot/${id}`}>
+                    Edit Spot
+                </Link>
+                <button className="btn btn-outline-danger" onClick={deleteSpot}>
+                    Delete Spot
+                </button>
             </ul>
             <div className="container">
                 <nav aria-label="breadcrumb">
@@ -167,13 +184,13 @@ export default function ViewSpot() {
                                 Photo {currentPhotoIndex + 1} of {spot.photos.length}
                             </span>
                             <div>
-                                <Button variant="secondary" onClick={handlePrevPhoto} className="me-2">
+                                <Button variant="outline-secondary btn-sm" onClick={handlePrevPhoto} className="me-2">
                                     ← Previous
                                 </Button>
-                                <Button variant="secondary" onClick={handleNextPhoto} className="me-2">
+                                <Button variant="outline-secondary btn-sm" onClick={handleNextPhoto} className="me-2">
                                     Next →
                                 </Button>
-                                <Button variant="primary" onClick={handleCloseModal}>
+                                <Button variant="outline-primary btn-sm" onClick={handleCloseModal}>
                                     Close
                                 </Button>
                             </div>
@@ -182,8 +199,6 @@ export default function ViewSpot() {
                     <div className="col">
                         <h5 className="pb-1 mb-4 text-black border-bottom text-start">Spotted by {spot.user?.name}</h5>
                         <p className='text-start'>{spot.caption}</p>
-                    </div>
-                    <div className="col">
                         <div className="text-start">
                             <table class="table table-borderless">
                                 <tbody>
@@ -238,20 +253,27 @@ export default function ViewSpot() {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="container mt-5">
-
+                    </div>
+                    <div className="col">
+                        <div className="container">
                             <div>
                                 <h4 className='text-start'>Map:</h4>
                                 <div ref={mapContainerRef} style={containerStyle}></div>
                             </div>
                         </div>
                         <div>
-                            <h4>Coordinates:</h4>
+                            <h4 >Coordinates:</h4>
                             <p>
                                 {spot.latitude && spot.longitude
                                     ? `${spot.latitude}, ${spot.longitude}`
                                     : 'Coordinates not available'}
                             </p>
+                        </div>
+                        <div className="col border">
+                            <div className="mb-3">
+                                <label for="exampleFormControlTextarea1" className="form-label">Comments</label>
+                                <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>

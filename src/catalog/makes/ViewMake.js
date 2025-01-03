@@ -9,10 +9,14 @@ export default function ViewMake() {
     const [models, setModels] = useState([]);
     const [makeDetails, setMakeDetails] = useState(null);
     const { make } = useParams();
+    const [spots, setSpots] = useState([]);
+    const [page, setPage] = useState(0); // Текущая страница
+    const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
         loadModels();
         loadMakeDetails();
+        fetchSpots();
     }, [make]);
 
 
@@ -30,6 +34,31 @@ export default function ViewMake() {
             console.error('Error loading make details:', error);
         }
     };
+
+    const fetchSpots = async () => {
+        try {
+            const result = await axios.get(`http://localhost:8080/catalog/${make}/makeSpots?page=${page}&size=10`);
+            setSpots((prevSpots) => {
+                const newSpots = result.data.content.filter(
+                    (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
+                );
+                return [...prevSpots, ...newSpots];
+            }); // Добавляем новые записи
+            setHasMore(result.data.totalPages > page + 1); // Проверяем, есть ли ещё страницы
+        } catch (error) {
+            console.error("Failed to fetch spots", error);
+        }
+    };
+
+    const loadMoreSpots = () => {
+        setPage((prevPage) => prevPage + 1);
+    };
+
+    useEffect(() => {
+        if (page > 0) {
+            fetchSpots();
+        }
+    }, [page]);
 
     const groupedList = models.reduce((acc, obj) => {
         const firstLetter = obj.name.charAt(0).toUpperCase();
@@ -100,6 +129,36 @@ export default function ViewMake() {
                         ))}
                     </div>
                 </div>
+
+                <div className="h5 pb-1 mb-4 text-black border-bottom border-black text-start">
+                    Spots with {make}
+                </div>
+                <div className="row row-cols-2 row-cols-md-5">
+                    {spots.map((spot) => (
+                        <Link to={`/spots/${spot.id}`} key={spot.id}>
+                            <img
+                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.photos?.find(photo => photo.isMain)?.name}`}
+                                alt={spot.photos?.find(photo => photo.isMain).name}
+                                className="img-fluid mb-2"
+                            />
+                        </Link>
+                    ))}
+                </div>
+                {hasMore && (
+                    <div className="text-center mt-3">
+                        <span
+                            onClick={loadMoreSpots}
+                            style={{
+                                cursor: 'pointer',
+                                color: 'blue',
+                                fontSize: '16px',
+                            }}
+                        >
+                            Load More
+                        </span>
+                    </div>
+                )}
+
             </div>
         </div>
     )

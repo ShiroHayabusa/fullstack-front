@@ -6,6 +6,10 @@ import { Modal, Button } from 'react-bootstrap';
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    const [spots, setSpots] = useState([]);
+
+
+
     const handleOpenModal = (index) => {
         setCurrentPhotoIndex(index); // Устанавливаем индекс текущего фото
         setShowModal(true); // Открываем модалку
@@ -26,6 +30,23 @@ export default function ViewTrim() {
             prevIndex === 0 ? trim.photos.length - 1 : prevIndex - 1
         );
     };
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "ArrowLeft") {
+                handlePrevPhoto();
+            } else if (e.key === "ArrowRight") {
+                handleNextPhoto();
+            } else if (e.key === "Escape") {
+                handleCloseModal();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [handlePrevPhoto, handleNextPhoto, handleCloseModal]);
 
     const [trim, setTrim] = useState({
         name: '',
@@ -51,8 +72,18 @@ export default function ViewTrim() {
 
     const { make, model, generationId, bodystyleId, trimId } = useParams();
 
+    const fetchSpots = async () => {
+        try {
+            const result = await axios.get(`http://localhost:8080/catalog/${trimId}/spots`);
+            setSpots(result.data);
+        } catch (error) {
+            console.error("Failed to fetch spots", error);
+        }
+    };
+
     useEffect(() => {
-        loadTrim()
+        loadTrim();
+        fetchSpots();
     }, []);
 
     const loadTrim = async () => {
@@ -93,6 +124,50 @@ export default function ViewTrim() {
                 </div>
 
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+
+                    <div className="col">
+                        {trim.photos && trim.photos.length > 0 && (
+                            <div>
+                                {trim.photos.map((photo, index) => (
+                                    <img
+                                        key={index}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${photo.name}`}
+                                        alt={photo.name}
+                                        className="img-fluid mb-2"
+                                        onClick={() => handleOpenModal(index)} // Открытие модального окна
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Bootstrap Modal */}
+                        <Modal show={showModal} onHide={handleCloseModal} size="lg">
+                            <Modal.Body>
+                                <div className="d-flex justify-content-center">
+                                    <img
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${trim.photos[currentPhotoIndex].name}`}
+                                        className="img-fluid"
+                                    />
+                                </div>
+                            </Modal.Body>
+                            <Modal.Footer className="d-flex justify-content-between">
+                                <span>
+                                    Photo {currentPhotoIndex + 1} of {trim.photos.length}
+                                </span>
+                                <div>
+                                    <Button variant="outline-secondary btn-sm" onClick={handlePrevPhoto} className="me-2">
+                                        ← Previous
+                                    </Button>
+                                    <Button variant="outline-secondary btn-sm" onClick={handleNextPhoto} className="me-2">
+                                        Next →
+                                    </Button>
+                                    <Button variant="outline-primary btn-sm" onClick={handleCloseModal}>
+                                        Close
+                                    </Button>
+                                </div>
+                            </Modal.Footer>
+                        </Modal>
+                    </div>
                     <div className="col">
                         <ul className="list-group list-group-flush">
 
@@ -133,9 +208,9 @@ export default function ViewTrim() {
                             </li>
 
                         </ul>
-                    </div>
 
-                    <div className="col">
+
+
                         <ul className="list-group list-group-flush">
                             {trim.maxSpeed && (
                                 <li className="list-group-item text-start">
@@ -175,47 +250,20 @@ export default function ViewTrim() {
                         </ul>
                     </div>
                     <div className="col">
-                        {trim.photos && trim.photos.length > 0 && (
-                            <div>
-                                {trim.photos.map((photo, index) => (
+                        <h4>Spots with this car:</h4>
+                        <div className="row row-cols-2 row-cols-md-2">
+                            {spots.map((spot) => (
+                                <Link to={`/spots/${spot.id}`}>
                                     <img
-                                        key={index}
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${photo.name}`}
-                                        alt={photo.name}
+                                        key={spot.id}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.photos?.find(photo => photo.isMain).name}`}
+                                        alt={spot.photos?.find(photo => photo.isMain).name}
                                         className="img-fluid mb-2"
-                                        onClick={() => handleOpenModal(index)} // Открытие модального окна
                                     />
-                                ))}
-                            </div>
-                        )}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
-                    {/* Bootstrap Modal */}
-                    <Modal show={showModal} onHide={handleCloseModal} size="lg">
-                        <Modal.Body>
-                            <div className="d-flex justify-content-center">
-                                <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${trim.photos[currentPhotoIndex].name}`}
-                                    className="img-fluid"
-                                />
-                            </div>
-                        </Modal.Body>
-                        <Modal.Footer className="d-flex justify-content-between">
-                            <span>
-                                Photo {currentPhotoIndex + 1} of {trim.photos.length}
-                            </span>
-                            <div>
-                                <Button variant="secondary" onClick={handlePrevPhoto} className="me-2">
-                                    ← Previous
-                                </Button>
-                                <Button variant="secondary" onClick={handleNextPhoto} className="me-2">
-                                    Next →
-                                </Button>
-                                <Button variant="primary" onClick={handleCloseModal}>
-                                    Close
-                                </Button>
-                            </div>
-                        </Modal.Footer>
-                    </Modal>
                 </div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-2">
                     <div className="col border">

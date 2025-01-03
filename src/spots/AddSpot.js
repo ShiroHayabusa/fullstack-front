@@ -1,19 +1,36 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Select from "react-select";
 import './AddSpot.css';
 
 export default function AddSpot() {
+
     const navigate = useNavigate();
 
     const [spot, setSpot] = useState({ caption: "" });
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
+
     const [citySuggestions, setCitySuggestions] = useState([]);
     const [selectedCity, setSelectedCity] = useState("");
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
+
+    const [makes, setMakes] = useState([]);
+    const [models, setModels] = useState([]);
+    const [generations, setGenerations] = useState([]);
+    const [facelifts, setFacelifts] = useState([]);
+    const [bodystyles, setBodystyles] = useState([]);
+    const [trims, setTrims] = useState([]);
+
+    const [selectedMake, setSelectedMake] = useState(null);
+    const [selectedModel, setSelectedModel] = useState(null);
+    const [selectedGeneration, setSelectedGeneration] = useState(null);
+    const [selectedFacelift, setSelectedFacelift] = useState(null);
+    const [selectedBodystyle, setSelectedBodystyle] = useState(null);
+    const [selectedTrim, setSelectedTrim] = useState(null);
 
     const { caption } = spot;
 
@@ -27,6 +44,11 @@ export default function AddSpot() {
         setSelectedFiles(files);
         setPreviewUrls(previewUrls);
         setMainPhotoIndex(0);
+    };
+
+    const clearPreviews = () => {
+        previewUrls.forEach(url => URL.revokeObjectURL(url));
+        setPreviewUrls([]);
     };
 
     const handleCityInput = async (e) => {
@@ -86,9 +108,169 @@ export default function AddSpot() {
         }
     };
 
-    const clearPreviews = () => {
-        previewUrls.forEach(url => URL.revokeObjectURL(url));
-        setPreviewUrls([]);
+    useEffect(() => {
+        const fetchMakes = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/catalog`);
+                setMakes(response.data);
+            } catch (error) {
+                console.error("Error fetching makes:", error);
+            }
+        };
+        fetchMakes();
+    }, []);
+
+    const optionsMake = makes.map((make) => ({
+        value: make.name, // Приводим к нижнему регистру для value
+        label: make.name, // Оригинальное имя для отображения
+    }));
+
+    useEffect(() => {
+        if (selectedMake) {
+            const fetchModels = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`);
+                    setModels(response.data);
+                } catch (error) {
+                    console.error("Error fetching models:", error);
+                }
+            };
+            fetchModels();
+        } else {
+            setModels([]);
+        }
+    }, [selectedMake]);
+
+    const optionsModel = models.map((model) => ({
+        value: model.name, // Приводим к нижнему регистру для value
+        label: model.name, // Оригинальное имя для отображения
+    }));
+
+    useEffect(() => {
+        if (selectedModel) {
+            const fetchGenerations = async () => {
+                try {
+                    const response =
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`);
+                    setGenerations(response.data);
+                } catch (error) {
+                    console.error("Error fetching generations:", error);
+                }
+            };
+            fetchGenerations();
+        } else {
+            setGenerations([]);
+        }
+    }, [selectedModel]);
+
+    const optionsGeneration = generations.map((generation) => ({
+        value: generation.id,
+        label: generation.name,
+    }));
+
+    useEffect(() => {
+        if (selectedGeneration) {
+            const fetchFacelifts = async () => {
+                try {
+                    const response =
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`);
+                    setFacelifts(response.data);
+                } catch (error) {
+                    console.error("Error fetching facelifts:", error);
+                }
+            };
+            fetchFacelifts();
+        } else {
+            setFacelifts([]);
+        }
+    }, [selectedGeneration]);
+
+    const optionsFacelift = facelifts.map((facelift) => ({
+        value: facelift.id,
+        label: facelift.name,
+    }));
+
+    useEffect(() => {
+        if (selectedFacelift) {
+            const fetchBodystyles = async () => {
+                try {
+                    const response =
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`);
+                    setBodystyles(response.data);
+                } catch (error) {
+                    console.error("Error fetching bodystyles:", error);
+                }
+            };
+            fetchBodystyles();
+        } else {
+            setBodystyles([]);
+        }
+    }, [selectedFacelift]);
+
+    const optionsBodystyle = bodystyles.map((bodystyle) => ({
+        value: bodystyle.id,
+        label: bodystyle.bodytype?.name,
+    }));
+
+    useEffect(() => {
+        if (selectedBodystyle) {
+            const fetchTrims = async () => {
+                try {
+                    const response =
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`);
+                    setTrims(response.data);
+                } catch (error) {
+                    console.error("Error fetching trims:", error);
+                }
+            };
+            fetchTrims();
+        } else {
+            setTrims([]);
+        }
+    }, [selectedBodystyle]);
+
+    const optionsTrim = trims.map((trim) => ({
+        value: trim.id,
+        label: trim.name,
+    }));
+
+    const handleMakeChange = (selectedOption) => {
+        setSelectedMake(selectedOption);
+        setSelectedModel(null); // Сбрасываем выбор модели
+        setSelectedGeneration(null); // Сбрасываем выбор поколения
+        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
+        setSelectedBodystyle(null); // Сбрасываем выбор кузова
+        setSelectedTrim(null); // Сбрасываем выбор комплектации
+    };
+
+    const handleModelChange = (selectedOption) => {
+        setSelectedModel(selectedOption);
+        setSelectedGeneration(null); // Сбрасываем выбор поколения
+        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
+        setSelectedBodystyle(null); // Сбрасываем выбор кузова
+        setSelectedTrim(null); // Сбрасываем выбор комплектации
+    };
+
+    const handleGenerationChange = (selectedOption) => {
+        setSelectedGeneration(selectedOption);
+        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
+        setSelectedBodystyle(null); // Сбрасываем выбор кузова
+        setSelectedTrim(null); // Сбрасываем выбор комплектации
+    };
+
+    const handleFaceliftChange = (selectedOption) => {
+        setSelectedFacelift(selectedOption);
+        setSelectedBodystyle(null); // Сбрасываем выбор кузова
+        setSelectedTrim(null); // Сбрасываем выбор комплектации
+    };
+
+    const handleBodystyleChange = (selectedOption) => {
+        setSelectedBodystyle(selectedOption);
+        setSelectedTrim(null); // Сбрасываем выбор комплектации
+    };
+
+    const handleTrimChange = (selectedOption) => {
+        setSelectedTrim(selectedOption);
     };
 
     const onSubmit = async (e) => {
@@ -96,15 +278,34 @@ export default function AddSpot() {
 
         const formData = new FormData();
         formData.append("caption", caption);
+        formData.append("mainPhotoIndex", mainPhotoIndex);
+        selectedFiles.forEach((file) => formData.append("photos", file));
+
         if (latitude !== null) {
             formData.append("latitude", latitude);
         }
         if (longitude !== null) {
             formData.append("longitude", longitude);
         }
-        formData.append("mainPhotoIndex", mainPhotoIndex);
 
-        selectedFiles.forEach((file) => formData.append("photos", file));
+        if (selectedTrim) {
+            formData.append('trim', selectedTrim.value);
+        }
+        if (selectedBodystyle) {
+            formData.append('bodystyle', selectedBodystyle.value);
+        }
+        if (selectedFacelift) {
+            formData.append('facelift', selectedFacelift.value);
+        }
+        if (selectedGeneration) {
+            formData.append('generation', selectedGeneration.value);
+        }
+        if (selectedModel) {
+            formData.append('model', selectedModel.value);
+        }
+        if (selectedMake) {
+            formData.append('make', selectedMake.value);
+        }
 
         try {
             const response = await axios.post(`http://localhost:8080/spots/addSpot`, formData);
@@ -134,10 +335,9 @@ export default function AddSpot() {
                     <li className="breadcrumb-item active" aria-current="page">Add Spot</li>
                 </ol>
             </nav>
-            <div className="row">
-                <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow">
-                    <h2 className="text-center m-4">Add Spot</h2>
-                    <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit}>
+                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+                    <div className="col">
                         <input
                             type="file"
                             className="form-control mt-3 mb-3"
@@ -169,7 +369,8 @@ export default function AddSpot() {
                                 </div>
                             </div>
                         )}
-
+                    </div>
+                    <div className="col">
                         <div className="form-floating mb-3">
                             <textarea
                                 className="form-control"
@@ -182,43 +383,100 @@ export default function AddSpot() {
                             </textarea>
                             <label htmlFor="floatingTextarea2">Caption</label>
                         </div>
+                    </div>
+                    <div className="col">
+                        <h5>Specify the car:</h5>
+                        <Select className='text-start'
+                            options={optionsMake}
+                            onChange={handleMakeChange}
+                            isSearchable
+                            placeholder="Select make"
+                            value={selectedMake}
+                        />
+                        <Select className='text-start mt-3'
+                            options={optionsModel}
+                            onChange={handleModelChange}
+                            isSearchable
+                            placeholder="Select model"
+                            value={selectedModel}
+                            isDisabled={!selectedMake}
+                        />
 
-                        <div className="mt-3">
-                            <label>City</label>
-                            <input
-                                list="citySuggestions"
-                                className="form-control"
-                                placeholder="Enter city"
-                                value={selectedCity}
-                                onChange={handleCityInput}
-                                required
-                            />
-                            <datalist id="citySuggestions">
-                                {citySuggestions.map((suggestion, index) => (
-                                    <option
-                                        key={index}
-                                        value={suggestion.description}
-                                        onClick={() => handleCitySelect(suggestion.description, suggestion.placeId)}
-                                    >
-                                        {suggestion.description}
-                                    </option>
-                                ))}
-                            </datalist>
+                        <Select className='text-start mt-3'
+                            options={optionsGeneration}
+                            onChange={handleGenerationChange}
+                            isSearchable
+                            placeholder="Select generation"
+                            isDisabled={!selectedModel}
+                            value={selectedGeneration}
+                        />
 
-                            {latitude && longitude && (
-                                <div className="mt-3">
-                                    <p>Координаты:</p>
-                                    <p>Широта: {latitude}</p>
-                                    <p>Долгота: {longitude}</p>
-                                </div>
-                            )}
-                        </div>
+                        <Select className='text-start mt-3'
+                            options={optionsFacelift}
+                            onChange={handleFaceliftChange}
+                            isSearchable
+                            placeholder="Select facelift"
+                            isDisabled={!selectedGeneration}
+                            value={selectedFacelift}
+                        />
 
-                        <button type="submit" className="btn btn-outline-primary mt-3">Add Spot</button>
-                        <Link className="btn btn-outline-danger mx-2 mt-3" to="/spots">Cancel</Link>
-                    </form>
+                        <Select className='text-start mt-3'
+                            options={optionsBodystyle}
+                            onChange={handleBodystyleChange}
+                            isSearchable
+                            placeholder="Select bodystyle"
+                            isDisabled={!selectedFacelift}
+                            value={selectedBodystyle}
+                        />
+
+                        <Select className='text-start mt-3'
+                            options={optionsTrim}
+                            onChange={handleTrimChange}
+                            isSearchable
+                            placeholder="Select trim"
+                            isDisabled={!selectedBodystyle}
+                            value={selectedTrim}
+                        />
+                    </div>
+
+                    <div className="mt-3">
+                        <label>City</label>
+                        <input
+                            list="citySuggestions"
+                            className="form-control"
+                            placeholder="Enter city"
+                            value={selectedCity}
+                            onChange={handleCityInput}
+                            required
+                        />
+                        <datalist id="citySuggestions">
+                            {citySuggestions.map((suggestion, index) => (
+                                <option
+                                    key={index}
+                                    value={suggestion.description}
+                                    onClick={() => handleCitySelect(suggestion.description, suggestion.placeId)}
+                                >
+                                    {suggestion.description}
+                                </option>
+                            ))}
+                        </datalist>
+
+                        {latitude && longitude && (
+                            <div className="mt-3">
+                                <p>Координаты:</p>
+                                <p>Широта: {latitude}</p>
+                                <p>Долгота: {longitude}</p>
+                            </div>
+                        )}
+                    </div>
+
+
+
+
                 </div>
-            </div>
+                <button type="submit" className="btn btn-outline-primary mt-3">Add Spot</button>
+                <Link className="btn btn-outline-danger mx-2 mt-3" to="/spots">Cancel</Link>
+            </form>
         </div>
 
     );

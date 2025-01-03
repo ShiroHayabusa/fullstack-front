@@ -13,8 +13,13 @@ export default function ViewBodystyle() {
 
     const { make, model, generationId, bodystyleId } = useParams();
 
+    const [spots, setSpots] = useState([]);
+    const [page, setPage] = useState(0); // Текущая страница
+    const [hasMore, setHasMore] = useState(true);
+
     useEffect(() => {
-        loadTrims()
+        loadTrims();
+        fetchSpots();
     }, []);
 
     useEffect(() => {
@@ -33,6 +38,31 @@ export default function ViewBodystyle() {
             `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}`);
         setBodystyle(result.data);
     }
+
+    const fetchSpots = async () => {
+        try {
+            const result = await axios.get(`http://localhost:8080/spots/${bodystyleId}/bodystyleSpots?page=${page}&size=10`);
+            setSpots((prevSpots) => {
+                const newSpots = result.data.content.filter(
+                    (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
+                );
+                return [...prevSpots, ...newSpots];
+            }); // Добавляем новые записи
+            setHasMore(result.data.totalPages > page + 1); // Проверяем, есть ли ещё страницы
+        } catch (error) {
+            console.error("Failed to fetch spots", error);
+        }
+    };
+
+    const loadMoreSpots = () => {
+        setPage((prevPage) => prevPage + 1);
+    };
+
+    useEffect(() => {
+        if (page > 0) {
+            fetchSpots();
+        }
+    }, [page]);
 
     return (
         <div>
@@ -61,29 +91,31 @@ export default function ViewBodystyle() {
                                 ? trim.photos.find((photo) => photo.isMain)
                                 : {};
                             return (
-                                <div className="card mb-3" key={index}>
-                                    <div className="row g-0">
-                                        <div className="col-md-3 text-start">
-                                            <img
-                                                src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.bodytype?.name}/${trim.name}/${mainPhoto.name || 'defaultImage.jpg'}`}
-                                                className="img-fluid"
-                                                style={{ maxWidth: '100%', objectFit: 'cover' }}
-                                                onError={(e) => {
-                                                    e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Путь к резервному изображению
-                                                }}
-                                            ></img>
-                                        </div>
-                                        <div className="col-md-9 text-start">
-                                            <div className="card-body">
-                                                <h5 className="card-title">
-                                                    <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`} className="text-decoration-none">{trim.name}</Link>
-                                                </h5>
-                                                <p className="card-text">{trim.years}</p>
-                                                <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
+                                <Link to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`} className="text-decoration-none text-black">
+                                    <div className="card mb-3" key={index}>
+                                        <div className="row g-0">
+                                            <div className="col-md-3 text-start">
+                                                <img
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.bodytype?.name}/${trim.name}/${mainPhoto.name || 'defaultImage.jpg'}`}
+                                                    className="img-fluid"
+                                                    style={{ maxWidth: '100%', objectFit: 'cover' }}
+                                                    onError={(e) => {
+                                                        e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Путь к резервному изображению
+                                                    }}
+                                                ></img>
+                                            </div>
+                                            <div className="col-md-9 text-start">
+                                                <div className="card-body">
+                                                    <h5 className="card-title">
+                                                        {trim.name}
+                                                    </h5>
+                                                    <p className="card-text">{trim.years}</p>
+                                                    <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
 
                             );
 
@@ -94,6 +126,34 @@ export default function ViewBodystyle() {
                     </div>
 
                 </div>
+                <div className="h5 pb-1 mb-4 mt-5 text-black border-bottom border-black text-start">
+                    Spots with {make} {model} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
+                </div>
+                <div className="row row-cols-2 row-cols-md-5">
+                    {spots.map((spot) => (
+                        <Link to={`/spots/${spot.id}`} key={spot.id}>
+                            <img
+                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.photos?.find(photo => photo.isMain)?.name}`}
+                                alt={spot.photos?.find(photo => photo.isMain).name}
+                                className="img-fluid mb-2"
+                            />
+                        </Link>
+                    ))}
+                </div>
+                {hasMore && (
+                    <div className="text-center mt-3">
+                        <span
+                            onClick={loadMoreSpots}
+                            style={{
+                                cursor: 'pointer',
+                                color: 'blue',
+                                fontSize: '16px',
+                            }}
+                        >
+                            Load More
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
 

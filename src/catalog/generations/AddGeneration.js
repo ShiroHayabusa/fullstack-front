@@ -102,10 +102,10 @@ export default function AddGeneration() {
                             />
                         </div>
                         <div className='mb-3'>
-                            <input
-                                type={'text'}
+                            <textarea
                                 className='form-control'
                                 placeholder='Enter description'
+                                style={{ height: '310px' }}
                                 name='description'
                                 value={description}
                                 onChange={(e) => onInputChange(e)}

@@ -8,10 +8,11 @@ export default function AddFacelift() {
 
     const [facelift, setFacelift] = useState({
         name: "",
+        years: "",
         description: ""
     });
 
-    const { name, description } = facelift;
+    const { name, years, description } = facelift;
     const { make, model, generation } = useParams();
 
     const [generationEntity, setGenerationEntity] = useState({
@@ -33,7 +34,13 @@ export default function AddFacelift() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addFacelift`, facelift);
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('years', years);
+        formData.append('description', description);
+
+        await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addFacelift`, formData);
         navigate(`/catalog/${make}/${model}/${generation}`);
     };
 
@@ -61,6 +68,17 @@ export default function AddFacelift() {
                                 placeholder='Enter facelift'
                                 name='name'
                                 value={name}
+                                onChange={(e) => onInputChange(e)}
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='Name' className='form-label'>Name</label>
+                            <input
+                                type={'text'}
+                                className='form-control'
+                                placeholder='Enter years'
+                                name='years'
+                                value={years}
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>

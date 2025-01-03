@@ -425,15 +425,14 @@ export default function EditSpot() {
                             <textarea
                                 className="form-control"
                                 id="floatingTextarea2"
-                                style={{ height: '395px' }}
+                                style={{ height: '391px' }}
                                 name="caption"
                                 value={spot.caption}
                                 onChange={onInputChange}>
                             </textarea>
                             <label htmlFor="floatingTextarea2">Caption</label>
                         </div>
-                        <button type='submit' className="btn btn-outline-primary">Save</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/spots/${id}`}>Cancel</Link>
+
                     </div>
 
                     <div className="col">
@@ -490,6 +489,10 @@ export default function EditSpot() {
                             value={selectedTrim}
                         />
                     </div>
+                </div>
+                <div className="d-flex justify-content-center mt-3">
+                    <button type='submit' className="btn btn-outline-primary">Save</button>
+                    <Link className="btn btn-outline-danger mx-2" to={`/spots/${id}`}>Cancel</Link>
                 </div>
             </form>
         </div>
