@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -27,11 +28,26 @@ const Navbar = () => {
                 </nav>
                 <div className="d-flex">
                     {user ? (
-                        <div>
-                            <span className="text-white me-3">{user.username}</span>
-                            <button className="btn btn-outline-light" onClick={handleLogout}>
-                                Sign out
-                            </button>
+                        <div className="collapse navbar-collapse dropstart" id="navbarNavDarkDropdown">
+                            <ul className="navbar-nav">
+                                <li className="nav-item dropdown">
+                                    <a className="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {user.username}
+                                    </a>
+                                    <ul className="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                        <li><a className="dropdown-item" href="/user/profile">Profile</a></li>
+                                        <li><a
+                                            className="dropdown-item"
+                                            href={handleLogout}
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleLogout();
+                                            }}
+                                        >Sign out</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
                         </div>
                     ) : (
                         // Если пользователь НЕ залогинен, проверяем, не на странице логина ли он

@@ -1,6 +1,7 @@
 
 import './App.css';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import Home from './pages/Home';
@@ -124,7 +125,7 @@ function App() {
             <Route exact path='/users/forgot-password/' element={<ForgotPassword />} />
             <Route exact path='/users/reset-password/:token' element={<ResetPassword />} />
             <Route exact path='/users/activate-account/:token' element={<ActivateAccount />} />
-            <Route exact path='/api/user/profile' element={<Profile />} />
+            <Route exact path='/user/profile' element={<Profile />} />
 
             <Route exact path='/catalog' element={<Makes />} />
             <Route exact path='/catalog/addMake' element={<AddMake />} />
