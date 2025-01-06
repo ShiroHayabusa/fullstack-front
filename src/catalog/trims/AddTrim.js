@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddTrim() {
 
@@ -41,11 +42,15 @@ export default function AddTrim() {
     const [drivetrainList, setDrivetrainList] = useState([]);
     const [tunerList, setTunerList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const loadBodystyleEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`);
+        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setBodystyleEntity(result.data);
-        console.log("bodystyle:", result.data);
     }
     useEffect(() => {
         loadBodystyleEntity();
@@ -62,13 +67,16 @@ export default function AddTrim() {
 
     const fetchEngineData = () => {
         axios
-            .get(`http://localhost:8080/administration/engines/${make}`)
+            .get(`http://localhost:8080/administration/engines/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setEngineList(data)
-                    console.log("engines:", data);
                 } else {
                     //error handle section 
                 }
@@ -78,13 +86,16 @@ export default function AddTrim() {
 
     const fetchTransmissionData = () => {
         axios
-            .get(`http://localhost:8080/administration/transmissions/${make}`)
+            .get(`http://localhost:8080/administration/transmissions/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setTransmissionList(data)
-                    console.log("transmissions:", data);
                 } else {
                     //error handle section 
                 }
@@ -94,13 +105,16 @@ export default function AddTrim() {
 
     const fetchBodyData = () => {
         axios
-            .get(`http://localhost:8080/administration/bodies/${make}`)
+            .get(`http://localhost:8080/administration/bodies/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setBodyList(data)
-                    console.log("bodies:", data);
                 } else {
                     //error handle section 
                 }
@@ -110,13 +124,16 @@ export default function AddTrim() {
 
     const fetchDrivetrainData = () => {
         axios
-            .get('http://localhost:8080/administration/drivetrains')
+            .get('http://localhost:8080/administration/drivetrains', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setDrivetrainList(data)
-                    console.log("drivetrains:", data);
                 } else {
                     //error handle section 
                 }
@@ -126,13 +143,16 @@ export default function AddTrim() {
 
     const fetchTunerData = () => {
         axios
-            .get('http://localhost:8080/catalog/tuners')
+            .get('http://localhost:8080/catalog/tuners', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setTunerList(data)
-                    console.log("tuners:", data);
                 } else {
                     //error handle section 
                 }
@@ -161,7 +181,11 @@ export default function AddTrim() {
 
         try {
             const response =
-                await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/addTrim`, formData);
+                await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/addTrim`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
             if (response.status === 200 || response.status === 201) {
                 console.log('Trim added successfully');
                 navigate(`/catalog/${make}/${model}/${generationId}/${bodystyleId}`);
@@ -174,14 +198,14 @@ export default function AddTrim() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add trim</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add trim</li>
                 </ol>
             </nav>
             <div className='row'>
@@ -352,7 +376,7 @@ export default function AddTrim() {
                                 checked={uniq}
                                 onChange={onChange}
                             />
-                            <label className="form-check-label" for="uniq">Uniq</label>
+                            <label className="form-check-label" htmlFor="uniq">Uniq</label>
                         </div>
 
                         <div className="form-check form-switch mb-3 text-start">
@@ -365,7 +389,7 @@ export default function AddTrim() {
                                 checked={electric}
                                 onChange={onChange}
                             />
-                            <label className="form-check-label" for="electric">Electric</label>
+                            <label className="form-check-label" htmlFor="electric">Electric</label>
                         </div>
 
                         <div className="form-check form-switch mb-3 text-start">
@@ -378,7 +402,7 @@ export default function AddTrim() {
                                 checked={hybrid}
                                 onChange={onChange}
                             />
-                            <label className="form-check-label" for="flexSwitchCheckDefault">Hybrid</label>
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Hybrid</label>
                         </div>
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>

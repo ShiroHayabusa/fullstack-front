@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditBody() {
 
@@ -13,17 +14,21 @@ export default function EditBody() {
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         // Fetch the current details of the body
         const fetchBody = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodies/${make}/${bodyId}`);
+                const response = await axios.get(`http://localhost:8080/administration/bodies/${make}/${bodyId}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setBody({
                     name: response.data.name,
                     description: response.data.description
                 });
-                console.log("body:", response.data)
             } catch (error) {
                 setError('Error fetching body details: ' + error.message);
             }
@@ -49,7 +54,11 @@ export default function EditBody() {
         });
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/bodies/${make}/${bodyId}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/bodies/${make}/${bodyId}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Body updated successfully');
                 setError('');
@@ -63,11 +72,11 @@ export default function EditBody() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/bodies'>Bodies</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add body</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className='text-decoration-none'>Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className='text-decoration-none'>Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/bodies' className='text-decoration-none'>Bodies</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add body</li>
                 </ol>
             </nav>
             <div className='row'>
@@ -90,6 +99,7 @@ export default function EditBody() {
                             type='text'
                             className='form-control mt-3 mb-3'
                             placeholder='Enter description'
+                            style={{ height: '310px' }}
                             name='description'
                             value={body.description}
                             onChange={onInputChange}

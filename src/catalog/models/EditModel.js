@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditModel() {
 
@@ -15,18 +16,22 @@ export default function EditModel() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         // Fetch the current details of the model
         const fetchModelEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/editModel`);
+                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/editModel`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setModelEntity({
                     name: response.data.name,
                     description: response.data.description,
                     years: response.data.years
                 });
-                console.log("model:", response.data)
             } catch (error) {
                 setError('Error fetching make details: ' + error.message);
             }
@@ -57,7 +62,11 @@ export default function EditModel() {
         formData.append('years', modelEntity.years);
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/editModel`, formData);
+            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/editModel`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
 
             if (response.status === 200) {
                 setSuccess('Make updated successfully');
@@ -72,12 +81,12 @@ export default function EditModel() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit model</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit model</li>
                 </ol>
             </nav>
             <div className='row'>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 
 export default function ViewEngine() {
 
@@ -16,6 +17,7 @@ export default function ViewEngine() {
     });
 
     const { make, engineId } = useParams();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadEngine()
@@ -23,7 +25,11 @@ export default function ViewEngine() {
 
     const loadEngine = async () => {
         const result = await axios.get(
-            `http://localhost:8080/administration/engines/${make}/${engineId}`);
+            `http://localhost:8080/administration/engines/${make}/${engineId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
         setEngine(result.data);
     }
 
@@ -38,15 +44,13 @@ export default function ViewEngine() {
             </ul>
 
             <div className='container'>
-
-
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li class="breadcrumb-item"><a href="/administration/engines" className="text-decoration-none">Engines</a></li>
-                        <li class="breadcrumb-item"><a href={`/administration/engines/${make}/`} className="text-decoration-none">{make}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{engine.name}</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href="/administration/engines" className="text-decoration-none">Engines</a></li>
+                        <li className="breadcrumb-item"><a href={`/administration/engines/${make}/`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">{engine.name}</li>
                     </ol>
                 </nav>
                 <div className="h5 pb-1 mb-4 text-black border-bottom border-black text-start">
@@ -79,10 +83,10 @@ export default function ViewEngine() {
                             </li>
                         </ul>
                     </div>
-                    <div class="col-lg-4 border">
+                    <div className="col-lg-4 border">
 
                         <div className="mb-3">
-                            <label for="exampleFormControlTextarea1" className="form-label">Comments</label>
+                            <label htmlFor="exampleFormControlTextarea1" className="form-label">Comments</label>
                             <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Select from "react-select";
+import { useAuth } from '../context/AuthContext';
 import './AddSpot.css';
 
 export default function AddSpot() {
@@ -33,6 +34,8 @@ export default function AddSpot() {
     const [selectedTrim, setSelectedTrim] = useState(null);
 
     const { caption } = spot;
+
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const onChange = (e) => {
         setSpot({ ...spot, [e.target.name]: e.target.value });
@@ -109,16 +112,24 @@ export default function AddSpot() {
     };
 
     useEffect(() => {
-        const fetchMakes = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/catalog`);
-                setMakes(response.data);
-            } catch (error) {
-                console.error("Error fetching makes:", error);
-            }
-        };
-        fetchMakes();
-    }, []);
+        if (!user) {
+            navigate('/login');
+        } else {
+            const fetchMakes = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/catalog`, {
+                        headers: {
+                            Authorization: `Bearer ${user.token}`,
+                        },
+                    });
+                    setMakes(response.data);
+                } catch (error) {
+                    console.error("Error fetching makes:", error);
+                }
+            };
+            fetchMakes();
+        }
+    }, [user]);
 
     const optionsMake = makes.map((make) => ({
         value: make.name, // Приводим к нижнему регистру для value
@@ -126,20 +137,28 @@ export default function AddSpot() {
     }));
 
     useEffect(() => {
-        if (selectedMake) {
-            const fetchModels = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`);
-                    setModels(response.data);
-                } catch (error) {
-                    console.error("Error fetching models:", error);
-                }
-            };
-            fetchModels();
+        if (!user) {
+            navigate('/login');
         } else {
-            setModels([]);
+            if (selectedMake) {
+                const fetchModels = async () => {
+                    try {
+                        const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`,
+                            },
+                        });
+                        setModels(response.data);
+                    } catch (error) {
+                        console.error("Error fetching models:", error);
+                    }
+                };
+                fetchModels();
+            } else {
+                setModels([]);
+            }
         }
-    }, [selectedMake]);
+    }, [selectedMake, user]);
 
     const optionsModel = models.map((model) => ({
         value: model.name, // Приводим к нижнему регистру для value
@@ -147,21 +166,29 @@ export default function AddSpot() {
     }));
 
     useEffect(() => {
-        if (selectedModel) {
-            const fetchGenerations = async () => {
-                try {
-                    const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`);
-                    setGenerations(response.data);
-                } catch (error) {
-                    console.error("Error fetching generations:", error);
-                }
-            };
-            fetchGenerations();
+        if (!user) {
+            navigate('/login');
         } else {
-            setGenerations([]);
+            if (selectedModel) {
+                const fetchGenerations = async () => {
+                    try {
+                        const response =
+                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`, {
+                                headers: {
+                                    Authorization: `Bearer ${user.token}`,
+                                },
+                            });
+                        setGenerations(response.data);
+                    } catch (error) {
+                        console.error("Error fetching generations:", error);
+                    }
+                };
+                fetchGenerations();
+            } else {
+                setGenerations([]);
+            }
         }
-    }, [selectedModel]);
+    }, [selectedModel, user]);
 
     const optionsGeneration = generations.map((generation) => ({
         value: generation.id,
@@ -169,21 +196,29 @@ export default function AddSpot() {
     }));
 
     useEffect(() => {
-        if (selectedGeneration) {
-            const fetchFacelifts = async () => {
-                try {
-                    const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`);
-                    setFacelifts(response.data);
-                } catch (error) {
-                    console.error("Error fetching facelifts:", error);
-                }
-            };
-            fetchFacelifts();
+        if (!user) {
+            navigate('/login');
         } else {
-            setFacelifts([]);
+            if (selectedGeneration) {
+                const fetchFacelifts = async () => {
+                    try {
+                        const response =
+                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`, {
+                                headers: {
+                                    Authorization: `Bearer ${user.token}`,
+                                },
+                            });
+                        setFacelifts(response.data);
+                    } catch (error) {
+                        console.error("Error fetching facelifts:", error);
+                    }
+                };
+                fetchFacelifts();
+            } else {
+                setFacelifts([]);
+            }
         }
-    }, [selectedGeneration]);
+    }, [selectedGeneration, user]);
 
     const optionsFacelift = facelifts.map((facelift) => ({
         value: facelift.id,
@@ -191,21 +226,29 @@ export default function AddSpot() {
     }));
 
     useEffect(() => {
-        if (selectedFacelift) {
-            const fetchBodystyles = async () => {
-                try {
-                    const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`);
-                    setBodystyles(response.data);
-                } catch (error) {
-                    console.error("Error fetching bodystyles:", error);
-                }
-            };
-            fetchBodystyles();
+        if (!user) {
+            navigate('/login');
         } else {
-            setBodystyles([]);
+            if (selectedFacelift) {
+                const fetchBodystyles = async () => {
+                    try {
+                        const response =
+                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`, {
+                                headers: {
+                                    Authorization: `Bearer ${user.token}`,
+                                },
+                            });
+                        setBodystyles(response.data);
+                    } catch (error) {
+                        console.error("Error fetching bodystyles:", error);
+                    }
+                };
+                fetchBodystyles();
+            } else {
+                setBodystyles([]);
+            }
         }
-    }, [selectedFacelift]);
+    }, [selectedFacelift, user]);
 
     const optionsBodystyle = bodystyles.map((bodystyle) => ({
         value: bodystyle.id,
@@ -213,21 +256,29 @@ export default function AddSpot() {
     }));
 
     useEffect(() => {
-        if (selectedBodystyle) {
-            const fetchTrims = async () => {
-                try {
-                    const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`);
-                    setTrims(response.data);
-                } catch (error) {
-                    console.error("Error fetching trims:", error);
-                }
-            };
-            fetchTrims();
+        if (!user) {
+            navigate('/login');
         } else {
-            setTrims([]);
+            if (selectedBodystyle) {
+                const fetchTrims = async () => {
+                    try {
+                        const response =
+                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`, {
+                                headers: {
+                                    Authorization: `Bearer ${user.token}`,
+                                },
+                            });
+                        setTrims(response.data);
+                    } catch (error) {
+                        console.error("Error fetching trims:", error);
+                    }
+                };
+                fetchTrims();
+            } else {
+                setTrims([]);
+            }
         }
-    }, [selectedBodystyle]);
+    }, [selectedBodystyle, user]);
 
     const optionsTrim = trims.map((trim) => ({
         value: trim.id,
@@ -308,7 +359,11 @@ export default function AddSpot() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/spots/addSpot`, formData);
+            const response = await axios.post(`http://localhost:8080/spots/addSpot`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Spot added successfully");

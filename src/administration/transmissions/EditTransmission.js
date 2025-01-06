@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditTransmission() {
 
@@ -16,19 +17,23 @@ export default function EditTransmission() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         // Fetch the current details of the engine
         const fetchTransmission = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/transmissions/${make}/${transmissionId}`);
+                const response = await axios.get(`http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setTransmission({
                     name: response.data.name,
                     description: response.data.description,
                     transmissionType: response.data.transmissionType?.id,
                     photo: response.data.photo
                 });
-                console.log("transmission:", response)
             } catch (error) {
                 setError('Error fetching transmission details: ' + error.message);
             }
@@ -40,7 +45,11 @@ export default function EditTransmission() {
 
     const fetchTransmissionTypes = () => {
         axios
-            .get('http://localhost:8080/administration/transmissionTypes')
+            .get('http://localhost:8080/administration/transmissionTypes', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -82,7 +91,11 @@ export default function EditTransmission() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Transmission updated successfully');
                 setError('');
@@ -96,13 +109,13 @@ export default function EditTransmission() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/transmissions'>Transmissions</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/transmissions/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/transmissions/${make}/${transmissionId}`} className="text-decoration-none">{transmission.name}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit transmission</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/transmissions' className="text-decoration-none">Transmissions</a></li>
+                    <li className="breadcrumb-item"><a href={`/administration/transmissions/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/administration/transmissions/${make}/${transmissionId}`} className="text-decoration-none">{transmission.name}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit transmission</li>
                 </ol>
             </nav>
             <div className='row'>

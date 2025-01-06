@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditTransmissionType() {
 
@@ -12,16 +13,20 @@ export default function EditTransmissionType() {
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         // Fetch the current details of the transmissionType
         const fetchTransmissionType = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/transmissionTypes/${id}`);
+                const response = await axios.get(`http://localhost:8080/administration/transmissionTypes/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setTransmissionType({
                     name: response.data.name
                 });
-                console.log("transmissionType:", response.data)
             } catch (error) {
                 setError('Error fetching transmissionType details: ' + error.message);
             }
@@ -45,7 +50,11 @@ export default function EditTransmissionType() {
         formData.append('name', transmissionType.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/transmissionTypes/${id}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/transmissionTypes/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Transmission type updated successfully');
                 setError('');
@@ -59,11 +68,11 @@ export default function EditTransmissionType() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/transmissionTypes'>Transmission types</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add transmission type</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/transmissionTypes' className="text-decoration-none">Transmission types</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit transmission type</li>
                 </ol>
             </nav>
             <div className='row'>

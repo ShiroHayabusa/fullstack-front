@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
 
 export default function Engines() {
 
     const [makes, setMakes] = useState([])
+    const { user } = useAuth();
 
     useEffect(() => {
         loadMakes();
     }, []);
 
     const loadMakes = async () => {
-        const result = await axios.get("http://localhost:8080/catalog");
+        const result = await axios.get("http://localhost:8080/catalog", {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setMakes(result.data);
     };
 
@@ -29,10 +35,10 @@ export default function Engines() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Engines</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Engines</li>
                 </ol>
             </nav>
             <h2>Engines</h2>

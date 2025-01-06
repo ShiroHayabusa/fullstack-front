@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../../components/ColumnContainer.css'
+import { useAuth } from '../../context/AuthContext';
 
 export default function Bodies() {
 
     const [makes, setMakes] = useState([])
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         loadMakes();
     }, []);
 
     const loadMakes = async () => {
-        const result = await axios.get("http://localhost:8080/catalog");
+        const result = await axios.get("http://localhost:8080/catalog", {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setMakes(result.data);
     };
 
@@ -28,11 +34,11 @@ export default function Bodies() {
 
     return (
         <div className='container'>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Bodies</li>
+            <nav aria-label="breadcrumb" className='mt-3'>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Bodies</li>
                 </ol>
             </nav>
             <h2>Bodies</h2>

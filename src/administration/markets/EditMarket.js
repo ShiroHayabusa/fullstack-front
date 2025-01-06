@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditMarket() {
     let navigate = useNavigate();
     let { id } = useParams();
 
     const [market, setMarket] = useState({
-        name: "",
-        country: { id: null }
+        name: '',
+        country: ''
     });
     const [countryList, setCountryList] = useState([]);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         loadMarket();
@@ -18,12 +22,23 @@ export default function EditMarket() {
     }, []);
 
     const loadMarket = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/markets/updateMarket/${id}`);
-        setMarket(result.data);
+        const result = await axios.get(`http://localhost:8080/administration/markets/updateMarket/${id}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
+        setMarket({
+            name: result.data.name,
+            country: result.data.country?.id
+        });
     };
 
     const fetchCountries = async () => {
-        const result = await axios.get('http://localhost:8080/administration/countries');
+        const result = await axios.get('http://localhost:8080/administration/countries', {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setCountryList(result.data);
     };
 
@@ -31,31 +46,45 @@ export default function EditMarket() {
         setMarket({ ...market, [e.target.name]: e.target.value });
     };
 
-    const onCountryChange = (e) => {
-        setMarket({ ...market, country: { id: e.target.value } });
-    };
-
     const onSubmit = async (e) => {
         e.preventDefault();
+        if (!market.name) {
+            setError('Please provide a market name.');
+            return;
+        }
+
+        const formData = new FormData();
+        Object.keys(market).forEach(key => {
+            formData.append(key, market[key]);
+        });
+
+        if (market.country) {
+            formData.append('countryId', market.country);
+        }
+
         try {
-            await axios.put(`http://localhost:8080/administration/markets/updateMarket/${id}`, market, {
+            const response = await axios.put(`http://localhost:8080/administration/markets/${id}/editMarket`, formData, {
                 headers: {
-                    'Content-Type': 'application/json',
-                }
+                    Authorization: `Bearer ${user.token}`,
+                },
             });
-            navigate('/administration/markets');
+            if (response.status === 200) {
+                setSuccess('Market updated successfully');
+                setError('');
+                navigate(`/administration/markets`);
+            }
         } catch (error) {
-            console.error('Error updating market:', error);
+            setError('Error updating market: ' + error.message);
         }
     };
 
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Markets</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Markets</li>
 
                 </ol>
             </nav>
@@ -74,10 +103,20 @@ export default function EditMarket() {
                 </div>
                 <div className='mb-3'>
                     <label htmlFor='country' className='form-label'>Country</label>
-                    <select name='country' className='form-select' onChange={onCountryChange} value={market.country.id}>
-                        <option value={null}>Select country</option>
+                    <select
+                        name='country'
+                        className='form-select'
+                        onChange={onInputChange}
+                        value={market.country}>
+                        <option value={"default"}>
+                            Select country
+                        </option>
                         {countryList.map(country => (
-                            <option key={country.id} value={country.id}>{country.name}</option>
+                            <option
+                                key={country.id}
+                                value={country.id}>
+                                {country.name}
+                            </option>
                         ))}
                     </select>
                 </div>

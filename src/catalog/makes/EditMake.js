@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditMake() {
 
@@ -19,12 +20,17 @@ export default function EditMake() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         // Fetch the current details of the make
         const fetchMakeEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/editMake/${make}`);
+                const response = await axios.get(`http://localhost:8080/catalog/editMake/${make}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setMakeEntity({
                     name: response.data.name,
                     country: response.data.country?.id || "",
@@ -32,7 +38,6 @@ export default function EditMake() {
                     tuner: response.data.tuner,
                     photo: response.data.photo
                 });
-                console.log("make:", response.data)
             } catch (error) {
                 setError('Error fetching make details: ' + error.message);
             }
@@ -40,7 +45,11 @@ export default function EditMake() {
 
         const fetchCountries = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/administration/countries');
+                const response = await axios.get('http://localhost:8080/administration/countries', {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setCountryList(response.data);
             } catch (error) {
                 console.log('Error fetching countries:', error);
@@ -81,7 +90,11 @@ export default function EditMake() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/editMake/${make}`, formData);
+            const response = await axios.put(`http://localhost:8080/catalog/editMake/${make}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
 
             if (response.status === 200) {
                 setSuccess('Make updated successfully');
@@ -96,11 +109,11 @@ export default function EditMake() {
     return (
         <div className='container'>
             <nav className='mt-2' aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit make</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit make</li>
                 </ol>
             </nav>
             <div className='row'>

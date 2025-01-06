@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddEngine() {
 
@@ -24,9 +25,15 @@ export default function AddEngine() {
 
     const { name, displacement, power, engineType, torque, fuel, description } = engine;
 
+    const { user } = useAuth();
+
     const fetchEngineTypes = () => {
         axios
-            .get('http://localhost:8080/administration/engineTypes')
+            .get('http://localhost:8080/administration/engineTypes', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -41,7 +48,11 @@ export default function AddEngine() {
 
     const fetchFuels = () => {
         axios
-            .get('http://localhost:8080/administration/fuels')
+            .get('http://localhost:8080/administration/fuels', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -98,7 +109,11 @@ export default function AddEngine() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/administration/engines/${make}/addEngine`, formData);
+            const response = await axios.post(`http://localhost:8080/administration/engines/${make}/addEngine`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 setSuccess('Engine added successfully');
                 setError('');
@@ -114,12 +129,12 @@ export default function AddEngine() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add engine</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
+                    <li className="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add engine</li>
                 </ol>
             </nav>
             <div className='row'>

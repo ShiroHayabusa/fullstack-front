@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddMake() {
 
@@ -15,6 +16,7 @@ export default function AddMake() {
 
     const [countryList, setCountryList] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const { name, country, description, tuner } = make;
 
@@ -37,7 +39,11 @@ export default function AddMake() {
         formData.append('tuner', tuner);
 
         try {
-            const response = await axios.post('http://localhost:8080/catalog/addMake', formData);
+            const response = await axios.post('http://localhost:8080/catalog/addMake', formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 console.log('Make added successfully');
                 navigate('/catalog');
@@ -49,7 +55,11 @@ export default function AddMake() {
 
     const fetchCountries = () => {
         axios
-            .get('http://localhost:8080/administration/countries')
+            .get('http://localhost:8080/administration/countries', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -74,11 +84,11 @@ export default function AddMake() {
 
     return (
         <div className='container'>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog">Catalog</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add make</li>
+            <nav aria-label="breadcrumb" className='mt-3'>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className='text-decoration-none'>Home</a></li>
+                    <li className="breadcrumb-item"><a href="/catalog" className='text-decoration-none'>Catalog</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add make</li>
 
                 </ol>
             </nav>
@@ -111,6 +121,7 @@ export default function AddMake() {
                                 type={'text'}
                                 className='form-control'
                                 placeholder='Enter description'
+                                style={{ height: '310px' }}
                                 name='description'
                                 value={description}
                                 onChange={(e) => onInputChange(e)}
@@ -125,7 +136,7 @@ export default function AddMake() {
                             />
                         </div>
 
-                        <div className="form-check form-switch mb-3">
+                        <div className="form-check form-switch text-start mb-3">
                             <input
                                 className="form-check-input"
                                 type="checkbox"
@@ -135,7 +146,7 @@ export default function AddMake() {
                                 checked={tuner}
                                 onChange={onInputChange}
                             />
-                            <label className="form-check-label" for="flexSwitchCheckDefault">Tuner</label>
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Tuner</label>
                         </div>
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>

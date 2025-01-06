@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditCountry() {
 
@@ -13,17 +14,21 @@ export default function EditCountry() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         // Fetch the current details of the country
         const fetchCountry = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/countries/${id}`);
+                const response = await axios.get(`http://localhost:8080/administration/countries/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setCountry({
                     name: response.data.name,
                     flag: response.data.flag
                 });
-                console.log("country:", response)
             } catch (error) {
                 setError('Error fetching country details: ' + error.message);
             }
@@ -54,7 +59,11 @@ export default function EditCountry() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/countries/${id}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/countries/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Country updated successfully');
                 setError('');
@@ -68,11 +77,11 @@ export default function EditCountry() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/countries'>Countries</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add country</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration'>Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/countries'>Countries</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add country</li>
                 </ol>
             </nav>
             <div className='row'>

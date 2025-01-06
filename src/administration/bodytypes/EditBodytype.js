@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditBodytype() {
 
@@ -12,16 +13,20 @@ export default function EditBodytype() {
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         // Fetch the current details of the bodytype
         const fetchBodytype = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodytypes/${id}`);
+                const response = await axios.get(`http://localhost:8080/administration/bodytypes/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setBodytype({
                     name: response.data.name
                 });
-                console.log("bodytype:", response.data)
             } catch (error) {
                 setError('Error fetching bodytype details: ' + error.message);
             }
@@ -45,7 +50,11 @@ export default function EditBodytype() {
         formData.append('name', bodytype.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/bodytypes/${id}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/bodytypes/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Bodytype updated successfully');
                 setError('');
@@ -59,11 +68,11 @@ export default function EditBodytype() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/bodytypes'>Bodytypes</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add bodytype</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/bodytypes' className="text-decoration-none">Bodytypes</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add bodytype</li>
                 </ol>
             </nav>
             <div className='row'>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditDrivetrain() {
 
@@ -12,12 +13,17 @@ export default function EditDrivetrain() {
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         // Fetch the current details of the drivetrain
         const fetchDrivetrain = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/drivetrains/${id}`);
+                const response = await axios.get(`http://localhost:8080/administration/drivetrains/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setDrivetrain({
                     name: response.data.name
                 });
@@ -45,7 +51,11 @@ export default function EditDrivetrain() {
         formData.append('name', drivetrain.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/drivetrains/${id}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/drivetrains/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Drivetrain updated successfully');
                 setError('');
@@ -59,11 +69,11 @@ export default function EditDrivetrain() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/drivetrains'>Drivetrains</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add drivetrain</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/drivetrains' className="text-decoration-none">Drivetrains</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit drivetrain</li>
                 </ol>
             </nav>
             <div className='row'>

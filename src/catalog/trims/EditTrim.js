@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditTrim() {
 
@@ -41,16 +42,24 @@ export default function EditTrim() {
     const [error, setError] = useState('');
 
     const [photos, setPhotos] = useState([]);
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const loadBodystyleEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`);
+        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setBodystyleEntity(result.data);
-        console.log("bodystyle:", result.data);
     }
 
     const fetchTrim = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`);
+            const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             setTrim({
                 name: response.data.name,
                 altName: response.data.altName,
@@ -73,7 +82,6 @@ export default function EditTrim() {
                 range: response.data.range,
                 photos: response.data.photos
             });
-            console.log("trim:", response.data)
         } catch (error) {
             setError('Error fetching trim details: ' + error.message);
         }
@@ -99,13 +107,16 @@ export default function EditTrim() {
 
     const fetchEngineData = () => {
         axios
-            .get(`http://localhost:8080/administration/engines/${make}`)
+            .get(`http://localhost:8080/administration/engines/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setEngineList(data)
-                    console.log("engines:", data);
                 } else {
                     //error handle section 
                 }
@@ -115,13 +126,16 @@ export default function EditTrim() {
 
     const fetchTransmissionData = () => {
         axios
-            .get(`http://localhost:8080/administration/transmissions/${make}`)
+            .get(`http://localhost:8080/administration/transmissions/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setTransmissionList(data)
-                    console.log("transmissions:", data);
                 } else {
                     //error handle section 
                 }
@@ -131,13 +145,16 @@ export default function EditTrim() {
 
     const fetchBodyData = () => {
         axios
-            .get(`http://localhost:8080/administration/bodies/${make}`)
+            .get(`http://localhost:8080/administration/bodies/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setBodyList(data)
-                    console.log("bodies:", data);
                 } else {
                     //error handle section 
                 }
@@ -147,13 +164,16 @@ export default function EditTrim() {
 
     const fetchDrivetrainData = () => {
         axios
-            .get('http://localhost:8080/administration/drivetrains')
+            .get('http://localhost:8080/administration/drivetrains', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setDrivetrainList(data)
-                    console.log("drivetrains:", data);
                 } else {
                     //error handle section 
                 }
@@ -163,13 +183,16 @@ export default function EditTrim() {
 
     const fetchTunerData = () => {
         axios
-            .get('http://localhost:8080/catalog/tuners')
+            .get('http://localhost:8080/catalog/tuners', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
                     setTunerList(data)
-                    console.log("tuners:", data);
                 } else {
                     //error handle section 
                 }
@@ -180,7 +203,11 @@ export default function EditTrim() {
     const handleSetMain = async (photoId) => {
         try {
             const response = await axios.put(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/setMainPhoto/${photoId}`,
+                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/setMainPhoto/${photoId}`, null, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            }
             );
 
             if (response.status === 200) {
@@ -200,7 +227,11 @@ export default function EditTrim() {
     const handleDelete = async (photoId) => {
         try {
             const response = await axios.delete(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/deletePhoto/${photoId}`
+                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/deletePhoto/${photoId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            }
             );
 
             if (response.status === 200) {
@@ -231,6 +262,7 @@ export default function EditTrim() {
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${user.token}`
                     },
                 }
             );
@@ -294,7 +326,11 @@ export default function EditTrim() {
 
         try {
             const response =
-                await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/editTrim`, formData);
+                await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/editTrim`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
             if (response.status === 200 || response.status === 201) {
                 console.log('Trim updated successfully');
                 navigate(`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`);
@@ -307,19 +343,19 @@ export default function EditTrim() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`} className="text-decoration-none">{trim.name}</Link></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit trim</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`} className="text-decoration-none">{trim.name}</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit trim</li>
                 </ol>
             </nav>
             <div className='row row-cols-1 row-cols-sm-2'>
-                
+
                 <div className='col'>
 
                     {trim.photos && trim.photos.length > 0 && (
@@ -360,8 +396,8 @@ export default function EditTrim() {
                                     )}
                                 </div>
                             ))}
-                            <div class="mb-3">
-                                <label for="formFileSm" class="form-label text-start d-block">Add new photo:</label>
+                            <div className="mb-3">
+                                <label htmlFor="formFileSm" className="form-label text-start d-block">Add new photo:</label>
                                 <input
                                     className="form-control form-control-sm"
                                     type="file"
@@ -555,7 +591,7 @@ export default function EditTrim() {
                                 checked={trim.uniq}
                                 onChange={onInputChange}
                             />
-                            <label className="form-check-label" for="flexSwitchCheckDefault">Uniq</label>
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Uniq</label>
                         </div>
 
                         <div className="form-check form-switch mb-3 text-start">
@@ -568,7 +604,7 @@ export default function EditTrim() {
                                 checked={trim.electric}
                                 onChange={onInputChange}
                             />
-                            <label className="form-check-label" for="flexSwitchCheckDefault">Electric</label>
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Electric</label>
                         </div>
 
                         <div className="form-check form-switch mb-3 text-start">
@@ -581,7 +617,7 @@ export default function EditTrim() {
                                 checked={trim.hybrid}
                                 onChange={onInputChange}
                             />
-                            <label className="form-check-label" for="flexSwitchCheckDefault">Hybrid</label>
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Hybrid</label>
                         </div>
 
                         <button type='submit' className="btn btn-outline-primary">Save</button>

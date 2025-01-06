@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditRole() {
     let navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function EditRole() {
     const [error, setError] = useState("");
 
     const { name } = role;
+    const { user } = useAuth();
 
     const onInputChange = (e) => {
         setRole({ ...role, [e.target.name]: e.target.value });
@@ -32,7 +34,11 @@ export default function EditRole() {
         }
 
         try {
-            await axios.put(`http://localhost:8080/administration/roles/editRole/${id}`, role);
+            await axios.put(`http://localhost:8080/administration/roles/editRole/${id}`, role, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             navigate('/administration/roles');
         } catch (error) {
             console.error("Error updating role", error);
@@ -44,7 +50,11 @@ export default function EditRole() {
         setLoading(true);
         setError("");
         try {
-            const result = await axios.get(`http://localhost:8080/administration/roles/${id}`);
+            const result = await axios.get(`http://localhost:8080/administration/roles/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             setRole(result.data);
         } catch (error) {
             console.error("Error loading role", error);
@@ -56,6 +66,14 @@ export default function EditRole() {
 
     return (
         <div className='container'>
+            <nav aria-label="breadcrumb">
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/roles' className="text-decoration-none">Roles</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit role {role.name}</li>
+                </ol>
+            </nav>
             <div className='row'>
                 <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
                     <h2 className='text-center m-4'>Edit Role</h2>

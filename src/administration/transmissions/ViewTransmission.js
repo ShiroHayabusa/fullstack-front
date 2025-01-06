@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 
 export default function ViewTransmission() {
 
@@ -12,6 +13,7 @@ export default function ViewTransmission() {
     });
 
     const { make, transmissionId } = useParams();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadTransmission()
@@ -19,7 +21,11 @@ export default function ViewTransmission() {
 
     const loadTransmission = async () => {
         const result = await axios.get(
-            `http://localhost:8080/administration/transmissions/${make}/${transmissionId}`);
+            `http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setTransmission(result.data);
     }
 
@@ -36,12 +42,12 @@ export default function ViewTransmission() {
             <div className='container'>
 
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li class="breadcrumb-item"><a href="/administration/transmissions" className="text-decoration-none">Transmissions</a></li>
-                        <li class="breadcrumb-item"><a href={`/administration/transmissions/${make}/`} className="text-decoration-none">{make}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{transmission.name}</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href="/administration/transmissions" className="text-decoration-none">Transmissions</a></li>
+                        <li className="breadcrumb-item"><a href={`/administration/transmissions/${make}/`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">{transmission.name}</li>
                     </ol>
                 </nav>
 
@@ -75,10 +81,10 @@ export default function ViewTransmission() {
                             </li>
                         </ul>
                     </div>
-                    <div class="col-lg-4 border">
+                    <div className="col-lg-4 border">
 
                         <div className="mb-3">
-                            <label for="exampleFormControlTextarea1" className="form-label">Comments</label>
+                            <label htmlFor="exampleFormControlTextarea1" className="form-label">Comments</label>
                             <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
                     </div>

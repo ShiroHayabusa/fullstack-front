@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddBodytype() {
 
@@ -14,6 +15,7 @@ export default function AddBodytype() {
     const [success, setSuccess] = useState('');
 
     const { name } = bodytype;
+    const { user } = useAuth();
 
     const onInputChange = (e) => {
         setBodytype({ ...bodytype, [e.target.name]: e.target.value });
@@ -28,7 +30,11 @@ export default function AddBodytype() {
         const formData = new FormData();
         formData.append('name', bodytype.name);
         try {
-            const response = await axios.post('http://localhost:8080/administration/bodytypes/addBodytype', formData);
+            const response = await axios.post('http://localhost:8080/administration/bodytypes/addBodytype', formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 setSuccess('Bodytype added successfully');
                 setError('');
@@ -43,11 +49,11 @@ export default function AddBodytype() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/bodytypes'>Bodytypes</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add bodytype</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/bodytypes' className="text-decoration-none">Bodytypes</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add bodytype</li>
                 </ol>
             </nav>
             <div className='row'>

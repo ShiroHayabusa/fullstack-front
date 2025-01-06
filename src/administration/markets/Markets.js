@@ -1,43 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Markets() {
 
     const [markets, setMarkets] = useState([]);
+    const { user } = useAuth();
 
     useEffect(() => {
         loadMarkets()
     }, []);
 
     const loadMarkets = async () => {
-        const result = await axios.get("http://localhost:8080/administration/markets");
+        const result = await axios.get("http://localhost:8080/administration/markets", {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setMarkets(result.data);
-        console.log("markets:",result.data);
     };
 
     const deleteMarket = async (id) => {
-        await axios.delete(`http://localhost:8080/administration/markets/${id}`);
-        loadMarkets();
-    }
+            const confirmDelete = window.confirm(
+                'Are you sure you want to delete this market? This action cannot be undone.'
+            );
+            if (confirmDelete) {
+                try {
+                    await axios.delete(`http://localhost:8080/administration/markets/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${user.token}`,
+                        },
+                    });
+                    alert('Market deleted successfully');
+                    window.location.href = '/administration/markets';
+                    loadMarkets();
+                } catch (error) {
+                    console.error('Failed to delete market:', error);
+                    alert('An error occurred while deleting the market.');
+                }
+            }
+        }
 
     return (
         <div>
-            <ul class="nav">
-                <li class="nav-item">
-                    <Link class="nav-link active" aria-current="page" to='/administration/markets/addMarket'>Add Market</Link>
+            <ul className="nav">
+                <li className="nav-item">
+                    <Link className="nav-link active" aria-current="page" to='/administration/markets/addMarket'>Add Market</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Markets</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">Markets</li>
                     </ol>
                 </nav>
 
-                <table class="table">
+                <table className="table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -46,11 +67,11 @@ export default function Markets() {
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody class="table-group-divider">
+                    <tbody className="table-group-divider">
                         {
                             markets.map((market, index) => (
-                                <tr>
-                                    <th scope="row" key={index}>{market.id}</th>
+                                <tr key={market.id || index}>
+                                    <th scope="row">{market.id}</th>
                                     <td className='text-start'>{market.name}</td>
                                     <td className='text-start'>{market.country.name}</td>
                                     <td>

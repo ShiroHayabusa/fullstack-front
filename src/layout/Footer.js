@@ -1,3 +1,5 @@
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 export default function Footer() {
 
     return (
@@ -10,26 +12,26 @@ export default function Footer() {
                     <section className="mb-4">
 
                         <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                        ><i className="fab fa-facebook-f"></i></a>
+                        ><i className="bi bi-youtube" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
                         <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                        ><i className="fab fa-twitter"></i></a>
+                        ><i className="bi bi-instagram" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
                         <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                        ><i className="fab fa-google"></i></a>
+                        ><i className="bi bi-facebook" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
                         <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                        ><i className="fab fa-instagram"></i></a>
+                        ><i className="bi bi-twitter-x" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
                         <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                        ><i className="fab fa-linkedin-in"></i></a>
+                        ><i className="bi bi-linkedin" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
                         <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                        ><i className="fab fa-github"></i></a>
+                        ><i className="bi bi-reddit" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
                     </section>
 
                 </div>
@@ -38,7 +40,7 @@ export default function Footer() {
 
                 <div className="text-center p-3" >
                     © 2025 Copyright: 
-                    <a className="text-white" href="https://loripin.com/">Loripin.com</a>
+                    <a className="text-white text-decoration-none" href="https://loripin.com/">Loripin.com</a>
                 </div>
 
             </footer>

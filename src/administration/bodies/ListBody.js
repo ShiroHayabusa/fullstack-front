@@ -1,20 +1,25 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
 
 export default function ListBody() {
 
     const [bodies, setBodies] = useState([]);
     const { make } = useParams();
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         loadBodies()
     }, [make]);
 
-
     const loadBodies = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/bodies/${make}`);
+        const result = await axios.get(`http://localhost:8080/administration/bodies/${make}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setBodies(result.data);
     }
 

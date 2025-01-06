@@ -1,42 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Fuels() {
 
     const [fuels, setFuels] = useState([]);
+    const { user } = useAuth();
 
     useEffect(() => {
         loadFuels()
     }, []);
 
     const loadFuels = async () => {
-        const result = await axios.get("http://localhost:8080/administration/fuels");
+        const result = await axios.get("http://localhost:8080/administration/fuels", {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setFuels(result.data);
     };
 
     const deleteFuel = async (id) => {
-        await axios.delete(`http://localhost:8080/administration/fuels/${id}`);
-        loadFuels();
+        const confirmDelete = window.confirm(
+            'Are you sure you want to delete this fuel? This action cannot be undone.'
+        );
+        if (confirmDelete) {
+            try {
+                await axios.delete(`http://localhost:8080/administration/fuels/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
+                alert('Fuel deleted successfully');
+                window.location.href = '/administration/fuels';
+                loadFuels();
+            } catch (error) {
+                console.error('Failed to delete fuel:', error);
+                alert('An error occurred while deleting the fuel.');
+            }
+        }
     }
 
     return (
         <div>
-            <ul class="nav">
-                <li class="nav-item">
-                    <Link class="nav-link active" aria-current="page" to='/administration/fuels/addFuel'>Add fuel</Link>
+            <ul className="nav">
+                <li className="nav-item">
+                    <Link className="nav-link active" aria-current="page" to='/administration/fuels/addFuel'>Add fuel</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Fuels</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">Fuels</li>
                     </ol>
                 </nav>
 
-                <table class="table">
+                <table className="table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -44,11 +66,11 @@ export default function Fuels() {
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody class="table-group-divider">
+                    <tbody className="table-group-divider">
                         {
                             fuels.map((fuel, index) => (
-                                <tr>
-                                    <th scope="row" key={index}>{fuel.id}</th>
+                                <tr key={fuel.id || index}>
+                                    <th scope="row">{fuel.id}</th>
                                     <td className='text-start'>{fuel.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'

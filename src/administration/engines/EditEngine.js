@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditEngine() {
 
@@ -21,12 +22,17 @@ export default function EditEngine() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth();
 
     useEffect(() => {
         // Fetch the current details of the engine
         const fetchEngine = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/engines/${make}/${engineId}`);
+                const response = await axios.get(`http://localhost:8080/administration/engines/${make}/${engineId}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setEngine({
                     name: response.data.name,
                     displacement: response.data.displacement,
@@ -37,7 +43,6 @@ export default function EditEngine() {
                     description: response.data.description,
                     photo: response.data.photo
                 });
-                console.log("engine:", response)
             } catch (error) {
                 setError('Error fetching engine details: ' + error.message);
             }
@@ -50,7 +55,11 @@ export default function EditEngine() {
 
     const fetchEngineTypes = () => {
         axios
-            .get('http://localhost:8080/administration/engineTypes')
+            .get('http://localhost:8080/administration/engineTypes', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -65,7 +74,11 @@ export default function EditEngine() {
 
     const fetchFuels = () => {
         axios
-            .get('http://localhost:8080/administration/fuels')
+            .get('http://localhost:8080/administration/fuels', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -112,7 +125,11 @@ export default function EditEngine() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/engines/${make}/${engineId}`, formData);
+            const response = await axios.put(`http://localhost:8080/administration/engines/${make}/${engineId}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200) {
                 setSuccess('Engine updated successfully');
                 setError('');
@@ -126,13 +143,13 @@ export default function EditEngine() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit engine</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
+                    <li className="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/administration/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit engine</li>
                 </ol>
             </nav>
             <div className='row'>

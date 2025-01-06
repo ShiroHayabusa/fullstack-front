@@ -1,25 +1,51 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../components/ColumnContainer.css'
 
-export default function Makes() {
+export default function Catalog() {
 
   const [makes, setMakes] = useState([])
+  const navigate = useNavigate();
+  const { user } = useAuth(); // Получаем пользователя из AuthContext
 
   useEffect(() => {
-    loadMakes()
-  }, []);
+    if (!user) {
+      navigate('/login');
+    } else {
+      loadMakes();
+    }
+  }, [user, navigate]);
 
   const loadMakes = async () => {
-    const result = await axios.get("http://localhost:8080/catalog");
-    setMakes(result.data);
+    try {
+      const result = await axios.get("http://localhost:8080/catalog", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      setMakes(result.data);
+    } catch (error) {
+      console.error('Error loading makes:', error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        navigate("/login"); // Перенаправляем на страницу логина при ошибке доступа
+      }
+    }
   };
 
   const deleteMake = async (id) => {
-    await axios.delete(`http://localhost:8080/make/${id}`);
-    loadMakes();
-  }
+    try {
+      await axios.delete(`http://localhost:8080/make/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`, // Используем токен для авторизации
+        },
+      });
+      loadMakes();
+    } catch (error) {
+      console.error("Error deleting make:", error);
+    }
+  };
 
   const groupedList = makes.reduce((acc, obj) => {
     const firstLetter = obj.name.charAt(0).toUpperCase();
@@ -34,16 +60,19 @@ export default function Makes() {
 
   return (
     <div>
-      <ul class="nav">
-        <li class="nav-item">
-          <Link class="nav-link active" aria-current="page" to={"/catalog/addMake"}>Add Make</Link>
-        </li>
-      </ul>
+      {/* Кнопка Add Make отображается только для ROLE_ADMIN */}
+      {user?.roles.includes("ROLE_ADMIN") && (
+        <ul className="nav">
+          <li className="nav-item">
+            <Link className="nav-link active" aria-current="page" to={"/catalog/addMake"}>Add Make</Link>
+          </li>
+        </ul>
+      )}
       <div className='container'>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+        <nav aria-label="breadcrumb" className='mt-3'>
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+            <li className="breadcrumb-item active" aria-current="page">Catalog</li>
           </ol>
         </nav>
         <h2>Catalog</h2>

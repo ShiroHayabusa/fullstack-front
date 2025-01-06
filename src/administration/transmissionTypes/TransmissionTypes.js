@@ -1,42 +1,65 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TransmissionTypes() {
 
     const [transmissionTypes, setTransmissionTypes] = useState([]);
+    const { user } = useAuth();
 
     useEffect(() => {
         loadTransmissionTypes()
     }, []);
 
     const loadTransmissionTypes = async () => {
-        const result = await axios.get("http://localhost:8080/administration/transmissionTypes");
+        const result = await axios.get("http://localhost:8080/administration/transmissionTypes", {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setTransmissionTypes(result.data);
     };
 
     const deleteTransmissionType = async (id) => {
-        await axios.delete(`http://localhost:8080/administration/transmissionTypes/${id}`);
-        loadTransmissionTypes();
+        const confirmDelete = window.confirm(
+            'Are you sure you want to delete this transmission type? This action cannot be undone.'
+        );
+        if (confirmDelete) {
+            try {
+                await axios.delete(`http://localhost:8080/administration/transmissionTypes/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
+                alert('Transmission type deleted successfully');
+                window.location.href = '/administration/transmissionTypes';
+                loadTransmissionTypes();
+            } catch (error) {
+                console.error('Failed to delete transmission type:', error);
+                alert('An error occurred while deleting the transmission type.');
+            }
+        }
     }
+
 
     return (
         <div>
-            <ul class="nav">
-                <li class="nav-item">
-                    <Link class="nav-link active" aria-current="page" to='/administration/transmissionTypes/addTransmissionType'>Add transmission type</Link>
+            <ul className="nav">
+                <li className="nav-item">
+                    <Link className="nav-link active" aria-current="page" to='/administration/transmissionTypes/addTransmissionType'>Add transmission type</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Transmission types</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">Transmission types</li>
                     </ol>
                 </nav>
 
-                <table class="table">
+                <table className="table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -44,10 +67,10 @@ export default function TransmissionTypes() {
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody class="table-group-divider">
+                    <tbody className="table-group-divider">
                         {
                             transmissionTypes.map((transmissionType, index) => (
-                                <tr>
+                                <tr key={transmissionType.id || index}>
                                     <th scope="row" key={index}>{transmissionType.id}</th>
                                     <td className='text-start'>{transmissionType.name}</td>
                                     <td>

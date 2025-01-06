@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AddSpot.css';
 import Select from "react-select";
+import { useAuth } from '../context/AuthContext';
 
 export default function EditSpot() {
     const navigate = useNavigate();
@@ -25,13 +26,20 @@ export default function EditSpot() {
     const [selectedBodystyle, setSelectedBodystyle] = useState(null);
     const [selectedTrim, setSelectedTrim] = useState(null);
 
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
+
     const fetchSpot = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/spots/${id}`);
+            const response = await axios.get(`http://localhost:8080/spots/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             setSpot({
                 caption: response.data.caption,
                 make: response.data.make,
-                photos: response.data.photos
+                photos: response.data.photos,
+                user: response.data.user
             });
             setSelectedMake(
                 response.data.make ? { value: response.data.make.name, label: response.data.make.name } : null
@@ -59,7 +67,11 @@ export default function EditSpot() {
     useEffect(() => {
         const fetchMakes = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog`);
+                const response = await axios.get(`http://localhost:8080/catalog`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setMakes(response.data);
             } catch (error) {
                 console.error("Error fetching makes:", error);
@@ -77,7 +89,11 @@ export default function EditSpot() {
         if (selectedMake) {
             const fetchModels = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`);
+                    const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`, {
+                        headers: {
+                            Authorization: `Bearer ${user.token}`,
+                        },
+                    });
                     setModels(response.data);
                 } catch (error) {
                     console.error("Error fetching models:", error);
@@ -99,7 +115,11 @@ export default function EditSpot() {
             const fetchGenerations = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`);
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`,
+                            },
+                        });
                     setGenerations(response.data);
                 } catch (error) {
                     console.error("Error fetching generations:", error);
@@ -121,7 +141,11 @@ export default function EditSpot() {
             const fetchFacelifts = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`);
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`,
+                            },
+                        });
                     setFacelifts(response.data);
                 } catch (error) {
                     console.error("Error fetching facelifts:", error);
@@ -143,7 +167,11 @@ export default function EditSpot() {
             const fetchBodystyles = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`);
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`,
+                            },
+                        });
                     setBodystyles(response.data);
                 } catch (error) {
                     console.error("Error fetching bodystyles:", error);
@@ -165,7 +193,11 @@ export default function EditSpot() {
             const fetchTrims = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`);
+                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`,
+                            },
+                        });
                     setTrims(response.data);
                 } catch (error) {
                     console.error("Error fetching trims:", error);
@@ -252,6 +284,7 @@ export default function EditSpot() {
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${user.token}`
                     },
                 }
             );
@@ -277,7 +310,11 @@ export default function EditSpot() {
     const handleSetMain = async (photoId) => {
         try {
             const response = await axios.put(
-                `http://localhost:8080/spots/${id}/setMainPhoto/${photoId}`,
+                `http://localhost:8080/spots/${id}/setMainPhoto/${photoId}`, null, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            }
             );
 
             if (response.status === 200) {
@@ -297,7 +334,11 @@ export default function EditSpot() {
     const handleDelete = async (photoId) => {
         try {
             const response = await axios.delete(
-                `http://localhost:8080/spots/${id}/deletePhoto/${photoId}`
+                `http://localhost:8080/spots/${id}/deletePhoto/${photoId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            }
             );
 
             if (response.status === 200) {
@@ -335,7 +376,11 @@ export default function EditSpot() {
 
         try {
             const response =
-                await axios.put(`http://localhost:8080/spots/editSpot/${id}`, formData);
+                await axios.put(`http://localhost:8080/spots/editSpot/${id}`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
             if (response.status === 200 || response.status === 201) {
                 console.log('Spot updated successfully');
                 navigate(`/spots/${id}`);
@@ -366,14 +411,13 @@ export default function EditSpot() {
             <form onSubmit={onSubmit}>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col">
-
                         {spot.photos && spot.photos.length > 0 && (
                             <div >
                                 {spot.photos.map((photo, index) => (
                                     <div key={index} className='mb-2'>
                                         <img
                                             key={index}
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${photo.name}`}
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${photo.name}`}
                                             alt={photo.name}
                                             className="img-fluid mb-2"
 

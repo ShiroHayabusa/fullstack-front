@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Loader } from '@googlemaps/js-api-loader';
 import { Modal, Button } from 'react-bootstrap';
+import { useAuth } from '../context/AuthContext';
 
 const containerStyle = {
     width: '100%',
@@ -13,25 +14,29 @@ export default function ViewSpot() {
     const [spot, setSpot] = useState({ caption: '', photos: [], latitude: null, longitude: null });
     const { id } = useParams();
     const mapContainerRef = useRef(null); // Ссылка на контейнер карты
-
-    useEffect(() => {
-        loadSpot();
-    }, []);
-
-    useEffect(() => {
-        if (spot.latitude && spot.longitude) {
-            initializeMap();
-        }
-    }, [spot.latitude, spot.longitude]);
+    const navigate = useNavigate();
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const loadSpot = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/spots/${id}`);
+            const result = await axios.get(`http://localhost:8080/spots/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             setSpot(result.data);
         } catch (error) {
             console.error('Ошибка загрузки данных:', error);
         }
     };
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        } else {
+            loadSpot();
+        }
+    }, [user]);
 
     const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -115,13 +120,23 @@ export default function ViewSpot() {
         }
     };
 
+    useEffect(() => {
+        if (spot.latitude && spot.longitude) {
+            initializeMap();
+        }
+    }, [spot.latitude, spot.longitude]);
+
     const deleteSpot = async () => {
         const confirmDelete = window.confirm(
             'Are you sure you want to delete this spot? This action cannot be undone.'
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/spots/deleteSpot/${id}`);
+                await axios.delete(`http://localhost:8080/spots/deleteSpot/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 alert('Spot deleted successfully');
                 window.location.href = '/spots';
             } catch (error) {
@@ -133,16 +148,8 @@ export default function ViewSpot() {
 
     return (
         <div>
-            <ul className="nav mt-2 mb-2">
-                <Link className="nav-link active" to={`/spots/editSpot/${id}`}>
-                    Edit Spot
-                </Link>
-                <button className="btn btn-outline-danger" onClick={deleteSpot}>
-                    Delete Spot
-                </button>
-            </ul>
             <div className="container">
-                <nav aria-label="breadcrumb">
+                <nav aria-label="breadcrumb" className='mt-3'>
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item">
                             <Link to="/" className="text-decoration-none">Home</Link>
@@ -153,6 +160,26 @@ export default function ViewSpot() {
                         <li className="breadcrumb-item active" aria-current="page">Spot {spot.id}</li>
                     </ol>
                 </nav>
+                {user.username === spot.user?.username && (
+                    <ul className="nav mt-3 mb-3" style={{ display: "flex", alignItems: "center" }}>
+                        <li className="nav-item">
+                            <button
+                                className="btn btn-outline-primary"
+                                onClick={() => navigate(`/spots/editSpot/${id}`)}
+                            >
+                                Edit Spot
+                            </button>
+                        </li>
+
+                        <li className="nav-item" style={{ marginLeft: "auto" }}>
+                            <button className="btn btn-outline-danger" onClick={deleteSpot}>
+                                Delete Spot
+                            </button>
+                        </li>
+
+                    </ul>
+                )}
+
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col">
                         {spot.photos && spot.photos.length > 0 && (
@@ -160,7 +187,7 @@ export default function ViewSpot() {
                                 {spot.photos.map((photo, index) => (
                                     <img
                                         key={index}
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${photo.name}`}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${photo.name}`}
                                         alt={photo.name}
                                         className="img-fluid mb-2"
                                         onClick={() => handleOpenModal(index)} // Открытие модального окна
@@ -174,8 +201,9 @@ export default function ViewSpot() {
                         <Modal.Body>
                             <div className="d-flex justify-content-center">
                                 <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.photos[currentPhotoIndex]?.name}`}
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos[currentPhotoIndex]?.name}`}
                                     className="img-fluid"
+                                    alt=""
                                 />
                             </div>
                         </Modal.Body>
@@ -197,7 +225,7 @@ export default function ViewSpot() {
                         </Modal.Footer>
                     </Modal>
                     <div className="col">
-                        <h5 className="pb-1 mb-4 text-black border-bottom text-start">Spotted by {spot.user?.name}</h5>
+                        <h5 className="pb-1 mb-4 text-black border-bottom text-start">Spotted by {spot.user?.username}</h5>
                         <p className='text-start'>{spot.caption}</p>
                         <div className="text-start">
                             <table class="table table-borderless">

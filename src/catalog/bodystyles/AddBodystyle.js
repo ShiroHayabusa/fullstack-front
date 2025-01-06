@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddBodystyle() {
 
@@ -9,7 +10,7 @@ export default function AddBodystyle() {
     const [bodytypeList, setBodytypeList] = useState([]);
     const [faceliftList, setFaceliftList] = useState([]);
     const [marketList, setMarketList] = useState([]);
-    
+
     const [bodystyle, setBodystyle] = useState({
         facelift: "",
         bodytype: "",
@@ -30,6 +31,8 @@ export default function AddBodystyle() {
         name: ''
     });
 
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
+
     useEffect(() => {
         fetchBodytypeData();
         fetchFaceliftData();
@@ -38,7 +41,11 @@ export default function AddBodystyle() {
     }, [])
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generation}`);
+        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generation}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setGenerationEntity(result.data);
     }
 
@@ -52,7 +59,11 @@ export default function AddBodystyle() {
 
     const fetchBodytypeData = () => {
         axios
-            .get('http://localhost:8080/administration/bodytypes')
+            .get('http://localhost:8080/administration/bodytypes', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -67,7 +78,11 @@ export default function AddBodystyle() {
 
     const fetchFaceliftData = () => {
         axios
-            .get('http://localhost:8080/catalog/' + make + "/" + model + "/" + generation + '/faceliftList')
+            .get('http://localhost:8080/catalog/' + make + "/" + model + "/" + generation + '/faceliftList', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -83,7 +98,11 @@ export default function AddBodystyle() {
 
     const fetchMarketData = () => {
         axios
-            .get('http://localhost:8080/administration/markets')
+            .get('http://localhost:8080/administration/markets', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -127,7 +146,11 @@ export default function AddBodystyle() {
 
         try {
             const response =
-                await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addBodystyle`, formData);
+                await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addBodystyle`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
             if (response.status === 200 || response.status === 201) {
                 console.log('Bodystyle added successfully');
                 navigate(`/catalog/${make}/${model}/${generation}`);

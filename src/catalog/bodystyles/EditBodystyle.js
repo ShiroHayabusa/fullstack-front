@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditBodystyle() {
 
@@ -25,12 +26,17 @@ export default function EditBodystyle() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         // Fetch the current details of the bodystyle
         const fetchBodystyleEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`);
+                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setBodystyleEntity({
                     bodytype: response.data.bodytype?.id || "",
                     bodytypeName: response.data.bodytype?.name,
@@ -46,7 +52,6 @@ export default function EditBodystyle() {
                     height: response.data.height,
                     base: response.data.base
                 });
-                console.log("bodystyle:", response.data)
             } catch (error) {
                 setError('Error fetching bodystyle details: ' + error.message);
             }
@@ -54,7 +59,11 @@ export default function EditBodystyle() {
 
         const fetchFaceliftList = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/faceliftList`);
+                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/faceliftList`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setFaceliftList(response.data);
             } catch (error) {
                 console.log('Error fetching facelifts:', error);
@@ -63,7 +72,11 @@ export default function EditBodystyle() {
 
         const fetchMarketList = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/administration/markets');
+                const response = await axios.get('http://localhost:8080/administration/markets', {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setMarketList(response.data);
             } catch (error) {
                 console.log('Error fetching markets:', error);
@@ -72,9 +85,12 @@ export default function EditBodystyle() {
 
         const fetchBodytypeList = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodytypes`);
+                const response = await axios.get(`http://localhost:8080/administration/bodytypes`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setBodytypeList(response.data);
-                console.log("bsnames:", response.data);
             } catch (error) {
                 console.log('Error fetching bodystylenames:', error);
             }
@@ -123,14 +139,18 @@ export default function EditBodystyle() {
         if (bodystyleEntity.facelift) {
             formData.append('faceliftId', bodystyleEntity.facelift);
         }
-        
+
         if (bodystyleEntity.market) {
             formData.append('marketId', bodystyleEntity.market);
         }
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, formData);
+                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
 
             if (response.status === 200) {
                 setSuccess('Make updated successfully');
@@ -145,15 +165,15 @@ export default function EditBodystyle() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation?.name}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytypeName}</a></li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation?.name}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytypeName}</a></li>
 
-                    <li class="breadcrumb-item active" aria-current="page">Edit bodystyle</li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit bodystyle</li>
                 </ol>
             </nav>
             <div className='row'>
@@ -224,6 +244,7 @@ export default function EditBodystyle() {
                             type='text'
                             className='form-control mt-3 mb-3'
                             placeholder='Enter description'
+                            style={{ height: '310px' }}
                             name='description'
                             value={bodystyleEntity.description}
                             onChange={onInputChange}
@@ -278,8 +299,6 @@ export default function EditBodystyle() {
                             name='photo'
                             onChange={handleFileChange}
                         />
-
-
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
                         <Link className="btn btn-outline-danger mx-2" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`}>Cancel</Link>
                     </form>

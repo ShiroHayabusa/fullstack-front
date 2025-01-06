@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddCountry() {
 
@@ -14,6 +15,7 @@ export default function AddCountry() {
     const [success, setSuccess] = useState('');
 
     const { name } = country;
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const onInputChange = (e) => {
         setCountry({ ...country, [e.target.name]: e.target.value });
@@ -33,7 +35,11 @@ export default function AddCountry() {
         formData.append('name', country.name);
         formData.append('flag', selectedFile);
         try {
-            const response = await axios.post('http://localhost:8080/administration/countries/addCountry', formData);
+            const response = await axios.post('http://localhost:8080/administration/countries/addCountry', formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 setSuccess('Country added successfully');
                 setError('');
@@ -49,11 +55,11 @@ export default function AddCountry() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/countries'>Countries</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add country</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration'>Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/countries'>Countries</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add country</li>
                 </ol>
             </nav>
             <div className='row'>

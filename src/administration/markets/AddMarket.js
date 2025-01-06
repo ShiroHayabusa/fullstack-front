@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddMarket() {
 
@@ -13,6 +14,7 @@ export default function AddMarket() {
     });
 
     const { name } = market;
+    const { user } = useAuth();
 
     const onInputChange = (e) => {
         setMarket({ ...market, [e.target.name]: e.target.value });
@@ -25,7 +27,11 @@ export default function AddMarket() {
         formData.append('name', market.name);
         formData.append('country', market.country);
         try {
-            const response = await axios.post('http://localhost:8080/administration/markets/addMarket', formData);
+            const response = await axios.post('http://localhost:8080/administration/markets/addMarket', formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 console.log('Market added successfully');
                 navigate('/administration/markets');
@@ -37,7 +43,11 @@ export default function AddMarket() {
 
     const fetchCountries = () => {
         axios
-            .get('http://localhost:8080/administration/countries')
+            .get('http://localhost:8080/administration/countries', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -57,11 +67,11 @@ export default function AddMarket() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/administration">Administration</a></li>
-                    <li class="breadcrumb-item"><a href="/administration/markets">Markets</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add market</li>
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href="/administration/markets" className="text-decoration-none">Markets</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add market</li>
 
                 </ol>
             </nav>

@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
 
 export default function ListTransmission() {
 
     const [transmissions, setTransmissions] = useState([]);
     const { make } = useParams();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadTransmissions()
@@ -14,7 +16,11 @@ export default function ListTransmission() {
 
 
     const loadTransmissions = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/transmissions/${make}`);
+        const result = await axios.get(`http://localhost:8080/administration/transmissions/${make}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setTransmissions(result.data);
     }
 

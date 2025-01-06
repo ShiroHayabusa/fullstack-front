@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditGeneration() {
 
@@ -19,12 +20,17 @@ export default function EditGeneration() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         // Fetch the current details of the generation
         const fetchGenerationEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/editGeneration`);
+                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/editGeneration`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setGenerationEntity({
                     name: response.data.name,
                     years: response.data.years,
@@ -32,7 +38,6 @@ export default function EditGeneration() {
                     description: response.data.description,
                     photo: response.data.photo
                 });
-                console.log("generation:", response.data)
             } catch (error) {
                 setError('Error fetching generation details: ' + error.message);
             }
@@ -40,7 +45,11 @@ export default function EditGeneration() {
 
         const fetchBodies = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/administration/bodies');
+                const response = await axios.get('http://localhost:8080/administration/bodies', {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setBodyList(response.data);
             } catch (error) {
                 console.log('Error fetching bodies:', error);
@@ -83,7 +92,11 @@ export default function EditGeneration() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/editGeneration`, formData);
+            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/editGeneration`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
 
             if (response.status === 200) {
                 setSuccess('Make updated successfully');
@@ -98,13 +111,13 @@ export default function EditGeneration() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit generation</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit generation</li>
                 </ol>
             </nav>
             <div className='row'>
@@ -155,6 +168,7 @@ export default function EditGeneration() {
                                 type='text'
                                 className='form-control'
                                 placeholder='Enter description'
+                                style={{ height: '310px' }}
                                 name='description'
                                 value={generationEntity.description}
                                 onChange={onInputChange}

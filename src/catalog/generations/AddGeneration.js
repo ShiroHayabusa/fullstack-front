@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddGeneration() {
 
@@ -16,6 +17,7 @@ export default function AddGeneration() {
     const [selectedFile, setSelectedFile] = useState(null);
     const { name, years, description } = generation;
     const { make, model } = useParams();
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const onInputChange = (e) => {
         setGeneration({ ...generation, [e.target.name]: e.target.value });
@@ -23,7 +25,11 @@ export default function AddGeneration() {
 
     const fetchBodies = () => {
         axios
-            .get(`http://localhost:8080/administration/bodies/${make}`)
+            .get(`http://localhost:8080/administration/bodies/${make}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
@@ -50,7 +56,11 @@ export default function AddGeneration() {
         formData.append('body', generation.body);
         formData.append('photo', selectedFile);
         try {
-            const response = await axios.post(`http://localhost:8080/catalog/${make}/${model}/addGeneration`, formData);
+            const response = await axios.post(`http://localhost:8080/catalog/${make}/${model}/addGeneration`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 console.log('Generation added successfully');
                 navigate(`/catalog/${make}/${model}`);
@@ -68,12 +78,12 @@ export default function AddGeneration() {
     return (
         <div className='container'>
             <nav className='mt-2' aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add generation</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add generation</li>
                 </ol>
             </nav>
             <div className='row'>

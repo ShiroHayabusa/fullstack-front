@@ -13,7 +13,7 @@ export default function Spots() {
 
     const loadSpots = async () => {
         try {
-            const result = await axios.get('http://localhost:8080/spots', {
+            const result = await axios.get('http://localhost:8080/spots/mySpots', {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -47,27 +47,12 @@ export default function Spots() {
                         <li className="breadcrumb-item">
                             <Link to="/" className="text-decoration-none">Home</Link>
                         </li>
-                        <li className="breadcrumb-item active" aria-current="page">Spots</li>
+                        <li className="breadcrumb-item">
+                            <Link to="/spots" className="text-decoration-none">Spots</Link>
+                        </li>
+                        <li className="breadcrumb-item active" aria-current="page">My spots</li>
                     </ol>
                 </nav>
-                <ul className="nav mb-3" style={{ display: "flex", alignItems: "center" }}>
-                    <li className="nav-item me-3">
-                        <button
-                            className="btn btn-outline-primary"
-                            onClick={() => navigate(`/spots/addSpot`)}
-                        >
-                            Add Spot
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button
-                            className="btn btn-outline-secondary"
-                            onClick={() => navigate(`/spots/mySpots`)}
-                        >
-                            My Spots
-                        </button>
-                    </li>
-                </ul>
                 <div className="row row-cols-1 row-cols-md-4 g-4">
                     {currentSpots.map((spot) => (
                         <div className="col" key={spot.id}>

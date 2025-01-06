@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Roles() {
 
@@ -9,6 +10,7 @@ export default function Roles() {
     const [error, setError] = useState("");
 
     const { id } = useParams();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadRoles();
@@ -18,7 +20,11 @@ export default function Roles() {
         setLoading(true);
         setError("");
         try {
-            const result = await axios.get("http://localhost:8080/administration/roles");
+            const result = await axios.get("http://localhost:8080/administration/roles", {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             setRoles(result.data);
         } catch (error) {
             console.error("Error loading roles:", error);
@@ -33,7 +39,11 @@ export default function Roles() {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:8080/administration/roles/${id}`);
+            await axios.delete(`http://localhost:8080/administration/roles/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             loadRoles();
         } catch (error) {
             console.error("Error deleting role:", error);
@@ -45,11 +55,18 @@ export default function Roles() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" 
-                          to='/administration/roles/addRole'>Add Role</Link>
+                    <Link className="nav-link active" aria-current="page"
+                        to='/administration/roles/addRole'>Add Role</Link>
                 </li>
             </ul>
             <div className='container'>
+                <nav aria-label="breadcrumb">
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">Roles</li>
+                    </ol>
+                </nav>
                 <div className='py-4'>
                     {loading && <div className="alert alert-info">Loading roles...</div>}
                     {error && <div className="alert alert-danger">{error}</div>}
@@ -57,7 +74,7 @@ export default function Roles() {
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Name</th>
+                                <th scope="col" className='text-start'>Name</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -66,14 +83,14 @@ export default function Roles() {
                                 roles.map((role, index) => (
                                     <tr key={role.id}>
                                         <th scope="row">{index + 1}</th>
-                                        <td>{role.name}</td>
+                                        <td className='text-start'>{role.name}</td>
                                         <td>
                                             <Link className='btn btn-primary mx-2'
-                                                  to={`/administration/roles/viewRole/${role.id}`}>View</Link>
+                                                to={`/administration/roles/viewRole/${role.id}`}>View</Link>
                                             <Link className='btn btn-outline-primary mx-2'
-                                                  to={`/administration/roles/editRole/${role.id}`}>Edit</Link>
+                                                to={`/administration/roles/editRole/${role.id}`}>Edit</Link>
                                             <button className='btn btn-danger mx-2'
-                                                    onClick={() => deleteRole(role.id)}>Delete</button>
+                                                onClick={() => deleteRole(role.id)}>Delete</button>
                                         </td>
                                     </tr>
                                 ))

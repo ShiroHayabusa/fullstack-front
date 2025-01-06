@@ -1,12 +1,15 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { Modal, Button } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
 
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [spots, setSpots] = useState([]);
+    const navigate = useNavigate();
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
 
 
@@ -74,7 +77,11 @@ export default function ViewTrim() {
 
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/catalog/${trimId}/spots`);
+            const result = await axios.get(`http://localhost:8080/catalog/${trimId}/spots`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             setSpots(result.data);
         } catch (error) {
             console.error("Failed to fetch spots", error);
@@ -82,13 +89,21 @@ export default function ViewTrim() {
     };
 
     useEffect(() => {
-        loadTrim();
-        fetchSpots();
-    }, []);
+        if (!user) {
+            navigate('/login');
+        } else {
+            loadTrim();
+            fetchSpots();
+        }
+    }, [user]);
 
     const loadTrim = async () => {
         const result = await axios.get(
-            `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`);
+            `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setTrim(result.data);
     }
 
@@ -99,15 +114,17 @@ export default function ViewTrim() {
     return (
 
         <div>
-            <ul className="nav">
-                <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trim.id}/editTrim`}
-                    >Edit Trim</Link>
-                </li>
-            </ul>
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <li className="nav-item">
+                        <Link className="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trim.id}/editTrim`}
+                        >Edit Trim</Link>
+                    </li>
+                </ul>
+            )}
 
             <div className='container'>
-                <nav aria-label="breadcrumb">
+                <nav aria-label="breadcrumb" className='mt-3'>
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                         <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
@@ -119,7 +136,7 @@ export default function ViewTrim() {
                     </ol>
                 </nav>
 
-                <div className="h5 pb-1 mb-4 text-black border-bottom border-black text-start">
+                <div className="h5 pb-1 mb-3 text-black border-bottom border-black text-start">
                     {make + ' ' + model + ' ' + trim.name}
                 </div>
 
@@ -249,14 +266,14 @@ export default function ViewTrim() {
                             )}
                         </ul>
                     </div>
-                    <div className="col">
+                    <div className="col text-start">
                         <h4>Spots with this car:</h4>
                         <div className="row row-cols-2 row-cols-md-2">
                             {spots.map((spot) => (
                                 <Link to={`/spots/${spot.id}`}>
                                     <img
                                         key={spot.id}
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.photos?.find(photo => photo.isMain).name}`}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos?.find(photo => photo.isMain).name}`}
                                         alt={spot.photos?.find(photo => photo.isMain).name}
                                         className="img-fluid mb-2"
                                     />

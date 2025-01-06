@@ -4,19 +4,14 @@ import { Link } from 'react-router-dom';
 export default function Administration() {
     return (
         <div>
-            <ul class="nav">
-                <li class="nav-item">
-                    <Link class="nav-link active" aria-current="page" to='#'>#</Link>
-                </li>
-            </ul>
             <div className='container'>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Administration</li>
+                <nav aria-label="breadcrumb" className='mt-3'>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">Administration</li>
                     </ol>
                 </nav>
-                <div className='py-4'>
+                <div>
                     <ul className="list-group list-group-flush">
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Catalog</div>
                         <Link className="list-group-item text-start" to='/administration/countries'>Countries</Link>
@@ -40,9 +35,7 @@ export default function Administration() {
                         <Link className="list-group-item text-start" to='/administration/roles'>Roles</Link>
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Other</div>
                         <Link className="list-group-item text-start" to='/administration/persons'>Persons</Link>
-                        <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Bucket</div>
                         <Link className="list-group-item text-start" to='/administration/check-bucket-availability'>Bucket availability</Link>
-                        <Link className="list-group-item text-start" to='/administration/imageUpload'>Image upload</Link>
                     </ul>
                 </div>
             </div>

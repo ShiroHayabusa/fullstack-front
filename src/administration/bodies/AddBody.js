@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddBody() {
 
@@ -17,6 +18,7 @@ export default function AddBody() {
     const [success, setSuccess] = useState('');
 
     const { name, description } = body;
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     const onInputChange = (e) => {
         setBody({ ...body, [e.target.name]: e.target.value });
@@ -39,7 +41,11 @@ export default function AddBody() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/administration/bodies/${make}/addBody`, formData);
+            const response = await axios.post(`http://localhost:8080/administration/bodies/${make}/addBody`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 setSuccess('Body added successfully');
                 setError('');
@@ -54,12 +60,12 @@ export default function AddBody() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li class="breadcrumb-item"><a href='/administration/bodies' className="text-decoration-none">Bodies</a></li>
-                    <li class="breadcrumb-item"><a href={`/administration/bodies/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add body</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/bodies' className="text-decoration-none">Bodies</a></li>
+                    <li className="breadcrumb-item"><a href={`/administration/bodies/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Add body</li>
                 </ol>
             </nav>
             <div className='row'>

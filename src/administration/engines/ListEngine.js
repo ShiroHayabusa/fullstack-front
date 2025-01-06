@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
 
 export default function ListEngine() {
 
     const [engines, setEngines] = useState([]);
     const { make } = useParams();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadEngines()
@@ -14,7 +16,11 @@ export default function ListEngine() {
 
 
     const loadEngines = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/engines/${make}`);
+        const result = await axios.get(`http://localhost:8080/administration/engines/${make}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setEngines(result.data);
     }
 

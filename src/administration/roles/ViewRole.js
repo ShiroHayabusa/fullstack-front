@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 
 export default function ViewRole() {
 
@@ -9,18 +10,31 @@ export default function ViewRole() {
     });
 
     const { id } = useParams();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadRole()
     }, []);
 
     const loadRole = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/roles/${id}`);
+        const result = await axios.get(`http://localhost:8080/administration/roles/${id}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setRole(result.data);
     }
 
     return (
         <div className='container'>
+            <nav aria-label="breadcrumb">
+                <ol className="breadcrumb mt-3">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/administration/roles' className="text-decoration-none">Roles</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">{role.name}</li>
+                </ol>
+            </nav>
             <div className='row'>
                 <div className='col-md-6 offset-md-3 border rounded p-4 mt-2 shadow'>
                     <h2 className='text-center m-4'>Role Details</h2>
@@ -35,7 +49,7 @@ export default function ViewRole() {
                             </ul>
                         </div>
                     </div>
-                    <Link className='btn btn-primary my-2' to={'/administration/roles'}>Back to Roles</Link>
+                    <Link className='btn btn-primary mt-3' to={'/administration/roles'}>Back to Roles</Link>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 
 export default function ViewBody() {
 
@@ -11,6 +12,7 @@ export default function ViewBody() {
     });
 
     const { make, bodyId } = useParams();
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
 
     useEffect(() => {
         loadBody()
@@ -18,7 +20,11 @@ export default function ViewBody() {
 
     const loadBody = async () => {
         const result = await axios.get(
-            `http://localhost:8080/administration/bodies/${make}/${bodyId}`);
+            `http://localhost:8080/administration/bodies/${make}/${bodyId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
         setBody(result.data);
     }
 
@@ -36,12 +42,12 @@ export default function ViewBody() {
 
 
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li class="breadcrumb-item"><a href="/administration/bodies" className="text-decoration-none">Bodies</a></li>
-                        <li class="breadcrumb-item"><a href={`/administration/bodies/${make}/`} className="text-decoration-none">{make}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{body.name}</li>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href="/administration/bodies" className="text-decoration-none">Bodies</a></li>
+                        <li className="breadcrumb-item"><a href={`/administration/bodies/${make}/`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">{body.name}</li>
                     </ol>
                 </nav>
                 <div className="h5 pb-1 mb-4 text-black border-bottom border-black text-start">
@@ -61,7 +67,7 @@ export default function ViewBody() {
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" aria-current="page" href="#">Photo</a>
-                                
+
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="#">Video</a>
@@ -71,10 +77,10 @@ export default function ViewBody() {
                             </li>
                         </ul>
                     </div>
-                    <div class="col-lg-4 border">
+                    <div className="col-lg-4 border">
 
                         <div className="mb-3">
-                            <label for="exampleFormControlTextarea1" className="form-label">Comments</label>
+                            <label htmlFor="exampleFormControlTextarea1" className="form-label">Comments</label>
                             <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
                     </div>

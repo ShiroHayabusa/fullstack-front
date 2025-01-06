@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditFacelift() {
 
@@ -19,17 +20,22 @@ export default function EditFacelift() {
         name: ''
     });
 
+    const { user } = useAuth(); // Получаем пользователя из AuthContext
+
     useEffect(() => {
         // Fetch the current details of the model
         const fetchFaceliftEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`);
+                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`, {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
                 setFaceliftEntity({
                     name: response.data.name,
                     years: response.data.years,
                     description: response.data.description
                 });
-                console.log("facelift:", response.data)
             } catch (error) {
                 setError('Error fetching facelift details: ' + error.message);
             }
@@ -40,7 +46,11 @@ export default function EditFacelift() {
     }, [make, model, generationId, faceliftId]);
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}`);
+        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
         setGenerationEntity(result.data);
     }
 
@@ -68,10 +78,11 @@ export default function EditFacelift() {
         try {
             const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${user.token}`
                 }
             });
-    
+
             if (response.status === 200) {
                 setSuccess('Facelift updated successfully');
                 setError('');
@@ -85,13 +96,13 @@ export default function EditFacelift() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
-                    <li class="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit facelift</li>
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                    <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit facelift</li>
                 </ol>
             </nav>
             <div className='row'>

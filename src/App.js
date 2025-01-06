@@ -4,7 +4,8 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import Home from './pages/Home';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Outlet, BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from "./context/AuthContext"; // <-- импортируем провайдер
 
 import Makes from './pages/Catalog';
 import AddMake from './catalog/makes/AddMake'
@@ -91,127 +92,157 @@ import AddSpot from './spots/AddSpot';
 import EditSpot from './spots/EditSpot';
 import Spots from './spots/Spots';
 import ViewSpot from './spots/ViewSpot';
+import MySpots from './spots/MySpots';
 
 import Autosport from './autosport/Autosport';
-import ImageUpload from './pages/ImageUpload';
 import BucketAvailabilityChecker from './administration/BucketAvailabilityChecker';
-import Dashboard from './users/Dashboard';
 import Login from './users/Login';
 import Profile from './users/Profile';
+import ForgotPassword from './users/ForgotPassword';
+import ResetPassword from './users/ResetPassword';
+import Register from './users/Register';
+import ActivateAccount from './users/ActivateAccount';
+import ProtectedRoute from "./ProtectedRoute";
+import Unauthorized from './pages/Unathorized';
 
-
-
+const routerOptions = {
+  future: {
+    v7_startTransition: true, // Включаем флаг
+  },
+};
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route exact path='/' element={<Home />} />
-          <Route exact path='/login' element={<Login />} />
-          <Route exact path='/api/user/profile' element={<Profile />} />
+      <AuthProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route exact path='/' element={<Home />} />
+            <Route exact path='/login' element={<Login />} />
+            <Route exact path='/users/register' element={<Register />} />
+            <Route exact path='/users/forgot-password/' element={<ForgotPassword />} />
+            <Route exact path='/users/reset-password/:token' element={<ResetPassword />} />
+            <Route exact path='/users/activate-account/:token' element={<ActivateAccount />} />
+            <Route exact path='/api/user/profile' element={<Profile />} />
 
-          <Route exact path='/catalog' element={<Makes />} />
-          <Route exact path='/catalog/addMake' element={<AddMake />} />
-          <Route exact path='/catalog/editMake/:make' element={<EditMake />} />
-          <Route exact path='/catalog/:make' element={<ViewMake />} />
+            <Route exact path='/catalog' element={<Makes />} />
+            <Route exact path='/catalog/addMake' element={<AddMake />} />
+            <Route exact path='/catalog/editMake/:make' element={<EditMake />} />
+            <Route exact path='/catalog/:make' element={<ViewMake />} />
 
-          <Route exact path='/catalog/:make/addModel' element={<AddModel />} />
-          <Route exact path='/catalog/:make/:model/editmodel' element={<EditModel />} />
-          <Route exact path='/catalog/:make/:model' element={<ViewModel />} />
+            <Route exact path='/catalog/:make/addModel' element={<AddModel />} />
+            <Route exact path='/catalog/:make/:model/editmodel' element={<EditModel />} />
+            <Route exact path='/catalog/:make/:model' element={<ViewModel />} />
 
-          <Route exact path='/catalog/:make/:model/addGeneration' element={<AddGeneration />} />
-          <Route exact path='/catalog/:make/:model/:generationId/editGeneration' element={<EditGeneration />} />
-          <Route exact path='/catalog/:make/:model/:generationId' element={<ViewGeneration />} />
+            <Route exact path='/catalog/:make/:model/addGeneration' element={<AddGeneration />} />
+            <Route exact path='/catalog/:make/:model/:generationId/editGeneration' element={<EditGeneration />} />
+            <Route exact path='/catalog/:make/:model/:generationId' element={<ViewGeneration />} />
 
-          <Route exact path='/catalog/:make/:model/:generation/addFacelift' element={<AddFacelift />} />
-          <Route exact path='/catalog/:make/:model/:generationId/:faceliftId/editFacelift' element={<EditFacelift />} />
+            <Route exact path='/catalog/:make/:model/:generation/addFacelift' element={<AddFacelift />} />
+            <Route exact path='/catalog/:make/:model/:generationId/:faceliftId/editFacelift' element={<EditFacelift />} />
 
-          <Route exact path='/catalog/:make/:model/:generation/addBodystyle' element={<AddBodystyle />} />
-          <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/editBodystyle' element={<EditBodystyle />} />
-          <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId' element={<ViewBodystyle />} />
+            <Route exact path='/catalog/:make/:model/:generation/addBodystyle' element={<AddBodystyle />} />
+            <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/editBodystyle' element={<EditBodystyle />} />
+            <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId' element={<ViewBodystyle />} />
 
-          <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/addTrim' element={<AddTrim />} />
-          <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId/editTrim' element={<EditTrim />} />
-          <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId' element={<ViewTrim />} />
+            <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/addTrim' element={<AddTrim />} />
+            <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId/editTrim' element={<EditTrim />} />
+            <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId' element={<ViewTrim />} />
 
-          <Route exact path='/administration/users/editUser/:id' element={<EditUser />} />
-          <Route exact path='/administration/users/viewUser/:id' element={<ViewUser />} />
-          <Route exact path='/administration/users' element={<Users />} />
+            <Route exact path='/spots/addSpot' element={<AddSpot />} />
+            <Route exact path='/spots/editSpot/:id' element={<EditSpot />} />
+            <Route exact path='/spots/' element={<Spots />} />
+            <Route exact path='/spots/:id' element={<ViewSpot />} />
+            <Route exact path='/spots/mySpots' element={<MySpots />} />
 
-          <Route exact path='/administration/roles/addRole' element={<AddRole />} />
-          <Route exact path='/administration/roles/editRole/:id' element={<EditRole />} />
-          <Route exact path='/administration/roles/viewRole/:id' element={<ViewRole />} />
-          <Route exact path='/administration/roles' element={<Roles />} />
+            <Route exact path='/autosport' element={<Autosport />} />
 
-          <Route exact path='/administration' element={<Administration />} />
+            <Route exact path="/unauthorized" element={<Unauthorized />} />
 
-          <Route exact path='/administration/check-bucket-availability' element={<BucketAvailabilityChecker />} />
-          <Route exact path='/administration/imageUpload' element={<ImageUpload />} />
+            {/* Защита всех маршрутов после /administration */}
+            <Route
+              path="/administration/*"
+              element={
+                <ProtectedRoute roles={["ROLE_ADMIN"]}>
+                  <AdministrationRoutes />
+                </ProtectedRoute>
+              }
+            >
+              <Route exact path='users/editUser/:id' element={<EditUser />} />
+              <Route exact path='users/:userId' element={<ViewUser />} />
+              <Route exact path='users' element={<Users />} />
 
-          <Route exact path='/administration/countries/addCountry' element={<AddCountry />} />
-          <Route exact path='/administration/countries/editCountry/:id' element={<EditCountry />} />
-          <Route exact path='/administration/countries' element={<Countries />} />
+              <Route exact path='roles/addRole' element={<AddRole />} />
+              <Route exact path='roles/editRole/:id' element={<EditRole />} />
+              <Route exact path='roles/viewRole/:id' element={<ViewRole />} />
+              <Route exact path='roles' element={<Roles />} />
 
-          <Route exact path='/administration/markets/addMarket' element={<AddMarket />} />
-          <Route exact path='/administration/markets/editMarket/:id' element={<EditMarket />} />
-          <Route exact path='/administration/markets' element={<Markets />} />
+              <Route exact path='' element={<Administration />} />
 
-          <Route exact path='/administration/engines/:make/addEngine' element={<AddEngine />} />
-          <Route exact path='/administration/engines/:make/:engineId/editEngine' element={<EditEngine />} />
-          <Route exact path='/administration/engines' element={<Engines />} />
-          <Route exact path='/administration/engines/:make' element={<ListEngine />} />
-          <Route exact path='/administration/engines/:make/:engineId' element={<ViewEngine />} />
-          
+              <Route exact path='check-bucket-availability' element={<BucketAvailabilityChecker />} />
 
-          <Route exact path='/administration/transmissions/:make/addTransmission' element={<AddTransmission />} />
-          <Route exact path='/administration/transmissions/:make/:transmissionId/editTransmission' element={<EditTransmission />} />
-          <Route exact path='/administration/transmissions' element={<Transmissions />} />
-          <Route exact path='/administration/transmissions/:make' element={<ListTransmission />} />
-          <Route exact path='/administration/transmissions/:make/:transmissionId' element={<ViewTransmission />} />
+              <Route exact path='countries/addCountry' element={<AddCountry />} />
+              <Route exact path='countries/editCountry/:id' element={<EditCountry />} />
+              <Route exact path='countries' element={<Countries />} />
 
-          <Route exact path='/administration/bodies/:make/addBody' element={<AddBody />} />
-          <Route exact path='/administration/bodies/:make/:bodyId/editBody' element={<EditBody />} />
-          <Route exact path='/administration/bodies' element={<Bodies />} />
-          <Route exact path='/administration/bodies/:make' element={<ListBody />} />
-          <Route exact path='/administration/bodies/:make/:bodyId' element={<ViewBody />} />
+              <Route exact path='markets/addMarket' element={<AddMarket />} />
+              <Route exact path='markets/editMarket/:id' element={<EditMarket />} />
+              <Route exact path='markets' element={<Markets />} />
 
-          <Route exact path='/administration/drivetrains/addDrivetrain' element={<AddDrivetrain />} />
-          <Route exact path='/administration/drivetrains/editDrivetrain/:id' element={<EditDrivetrain />} />
-          <Route exact path='/administration/drivetrains' element={<Drivetrains />} />
-
-          <Route exact path='/administration/bodytypes/addBodytype' element={<AddBodytype />} />
-          <Route exact path='/administration/bodytypes/editBodytype/:id' element={<EditBodytype />} />
-          <Route exact path='/administration/bodytypes' element={<Bodytypes />} />
-
-          <Route exact path='/administration/engineTypes/addEngineType' element={<AddEngineType />} />
-          <Route exact path='/administration/engineTypes/editEngineType/:id' element={<EditEngineType />} />
-          <Route exact path='/administration/engineTypes' element={<EngineTypes />} />
-
-          <Route exact path='/administration/transmissionTypes/addTransmissionType' element={<AddTransmissionType />} />
-          <Route exact path='/administration/transmissionTypes/editTransmissionType/:id' element={<EditTransmissionType />} />
-          <Route exact path='/administration/transmissionTypes' element={<TransmissionTypes />} />
-
-          <Route exact path='/administration/fuels/addFuel' element={<AddFuel />} />
-          <Route exact path='/administration/fuels/editFuel/:id' element={<EditFuel />} />
-          <Route exact path='/administration/fuels' element={<Fuels />} />
-
-          <Route exact path='/spots/addSpot' element={<AddSpot />} />
-          <Route exact path='/spots/editSpot/:id' element={<EditSpot />} />
-          <Route exact path='/spots/' element={<Spots />} />
-          <Route exact path='/spots/:id' element={<ViewSpot />} />
-
-          <Route exact path='/autosport' element={<Autosport />} />
+              <Route exact path='engines/:make/addEngine' element={<AddEngine />} />
+              <Route exact path='engines/:make/:engineId/editEngine' element={<EditEngine />} />
+              <Route exact path='engines' element={<Engines />} />
+              <Route exact path='engines/:make' element={<ListEngine />} />
+              <Route exact path='engines/:make/:engineId' element={<ViewEngine />} />
 
 
-          
+              <Route exact path='transmissions/:make/addTransmission' element={<AddTransmission />} />
+              <Route exact path='transmissions/:make/:transmissionId/editTransmission' element={<EditTransmission />} />
+              <Route exact path='transmissions' element={<Transmissions />} />
+              <Route exact path='transmissions/:make' element={<ListTransmission />} />
+              <Route exact path='transmissions/:make/:transmissionId' element={<ViewTransmission />} />
 
-        </Routes>
-        <Footer />
-      </Router>
+              <Route exact path='bodies/:make/addBody' element={<AddBody />} />
+              <Route exact path='bodies/:make/:bodyId/editBody' element={<EditBody />} />
+              <Route exact path='bodies' element={<Bodies />} />
+              <Route exact path='bodies/:make' element={<ListBody />} />
+              <Route exact path='bodies/:make/:bodyId' element={<ViewBody />} />
+
+              <Route exact path='drivetrains/addDrivetrain' element={<AddDrivetrain />} />
+              <Route exact path='drivetrains/editDrivetrain/:id' element={<EditDrivetrain />} />
+              <Route exact path='drivetrains' element={<Drivetrains />} />
+
+              <Route exact path='bodytypes/addBodytype' element={<AddBodytype />} />
+              <Route exact path='bodytypes/editBodytype/:id' element={<EditBodytype />} />
+              <Route exact path='bodytypes' element={<Bodytypes />} />
+
+              <Route exact path='engineTypes/addEngineType' element={<AddEngineType />} />
+              <Route exact path='engineTypes/editEngineType/:id' element={<EditEngineType />} />
+              <Route exact path='engineTypes' element={<EngineTypes />} />
+
+              <Route exact path='transmissionTypes/addTransmissionType' element={<AddTransmissionType />} />
+              <Route exact path='transmissionTypes/editTransmissionType/:id' element={<EditTransmissionType />} />
+              <Route exact path='transmissionTypes' element={<TransmissionTypes />} />
+
+              <Route exact path='fuels/addFuel' element={<AddFuel />} />
+              <Route exact path='fuels/editFuel/:id' element={<EditFuel />} />
+              <Route exact path='fuels' element={<Fuels />} />
+            </Route>
+          </Routes>
+          <Footer />
+        </Router>
+      </AuthProvider>
     </div>
   );
 }
+
+const AdministrationRoutes = () => {
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
+};
 
 export default App;
