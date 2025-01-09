@@ -103,6 +103,7 @@ import ForgotPassword from './users/ForgotPassword';
 import ResetPassword from './users/ResetPassword';
 import Register from './users/Register';
 import ActivateAccount from './users/ActivateAccount';
+import VerifyEmail from './users/VerifyEmail';
 import ProtectedRoute from "./ProtectedRoute";
 import Unauthorized from './pages/Unathorized';
 
@@ -125,6 +126,7 @@ function App() {
             <Route exact path='/users/forgot-password/' element={<ForgotPassword />} />
             <Route exact path='/users/reset-password/:token' element={<ResetPassword />} />
             <Route exact path='/users/activate-account/:token' element={<ActivateAccount />} />
+            <Route exact path='/users/profile/verify-changed-email/:email/:token' element={<VerifyEmail />} />
             <Route exact path='/user/profile' element={<Profile />} />
 
             <Route exact path='/catalog' element={<Makes />} />

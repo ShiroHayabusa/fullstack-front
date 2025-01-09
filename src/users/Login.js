@@ -87,6 +87,11 @@ const Login = () => {
               Don't have an account? Sign Up
             </a>
           </div>
+          <div className="text-center mt-3">
+            <a href="/users/forgot-password" className="text-decoration-none">
+              Forgot password?
+            </a>
+          </div>
         </form>
       </div>
     </div>
