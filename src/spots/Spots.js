@@ -69,27 +69,34 @@ export default function Spots() {
                     </li>
                 </ul>
                 <div className="row row-cols-1 row-cols-md-4 g-4">
-                    {currentSpots.map((spot) => (
-                        <div className="col" key={spot.id}>
-                            <Link to={`/spots/${spot.id}`} className="text-decoration-none text-black">
-                                <div className="card h-100">
-                                    <img
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot?.photos[0]?.name || 'defaultImage.jpg'}`}
-                                        className="card-img-top"
-                                        alt={spot?.photos[0]?.name || 'Default Image'}
-                                    />
-                                    <div className="card-body">
-                                        <p className="card-text text-start">Spotted by {spot.user?.username}</p>
+                    {currentSpots.map((spot) => {
+                        const mainPhoto = Array.isArray(spot.photos) && spot.photos.length > 0
+                            ? spot.photos.find((photo) => photo.isMain)
+                            : {};
+
+                        return (
+
+                            <div className="col" key={spot.id}>
+                                <Link to={`/spots/${spot.id}`} className="text-decoration-none text-black">
+                                    <div className="card h-100">
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${mainPhoto?.name || 'defaultImage.jpg'}`}
+                                            className="card-img-top"
+                                            alt={spot?.photos[0]?.name || 'Default Image'}
+                                        />
+                                        <div className="card-body">
+                                            <p className="card-text text-start">Spotted by {spot.user?.username}</p>
+                                        </div>
+                                        <div className="card-footer">
+                                            <small className="text-body-secondary text-start">
+                                                {format(new Date(spot.createdAt), 'MMMM d yyyy HH:mm')}
+                                            </small>
+                                        </div>
                                     </div>
-                                    <div className="card-footer">
-                                        <small className="text-body-secondary text-start">
-                                            {format(new Date(spot.createdAt), 'MMMM d yyyy HH:mm')}
-                                        </small>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-                    ))}
+                                </Link>
+                            </div>
+                        )
+                    })}
                 </div>
                 {/* Компонент пагинации */}
                 <Pagination

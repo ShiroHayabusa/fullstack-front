@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AddSpot.css';
 import Select from "react-select";
@@ -12,6 +12,7 @@ export default function EditSpot() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
 
+    // Списки опций
     const [makes, setMakes] = useState([]);
     const [models, setModels] = useState([]);
     const [generations, setGenerations] = useState([]);
@@ -19,6 +20,7 @@ export default function EditSpot() {
     const [bodystyles, setBodystyles] = useState([]);
     const [trims, setTrims] = useState([]);
 
+    // Выбранные опции
     const [selectedMake, setSelectedMake] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
     const [selectedGeneration, setSelectedGeneration] = useState(null);
@@ -28,6 +30,35 @@ export default function EditSpot() {
 
     const { user } = useAuth(); // Получаем пользователя из AuthContext
 
+    // Вспомогательная функция для сброса зависимых полей
+    const resetDependentFields = (level) => {
+        switch (level) {
+            case 'make':
+                setSelectedModel(null);
+                setModels([]);
+            // Fall through
+            case 'model':
+                setSelectedGeneration(null);
+                setGenerations([]);
+            // Fall through
+            case 'generation':
+                setSelectedFacelift(null);
+                setFacelifts([]);
+            // Fall through
+            case 'facelift':
+                setSelectedBodystyle(null);
+                setBodystyles([]);
+            // Fall through
+            case 'bodystyle':
+                setSelectedTrim(null);
+                setTrims([]);
+                break;
+            default:
+                break;
+        }
+    };
+
+    // Функция для загрузки данных спота
     const fetchSpot = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/spots/${id}`, {
@@ -64,6 +95,7 @@ export default function EditSpot() {
         }
     };
 
+    // Загрузка списка марок при монтировании компонента
     useEffect(() => {
         const fetchMakes = async () => {
             try {
@@ -78,13 +110,46 @@ export default function EditSpot() {
             }
         };
         fetchMakes();
-    }, []);
+    }, [user.token]);
 
-    const optionsMake = makes.map((make) => ({
-        value: make.name, // Приводим к нижнему регистру для value
-        label: make.name, // Оригинальное имя для отображения
-    }));
+    // Мемоизация опций для селектов
+    const optionsMake = useMemo(() =>
+        makes.map((make) => ({
+            value: make.name,
+            label: make.name,
+        })), [makes]);
 
+    const optionsModel = useMemo(() =>
+        models.map((model) => ({
+            value: model.name,
+            label: model.name,
+        })), [models]);
+
+    const optionsGeneration = useMemo(() =>
+        generations.map((generation) => ({
+            value: generation.id,
+            label: generation.name,
+        })), [generations]);
+
+    const optionsFacelift = useMemo(() =>
+        facelifts.map((facelift) => ({
+            value: facelift.id,
+            label: facelift.name,
+        })), [facelifts]);
+
+    const optionsBodystyle = useMemo(() =>
+        bodystyles.map((bodystyle) => ({
+            value: bodystyle.id,
+            label: bodystyle.bodytype?.name,
+        })), [bodystyles]);
+
+    const optionsTrim = useMemo(() =>
+        trims.map((trim) => ({
+            value: trim.id,
+            label: trim.name,
+        })), [trims]);
+
+    // Загрузка моделей при изменении selectedMake
     useEffect(() => {
         if (selectedMake) {
             const fetchModels = async () => {
@@ -103,15 +168,11 @@ export default function EditSpot() {
         } else {
             setModels([]);
         }
-    }, [selectedMake]);
+    }, [selectedMake, user.token]);
 
-    const optionsModel = models.map((model) => ({
-        value: model.name, // Приводим к нижнему регистру для value
-        label: model.name, // Оригинальное имя для отображения
-    }));
-
+    // Загрузка поколений при изменении selectedModel
     useEffect(() => {
-        if (selectedModel) {
+        if (selectedModel && selectedMake) {
             const fetchGenerations = async () => {
                 try {
                     const response =
@@ -129,15 +190,11 @@ export default function EditSpot() {
         } else {
             setGenerations([]);
         }
-    }, [selectedModel]);
+    }, [selectedModel, selectedMake, user.token]);
 
-    const optionsGeneration = generations.map((generation) => ({
-        value: generation.id,
-        label: generation.name,
-    }));
-
+    // Загрузка фейслифтов при изменении selectedGeneration
     useEffect(() => {
-        if (selectedGeneration) {
+        if (selectedGeneration && selectedMake && selectedModel) {
             const fetchFacelifts = async () => {
                 try {
                     const response =
@@ -155,15 +212,11 @@ export default function EditSpot() {
         } else {
             setFacelifts([]);
         }
-    }, [selectedGeneration]);
+    }, [selectedGeneration, selectedMake, selectedModel, user.token]);
 
-    const optionsFacelift = facelifts.map((facelift) => ({
-        value: facelift.id,
-        label: facelift.name,
-    }));
-
+    // Загрузка кузовов при изменении selectedFacelift
     useEffect(() => {
-        if (selectedFacelift) {
+        if (selectedFacelift && selectedMake && selectedModel && selectedGeneration) {
             const fetchBodystyles = async () => {
                 try {
                     const response =
@@ -181,15 +234,11 @@ export default function EditSpot() {
         } else {
             setBodystyles([]);
         }
-    }, [selectedFacelift]);
+    }, [selectedFacelift, selectedMake, selectedModel, selectedGeneration, user.token]);
 
-    const optionsBodystyle = bodystyles.map((bodystyle) => ({
-        value: bodystyle.id,
-        label: bodystyle.bodytype?.name,
-    }));
-
+    // Загрузка комплектаций при изменении selectedBodystyle
     useEffect(() => {
-        if (selectedBodystyle) {
+        if (selectedBodystyle && selectedMake && selectedModel && selectedGeneration) {
             const fetchTrims = async () => {
                 try {
                     const response =
@@ -207,57 +256,44 @@ export default function EditSpot() {
         } else {
             setTrims([]);
         }
-    }, [selectedBodystyle]);
+    }, [selectedBodystyle, selectedMake, selectedModel, selectedGeneration, user.token]);
 
-    const optionsTrim = trims.map((trim) => ({
-        value: trim.id,
-        label: trim.name,
-    }));
-
+    // Обработчики изменений селектов
     const handleMakeChange = (selectedOption) => {
         setSelectedMake(selectedOption);
-        setSelectedModel(null); // Сбрасываем выбор модели
-        setSelectedGeneration(null); // Сбрасываем выбор поколения
-        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        resetDependentFields('make');
     };
 
     const handleModelChange = (selectedOption) => {
         setSelectedModel(selectedOption);
-        setSelectedGeneration(null); // Сбрасываем выбор поколения
-        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        resetDependentFields('model');
     };
 
     const handleGenerationChange = (selectedOption) => {
         setSelectedGeneration(selectedOption);
-        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        resetDependentFields('generation');
     };
 
     const handleFaceliftChange = (selectedOption) => {
         setSelectedFacelift(selectedOption);
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        resetDependentFields('facelift');
     };
 
     const handleBodystyleChange = (selectedOption) => {
         setSelectedBodystyle(selectedOption);
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        resetDependentFields('bodystyle');
     };
 
     const handleTrimChange = (selectedOption) => {
         setSelectedTrim(selectedOption);
     };
 
+    // Загрузка данных спота при монтировании
     useEffect(() => {
         fetchSpot();
     }, []);
 
-
+    // Обработчик ввода текста
     const onInputChange = (e) => {
         const { name, value } = e.target;
         setSpot({
@@ -266,6 +302,7 @@ export default function EditSpot() {
         });
     };
 
+    // Обработчик загрузки файла
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
 
@@ -304,9 +341,9 @@ export default function EditSpot() {
         } finally {
             event.target.value = ""; // Сбрасываем input для загрузки следующего файла
         }
-
     };
 
+    // Обработчик установки основной фотографии
     const handleSetMain = async (photoId) => {
         try {
             const response = await axios.put(
@@ -314,8 +351,7 @@ export default function EditSpot() {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
-            }
-            );
+            });
 
             if (response.status === 200) {
                 // Update the photos in spot to reflect the new main photo
@@ -331,6 +367,7 @@ export default function EditSpot() {
         }
     };
 
+    // Обработчик удаления фотографии
     const handleDelete = async (photoId) => {
         try {
             const response = await axios.delete(
@@ -338,8 +375,7 @@ export default function EditSpot() {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
-            }
-            );
+            });
 
             if (response.status === 200) {
                 // Update the photos in spot locally
@@ -351,36 +387,31 @@ export default function EditSpot() {
         }
     };
 
+    // Обработчик отправки формы
     const onSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('caption', spot.caption);
-        if (selectedTrim) {
-            formData.append('trim', selectedTrim.value);
-        }
-        if (selectedBodystyle) {
-            formData.append('bodystyle', selectedBodystyle.value);
-        }
-        if (selectedFacelift) {
-            formData.append('facelift', selectedFacelift.value);
-        }
-        if (selectedGeneration) {
-            formData.append('generation', selectedGeneration.value);
-        }
-        if (selectedModel) {
-            formData.append('model', selectedModel.value);
-        }
-        if (selectedMake) {
-            formData.append('make', selectedMake.value);
-        }
+        const payload = {
+            caption: spot.caption || '',
+            make: selectedMake ? selectedMake.value : null,
+            model: selectedModel ? selectedModel.value : null,
+            generation: selectedGeneration ? selectedGeneration.value : null, // Long ID
+            facelift: selectedFacelift ? selectedFacelift.value : null, // Long ID
+            bodystyle: selectedBodystyle ? selectedBodystyle.value : null, // Long ID
+            trim: selectedTrim ? selectedTrim.value : null, // Long ID
+        };
+
+        console.log('Payload:', payload); // For debugging purposes
 
         try {
             const response =
-                await axios.put(`http://localhost:8080/spots/editSpot/${id}`, formData, {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                });
+                await axios.put(`http://localhost:8080/spots/editSpot/${id}`,
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${user.token}`,
+                            'Content-Type': 'application/json', // Explicitly setting content type
+                        },
+                    });
             if (response.status === 200 || response.status === 201) {
                 console.log('Spot updated successfully');
                 navigate(`/spots/${id}`);
@@ -388,7 +419,12 @@ export default function EditSpot() {
                 throw new Error(`Unexpected response status: ${response.status}`);
             }
         } catch (error) {
-            console.error('Error adding spot: ', error);
+            console.error('Error updating spot:', error);
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError('Failed to update spot. Please try again.');
+            }
         }
     };
 
@@ -420,7 +456,6 @@ export default function EditSpot() {
                                             src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${photo.name}`}
                                             alt={photo.name}
                                             className="img-fluid mb-2"
-
                                         />
                                         {!photo.isMain && (
                                             <div>
@@ -452,8 +487,8 @@ export default function EditSpot() {
                             </div>
                         )}
 
-                        <div class="mb-3">
-                            <label for="formFileSm" class="form-label text-start d-block">Add new photo:</label>
+                        <div className="mb-3">
+                            <label htmlFor="formFileSm" className="form-label text-start d-block">Add new photo:</label>
                             <input
                                 className="form-control form-control-sm"
                                 type="file"
@@ -476,7 +511,6 @@ export default function EditSpot() {
                             </textarea>
                             <label htmlFor="floatingTextarea2">Caption</label>
                         </div>
-
                     </div>
 
                     <div className="col">
@@ -485,6 +519,7 @@ export default function EditSpot() {
                             options={optionsMake}
                             onChange={handleMakeChange}
                             isSearchable
+                            isClearable
                             placeholder="Select make"
                             value={selectedMake}
                         />
@@ -492,6 +527,7 @@ export default function EditSpot() {
                             options={optionsModel}
                             onChange={handleModelChange}
                             isSearchable
+                            isClearable
                             placeholder="Select model"
                             value={selectedModel}
                             isDisabled={!selectedMake}
@@ -501,6 +537,7 @@ export default function EditSpot() {
                             options={optionsGeneration}
                             onChange={handleGenerationChange}
                             isSearchable
+                            isClearable
                             placeholder="Select generation"
                             isDisabled={!selectedModel}
                             value={selectedGeneration}
@@ -510,6 +547,7 @@ export default function EditSpot() {
                             options={optionsFacelift}
                             onChange={handleFaceliftChange}
                             isSearchable
+                            isClearable
                             placeholder="Select facelift"
                             isDisabled={!selectedGeneration}
                             value={selectedFacelift}
@@ -519,6 +557,7 @@ export default function EditSpot() {
                             options={optionsBodystyle}
                             onChange={handleBodystyleChange}
                             isSearchable
+                            isClearable
                             placeholder="Select bodystyle"
                             isDisabled={!selectedFacelift}
                             value={selectedBodystyle}
@@ -528,6 +567,7 @@ export default function EditSpot() {
                             options={optionsTrim}
                             onChange={handleTrimChange}
                             isSearchable
+                            isClearable
                             placeholder="Select trim"
                             isDisabled={!selectedBodystyle}
                             value={selectedTrim}
@@ -540,8 +580,5 @@ export default function EditSpot() {
                 </div>
             </form>
         </div>
-
-
-
     );
 }
