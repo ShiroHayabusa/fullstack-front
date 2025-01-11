@@ -4,20 +4,31 @@ import { Link, useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import { useAuth } from '../context/AuthContext';
 import './AddSpot.css';
+import EXIF from 'exif-js';
 
 export default function AddSpot() {
 
     const navigate = useNavigate();
 
-    const [spot, setSpot] = useState({ caption: "" });
+    const [spot, setSpot] = useState({
+        city: '',
+        country: '',
+        latitude: null,
+        longitude: null,
+        caption: ""
+    });
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
+    const [error, setError] = useState('');
 
     const [citySuggestions, setCitySuggestions] = useState([]);
     const [selectedCity, setSelectedCity] = useState("");
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
+    const [cityInputValue, setCityInputValue] = useState('');
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
 
     const [makes, setMakes] = useState([]);
     const [models, setModels] = useState([]);
@@ -33,9 +44,16 @@ export default function AddSpot() {
     const [selectedBodystyle, setSelectedBodystyle] = useState(null);
     const [selectedTrim, setSelectedTrim] = useState(null);
 
+    const [locationInfo, setLocationInfo] = useState({ city: '', country: '' });
+
     const { caption } = spot;
 
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
+
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [countryOptions, setCountryOptions] = useState([]);
+    const [cityOptions, setCityOptions] = useState([]);
+    const [isExifProcessing, setIsExifProcessing] = useState(false);
 
     const onChange = (e) => {
         setSpot({ ...spot, [e.target.name]: e.target.value });
@@ -47,6 +65,79 @@ export default function AddSpot() {
         setSelectedFiles(files);
         setPreviewUrls(previewUrls);
         setMainPhotoIndex(0);
+
+        setIsExifProcessing(true); // Начинаем обработку EXIF
+
+        try {
+            const { lat, lng } = await getExifData(files[0]); // Используем обертку
+            setLatitude(lat);
+            setLongitude(lng);
+            const location = await fetchLocationInfo(lat, lng);
+            setLocationInfo(location);
+            setCity(location.city);
+            setCountry(location.country);
+            setError(null); // Убираем сообщение об ошибке
+        } catch (error) {
+            console.error("Error processing file:", error.message);
+            setError(error.message);
+            setSelectedCountry(null);
+            setSelectedCity(null);
+            setCityOptions([]);
+            setLatitude(null);
+            setLongitude(null);
+            setLocationInfo({ city: '', country: '' });
+        } finally {
+            setIsExifProcessing(false); // Завершаем обработку EXIF
+        }
+    };
+
+
+
+    const getExifData = (file) => {
+        return new Promise((resolve, reject) => {
+            EXIF.getData(file, function () {
+                const exifData = EXIF.getAllTags(this);
+                if (exifData.GPSLatitude && exifData.GPSLongitude && exifData.GPSLatitudeRef && exifData.GPSLongitudeRef) {
+                    const lat = convertDMSToDD(exifData.GPSLatitude, exifData.GPSLatitudeRef);
+                    const lng = convertDMSToDD(exifData.GPSLongitude, exifData.GPSLongitudeRef);
+                    resolve({ lat, lng });
+                } else {
+                    reject(new Error("No GPS data found in the image."));
+                }
+            });
+        });
+    }
+
+    const convertDMSToDD = (dms, ref) => {
+        const degrees = dms[0];
+        const minutes = dms[1];
+        const seconds = dms[2];
+
+        let dd = degrees + minutes / 60 + seconds / 3600;
+        if (ref === 'S' || ref === 'W') {
+            dd = dd * -1;
+        }
+        return dd;
+    };
+
+    const fetchLocationInfo = async (lat, lng) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/places/reverse`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+                params: { lat, lng },
+            });
+
+            if (response.data) {
+                return { city: response.data.city, country: response.data.country };
+            } else {
+                throw new Error('Could not retrieve location info from coordinates.');
+            }
+        } catch (error) {
+            console.error("Error fetching reverse geocode data:", error);
+            throw new Error('Failed to retrieve location information.');
+        }
     };
 
     const clearPreviews = () => {
@@ -54,58 +145,124 @@ export default function AddSpot() {
         setPreviewUrls([]);
     };
 
-    const handleCityInput = async (e) => {
-        const query = e.target.value;
-        setSelectedCity(query);
+    const handleCountryChange = async (selectedOption) => {
+        setSelectedCountry(selectedOption);
+        setSelectedCity(null);
+        setCityOptions([]);
+        setLatitude(null);
+        setLongitude(null);
+        setLocationInfo({ city: '', country: selectedOption.label });
 
-        if (query.length > 2) {
-            try {
-                const response = await axios.get(
-                    `http://localhost:8080/api/places/autocomplete`,
-                    {
-                        params: {
-                            input: query,
-                            types: "(cities)",
-                            key: "AIzaSyCAFPj_ck8L8ceN5wTWlyoWiLAutAxKJnI",
-                        },
-                    }
-                );
-                const suggestions = response.data.predictions.map((prediction) => ({
-                    description: prediction.description,
-                    placeId: prediction.place_id,
-                }));
-                setCitySuggestions(suggestions);
-            } catch (error) {
-                console.error("Ошибка загрузки предложений города:", error);
-            }
-        }
-    };
-
-    const handleCitySelect = async (cityDescription, placeId) => {
-        setSelectedCity(cityDescription);
-        setCitySuggestions([]);
-
+        // Запрашиваем список городов для выбранной страны
         try {
             const response = await axios.get(
-                `http://localhost:8080/places/details`,
+                `http://localhost:8080/api/places/autocomplete`,
                 {
                     params: {
-                        place_id: placeId,
+                        input: '',
+                        types: "(cities)",
+                        country: selectedOption.value, // Передаем код страны
                         key: "AIzaSyCAFPj_ck8L8ceN5wTWlyoWiLAutAxKJnI",
                     },
                 }
             );
-            console.log("Response from Google Places API:", response.data);
+
+            // Предположим, что ваш бэкенд поддерживает фильтрацию по стране
+            const suggestions = response.data.predictions.map((prediction) => ({
+                description: prediction.description,
+                placeId: prediction.place_id,
+            }));
+
+            setCityOptions(suggestions);
+        } catch (error) {
+            console.error("Ошибка загрузки предложений города:", error);
+            setCityOptions([]);
+        }
+    };
+
+
+    const handleCityInput = async (inputValue) => {
+        if (!inputValue || inputValue.length <= 2) {
+            setCityOptions([]);
+            return;
+        }
+        try {
+            const response = await axios.get(
+                `http://localhost:8080/api/places/autocomplete`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+                params: {
+                    input: inputValue,
+                    types: "(cities)",
+                },
+            });
+            if (response.data && response.data.predictions) {
+                const suggestions = response.data.predictions.map(prediction => {
+                    const parts = prediction.structured_formatting.secondary_text.split(', ');
+                    return {
+                        value: prediction.place_id,
+                        label: prediction.description, // Город + Страна
+                        city: prediction.structured_formatting.main_text, // Город
+                        country: parts[parts.length - 1], // Страна
+                    };
+                });
+                setCityOptions(suggestions);
+            } else {
+                console.error("Пустой результат от бэкенда:", response.data);
+                setCityOptions([]);
+            }
+        } catch (error) {
+            console.error("Ошибка загрузки городов:", error);
+        }
+    };
+
+    // Обработка выбора города
+    const handleCitySelect = (selectedOption) => {
+        if (selectedOption) {
+            setSelectedCity(selectedOption);
+            setCityInputValue(selectedOption.label);
+            setLocationInfo({
+                city: selectedOption.city,
+                country: selectedOption.country,
+            });
+
+            // Получение координат для города
+            getCityCoordinates(selectedOption.value).then(({ lat, lng }) => {
+                setCity(selectedOption.city);
+                setCountry(selectedOption.country);
+                setLongitude(lng);
+                setLatitude(lat);
+            })
+        } else {
+            // Если пользователь очистил выбор
+            setSelectedCity(null);
+            setCityInputValue(''); // Очищаем поле ввода
+            setLocationInfo({ city: '', country: '' });
+            setCity('');
+            setCountry('');
+            setLongitude(null);
+            setLatitude(null);
+        }
+    };
+
+    const getCityCoordinates = async (placeId) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8080/api/places/details`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+                params: {
+                    place_id: placeId,
+                },
+            }
+            );
 
             const location = response.data.result.geometry.location;
-            if (location) {
-                setLatitude(location.lat);
-                setLongitude(location.lng);
-                console.log("Location:", location);
-            } else {
-                console.error("Location not found in response:", response.data);
-                alert("Не удалось получить координаты для выбранного города.");
-            }
+            setLatitude(location.lat);
+            setLongitude(location.lng);
+            return { lat: location.lat, lng: location.lng };
         } catch (error) {
             console.error("Ошибка получения координат города:", error);
         }
@@ -324,20 +481,31 @@ export default function AddSpot() {
         setSelectedTrim(selectedOption);
     };
 
+    // Обработка выбора города из дропдауна
+    const handleCitySelection = (selectedOption) => {
+        if (selectedOption) {
+            handleCitySelect(selectedOption.description, selectedOption.placeId);
+        }
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
+
+        // Проверяем, есть ли координаты
+        if (latitude === null || longitude === null) {
+            alert("Пожалуйста, укажите местоположение спота.");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("caption", caption);
         formData.append("mainPhotoIndex", mainPhotoIndex);
+        formData.append("city", city);
+        formData.append("country", country);
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
         selectedFiles.forEach((file) => formData.append("photos", file));
 
-        if (latitude !== null) {
-            formData.append("latitude", latitude);
-        }
-        if (longitude !== null) {
-            formData.append("longitude", longitude);
-        }
 
         if (selectedTrim) {
             formData.append('trim', selectedTrim.value);
@@ -376,8 +544,6 @@ export default function AddSpot() {
     };
 
     return (
-
-
         <div className="container mt-3">
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
@@ -424,6 +590,49 @@ export default function AddSpot() {
                                 </div>
                             </div>
                         )}
+
+                        <div className='text-start mt-3'>
+                            {selectedFiles.length > 0 && !isExifProcessing && (
+                                <>
+                                    {/* Отображение страны и города, если координаты найдены */}
+                                    {latitude && longitude && (
+                                        <>
+                                            <p><strong>Country:</strong> {locationInfo.country || 'Не найдена'}</p>
+                                            <p><strong>City:</strong> {locationInfo.city || 'Не найден'}</p>
+                                            <p><strong>City:</strong> {latitude || 'Не найден'}</p>
+                                            <p><strong>City:</strong> {longitude || 'Не найден'}</p>
+                                        </>
+                                    )}
+
+                                    {/* Отображение ошибки, если данные отсутствуют */}
+                                    {error && !latitude && !longitude && (
+                                        <div className="alert alert-danger mt-3" role="alert">
+                                            {error}
+                                        </div>
+                                    )}
+
+                                    {/* Поле Select всегда доступно */}
+                                    <Select
+                                        options={cityOptions}
+                                        inputValue={cityInputValue} // Управляемое состояние для текста ввода
+                                        onInputChange={(value) => {
+                                            setCityInputValue(value); // Обновляем текст
+                                            handleCityInput(value);  // Загружаем автозаполнение
+                                        }}
+                                        onChange={(selectedOption) => {
+                                            handleCitySelect(selectedOption); // Обрабатываем выбор города
+                                        }}
+                                        isSearchable
+                                        placeholder="Enter city name..."
+                                        isClearable
+                                    />
+                                </>
+                            )}
+                            {isExifProcessing && (
+                                <p>Обрабатываются данные изображения...</p>
+                            )}
+                        </div>
+
                     </div>
                     <div className="col">
                         <div className="form-floating mb-3">
@@ -494,40 +703,33 @@ export default function AddSpot() {
                         />
                     </div>
 
-                    <div className="mt-3">
-                        <label>City</label>
-                        <input
-                            list="citySuggestions"
-                            className="form-control"
-                            placeholder="Enter city"
-                            value={selectedCity}
-                            onChange={handleCityInput}
-                            required
-                        />
-                        <datalist id="citySuggestions">
-                            {citySuggestions.map((suggestion, index) => (
-                                <option
-                                    key={index}
-                                    value={suggestion.description}
-                                    onClick={() => handleCitySelect(suggestion.description, suggestion.placeId)}
-                                >
-                                    {suggestion.description}
-                                </option>
-                            ))}
-                        </datalist>
-
-                        {latitude && longitude && (
-                            <div className="mt-3">
-                                <p>Координаты:</p>
-                                <p>Широта: {latitude}</p>
-                                <p>Долгота: {longitude}</p>
+                    <div className="col mt-3">
+                        {/* Дропдаун для выбора города, отображается только если выбрана страна */}
+                        {selectedCountry && (
+                            <div className="col mt-3">
+                                <label><strong>City</strong></label>
+                                <Select
+                                    options={cityOptions.map(city => ({
+                                        value: city.placeId,
+                                        label: city.description,
+                                        description: city.description,
+                                        placeId: city.placeId,
+                                    }))}
+                                    onInputChange={handleCityInput}
+                                    onChange={handleCitySelection}
+                                    isSearchable
+                                    placeholder="Select city"
+                                    value={selectedCity ? {
+                                        value: selectedCity.placeId,
+                                        label: selectedCity.description,
+                                        description: selectedCity.description,
+                                        placeId: selectedCity.placeId,
+                                    } : null}
+                                    isClearable
+                                />
                             </div>
                         )}
                     </div>
-
-
-
-
                 </div>
                 <button type="submit" className="btn btn-outline-primary mt-3">Add Spot</button>
                 <Link className="btn btn-outline-danger mx-2 mt-3" to="/spots">Cancel</Link>

@@ -5,11 +5,8 @@ import { Loader } from '@googlemaps/js-api-loader';
 import { Modal, Button } from 'react-bootstrap';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
-
-const containerStyle = {
-    width: '100%',
-    height: '400px',
-};
+import ShareButtons from '../components/ShareButtons';
+import GoogleMapWithMarker from '../components/GoogleMapWithMarker';
 
 export default function ViewSpot() {
     const [spot, setSpot] = useState({ caption: '', photos: [], latitude: null, longitude: null });
@@ -280,20 +277,54 @@ export default function ViewSpot() {
         }
     };
 
+    const handleDeleteReply = async (commentId, replyId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this reply?");
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`http://localhost:8080/api/comments/${commentId}/replies/${replyId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
+
+            // Удаляем реплай из состояния
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment.id === commentId
+                        ? {
+                            ...comment,
+                            replies: comment.replies.filter((reply) => reply.id !== replyId),
+                        }
+                        : comment
+                )
+            );
+        } catch (error) {
+            console.error("Error deleting reply:", error);
+            alert("Failed to delete reply. Please try again.");
+        }
+    };
+
+
     return (
         <div>
             <div className="container">
-                <nav aria-label="breadcrumb" className='mt-3'>
-                    <ol className="breadcrumb">
-                        <li className="breadcrumb-item">
-                            <Link to="/" className="text-decoration-none">Home</Link>
-                        </li>
-                        <li className="breadcrumb-item">
-                            <Link to="/spots/" className="text-decoration-none">Spots</Link>
-                        </li>
-                        <li className="breadcrumb-item active" aria-current="page">Spot {spot.id}</li>
-                    </ol>
-                </nav>
+                <div className="d-flex justify-content-between align-items-center">
+                    <nav aria-label="breadcrumb" className='mt-3'>
+                        <ol className="breadcrumb">
+                            <li className="breadcrumb-item">
+                                <Link to="/" className="text-decoration-none">Home</Link>
+                            </li>
+                            <li className="breadcrumb-item">
+                                <Link to="/spots/" className="text-decoration-none">Spots</Link>
+                            </li>
+                            <li className="breadcrumb-item active" aria-current="page">Spot {spot.id}</li>
+                        </ol>
+                    </nav>
+                    <div>
+                        <ShareButtons />
+                    </div>
+                </div>
                 {user.username === spot.user?.username && (
                     <ul className="nav mt-3 mb-3" style={{ display: "flex", alignItems: "center" }}>
                         <li className="nav-item">
@@ -331,7 +362,12 @@ export default function ViewSpot() {
                         )}
                     </div>
                     {/* Bootstrap Modal */}
-                    <Modal show={showModal} onHide={handleCloseModal} size="lg">
+                    <Modal
+                        show={showModal}
+                        onHide={handleCloseModal}
+                        size="lg"
+                    >
+
                         <Modal.Body>
                             <div className="d-flex justify-content-center">
                                 <img
@@ -357,6 +393,7 @@ export default function ViewSpot() {
                                 </Button>
                             </div>
                         </Modal.Footer>
+
                     </Modal>
                     <div className="col-md-5">
                         <h5 className="pb-1 mb-4 text-black border-bottom d-flex justify-content-between align-items-center">
@@ -506,14 +543,14 @@ export default function ViewSpot() {
                                                         </button>
                                                         {comment.user.username === user.username && ( // Показываем кнопку только для своих комментариев
                                                             <button
-                                                                className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
+                                                                className="btn btn-sm btn-link text-muted p-0"
                                                                 style={{
                                                                     fontSize: '12px', // Уменьшение текста
                                                                     alignSelf: 'start',
                                                                 }}
                                                                 onClick={() => handleDeleteComment(comment.id)}
                                                             >
-                                                                Delete
+                                                                <i className="bi bi-trash"></i>
                                                             </button>
                                                         )}
                                                     </div>
@@ -556,7 +593,7 @@ export default function ViewSpot() {
                                                                     <div className="d-flex">
                                                                         {reply.user?.avatar ? (
                                                                             <img
-                                                                                src={`https://newloripinbucket.s3.amazonaws.com/image/users/${comment.user.username}/${comment.user.avatar.name}`}
+                                                                                src={`https://newloripinbucket.s3.amazonaws.com/image/users/${reply.user.username}/${reply.user.avatar?.name}`}
                                                                                 alt={`${reply.user?.username}'s avatar`}
                                                                                 className="rounded-circle me-2"
                                                                                 style={{
@@ -568,15 +605,13 @@ export default function ViewSpot() {
                                                                             />
                                                                         ) : (
                                                                             <div
-                                                                                className="rounded-circle me-2 d-flex justify-content-center align-items-center"
+                                                                                className="d-flex justify-content-center align-items-center rounded-circle bg-secondary text-white"
                                                                                 style={{
                                                                                     width: '30px',
                                                                                     height: '30px',
-                                                                                    backgroundColor: '#6c757d',
-                                                                                    color: '#fff',
                                                                                     fontSize: '12px',
                                                                                     fontWeight: 'bold',
-                                                                                    alignSelf: 'start',
+                                                                                    boxSizing: 'border-box',
                                                                                 }}
                                                                             >
                                                                                 {reply.user?.username[0].toUpperCase()}
@@ -595,6 +630,20 @@ export default function ViewSpot() {
                                                                                 </span>
                                                                             </span>
                                                                             <p className="mb-0">{reply.content}</p>
+                                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                                {reply.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                                                    <button
+                                                                                        className="btn btn-sm btn-link text-muted p-0"
+                                                                                        style={{
+                                                                                            fontSize: '12px', // Уменьшение текста
+                                                                                            alignSelf: 'start',
+                                                                                        }}
+                                                                                        onClick={() => handleDeleteReply(comment.id, reply.id)}
+                                                                                    >
+                                                                                        <i className="bi bi-trash"></i>
+                                                                                    </button>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -615,17 +664,20 @@ export default function ViewSpot() {
                     </div>
                     <div className="col-md-3">
                         <div className="container">
-                            <div>
-                                <h4 className='text-start'>Map:</h4>
-                                <div ref={mapContainerRef} style={containerStyle}></div>
+                            <div style={{ padding: '20px' }}>
+                                <GoogleMapWithMarker
+                                    latitude={spot.latitude}
+                                    longitude={spot.longitude}
+                                    title={spot.id}
+                                />
                             </div>
                         </div>
                         <div>
-                            <h4 >Coordinates:</h4>
-                            <p>
-                                {spot.latitude && spot.longitude
-                                    ? `${spot.latitude}, ${spot.longitude}`
-                                    : 'Coordinates not available'}
+                            <p className='text-start mx-5'>
+                                City: {spot?.city}
+                            </p>
+                            <p className='text-start mx-5'>
+                                Country: {spot?.country}
                             </p>
                         </div>
                     </div>
