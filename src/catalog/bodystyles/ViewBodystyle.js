@@ -118,7 +118,7 @@ export default function ViewBodystyle() {
                                         <div className="row g-0">
                                             <div className="col-md-3 text-start">
                                                 <img
-                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle.generation.name || 'defaultGeneration'}/${bodystyle.facelift.name || 'defaultBodystyle'}/${bodystyle.bodytype?.name}/${trim.name}/${mainPhoto.name || 'defaultImage.jpg'}`}
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle?.generation?.name || 'defaultGeneration'}/${bodystyle?.facelift?.name || 'defaultBodystyle'}/${bodystyle?.bodytype?.name}/${trim?.name}/${mainPhoto?.name || 'defaultImage.jpg'}`}
                                                     className="img-fluid"
                                                     alt=''
                                                     style={{ maxWidth: '100%', objectFit: 'cover' }}

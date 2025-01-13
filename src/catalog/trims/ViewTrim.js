@@ -3,15 +3,22 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { Modal, Button } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
+import { formatDistanceToNow } from 'date-fns';
+import GoogleMapWithMarker from '../../components/GoogleMapWithMarker';
 
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
+    const [showMapModal, setShowMapModal] = useState(false); // Состояние для карты
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [spots, setSpots] = useState([]);
     const navigate = useNavigate();
     const { user } = useAuth(); // Получаем пользователя из AuthContext
 
-
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [replyContent, setReplyContent] = useState('');
+    const [expandedReplies, setExpandedReplies] = useState({});
 
     const handleOpenModal = (index) => {
         setCurrentPhotoIndex(index); // Устанавливаем индекс текущего фото
@@ -44,7 +51,6 @@ export default function ViewTrim() {
                 handleCloseModal();
             }
         };
-
         document.addEventListener("keydown", handleKeyDown);
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
@@ -105,11 +111,129 @@ export default function ViewTrim() {
             },
         });
         setTrim(result.data);
+        setComments(result.data.comments);
     }
 
     if (!trim.photos || trim.photos.length === 0) {
         return <div>Нет фотографий для отображения.</div>;
     }
+
+    const handleAddComment = async () => {
+        if (!newComment.trim()) {
+            alert('Комментарий не может быть пустым.');
+            return;
+        }
+
+        try {
+            const result = await axios.post(
+                `http://localhost:8080/trims/${trimId}/comments`,
+                { content: newComment },
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                }
+            );
+            setComments((prevComments) => [result.data, ...prevComments]);
+            setNewComment(''); // Очищаем поле ввода
+        } catch (error) {
+            console.error('Ошибка добавления комментария:', error);
+            alert('Не удалось добавить комментарий.');
+        }
+    };
+
+    const handleReplyClick = (commentId) => {
+        setReplyingTo((prev) => (prev === commentId ? null : commentId)); // Если форма открыта, закрываем её
+    };
+
+
+    const toggleReplies = (commentId) => {
+        setExpandedReplies((prev) => ({
+            ...prev,
+            [commentId]: !prev[commentId], // Инвертируем состояние для данного комментария
+        }));
+    };
+
+    const handleAddReply = async (parentId) => {
+        if (!replyContent.trim()) {
+            alert('Reply cannot be empty.');
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                `http://localhost:8080/comments/${parentId}/replies`,
+                { content: replyContent },
+                { headers: { Authorization: `Bearer ${user.token}` } }
+            );
+
+            // Обновление состояния комментариев
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment.id === parentId
+                        ? { ...comment, replies: [response.data, ...(comment.replies || [])] }
+                        : comment
+                )
+            );
+
+            // Раскрываем реплаи для родительского комментария
+            setExpandedReplies((prev) => ({
+                ...prev,
+                [parentId]: true, // Устанавливаем состояние "развернуто" для родителя
+            }));
+            setReplyContent('');
+            setReplyingTo(null);
+        } catch (error) {
+            console.error('Failed to add reply:', error);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this comment?");
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
+
+            // Удаляем комментарий из состояния
+            setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId));
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+            alert("Failed to delete comment. Please try again.");
+        }
+    };
+
+    const handleDeleteReply = async (commentId, replyId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this reply?");
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`http://localhost:8080/api/comments/${commentId}/replies/${replyId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
+
+            // Удаляем реплай из состояния
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment.id === commentId
+                        ? {
+                            ...comment,
+                            replies: comment.replies.filter((reply) => reply.id !== replyId),
+                        }
+                        : comment
+                )
+            );
+        } catch (error) {
+            console.error("Error deleting reply:", error);
+            alert("Failed to delete reply. Please try again.");
+        }
+    };
 
     return (
 
@@ -267,7 +391,19 @@ export default function ViewTrim() {
                         </ul>
                     </div>
                     <div className="col text-start">
-                        <h4>Spots with this car:</h4>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <h4>Spots with this car:</h4>
+                            <div>
+                                <Button
+                                    variant="link"
+                                    className="p-0 mb-1 text-decoration-none d-inline-flex align-items-center"
+                                    onClick={() => setShowMapModal(true)}
+                                >
+                                    <i className="bi bi-map me-1" />
+                                    Map
+                                </Button>
+                            </div>
+                        </div>
                         <div className="row row-cols-2 row-cols-md-2">
                             {spots.map((spot) => (
                                 <Link to={`/spots/${spot.id}`}>
@@ -280,15 +416,204 @@ export default function ViewTrim() {
                                 </Link>
                             ))}
                         </div>
+                        {/* Modal for Map */}
+                        <Modal show={showMapModal} onHide={() => setShowMapModal(false)} size="lg" centered>
+                            <Modal.Body>
+                                <GoogleMapWithMarker spots={spots} />
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="outline-primary btn-sm" onClick={() => setShowMapModal(false)}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                     </div>
                 </div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-2">
-                    <div className="col border">
-                        <div className="mb-3">
-                            <label for="exampleFormControlTextarea1" className="form-label">Comments</label>
-                            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                        </div>
+                    <div className="mt-4 mb-3">
+                        <textarea
+                            className="form-control"
+                            rows="3"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Add a comment"
+                        ></textarea>
+                        <button className="btn btn-outline-secondary mt-2" onClick={handleAddComment}>
+                            Comment
+                        </button>
                     </div>
+                    <h5 className='text-start'>Comments:</h5>
+                    <ul className="list-group list-group-flush text-start">
+                        {comments.map((comment) => (
+                            <li key={comment.id} className="list-group-item py-2">
+                                <div className="d-flex">
+                                    {/* Аватар пользователя */}
+                                    {comment.user.avatar ? (
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/users/${comment.user.username}/${comment.user.avatar.name}`}
+                                            alt={`${comment.user.username}'s avatar`}
+                                            className="rounded-circle me-2"
+                                            style={{
+                                                width: '40px',
+                                                height: '40px',
+                                                objectFit: 'cover',
+                                                alignSelf: 'start',
+                                            }}
+                                        />
+                                    ) : (
+                                        <div
+                                            className="rounded-circle me-2 d-flex justify-content-center align-items-center"
+                                            style={{
+                                                width: '40px',
+                                                height: '40px',
+                                                backgroundColor: '#6c757d',
+                                                color: '#fff',
+                                                fontSize: '16px',
+                                                fontWeight: 'bold',
+                                                alignSelf: 'start',
+                                            }}
+                                        >
+                                            {comment.user.username[0].toUpperCase()}
+                                        </div>
+                                    )}
+                                    <div className="d-flex flex-column w-100">
+                                        {/* Имя пользователя и время */}
+                                        <span className="d-flex justify-content-between align-items-center">
+                                            <strong>{comment.user.username}</strong>
+                                            <span className="text-muted small">
+                                                {comment?.createdAt
+                                                    ? `${formatDistanceToNow(new Date(comment.createdAt)).replace('about ', '')}`
+                                                    : 'Unknown'}
+                                            </span>
+                                        </span>
+                                        {/* Контент комментария */}
+                                        <p className="mb-0">{comment.content}</p>
+                                        {/* Кнопка "Reply" */}
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <button
+                                                className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
+                                                style={{
+                                                    fontSize: '12px', // Уменьшение текста
+                                                    alignSelf: 'start',
+                                                }}
+                                                onClick={() => handleReplyClick(comment.id)} // Открываем или закрываем форму
+                                            >
+                                                {replyingTo === comment.id ? 'Cancel' : 'Reply'}
+                                            </button>
+                                            {comment.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                <button
+                                                    className="btn btn-sm btn-link text-muted p-0"
+                                                    style={{
+                                                        fontSize: '12px', // Уменьшение текста
+                                                        alignSelf: 'start',
+                                                    }}
+                                                    onClick={() => handleDeleteComment(comment.id)}
+                                                >
+                                                    <i className="bi bi-trash"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                        {/* Форма для добавления ответа */}
+                                        {replyingTo === comment.id && (
+                                            <div className="mt-2">
+                                                <textarea
+                                                    className="form-control"
+                                                    rows="2"
+                                                    value={replyContent}
+                                                    onChange={(e) => setReplyContent(e.target.value)}
+                                                    placeholder="Write your reply..."
+                                                ></textarea>
+                                                <button
+                                                    className="btn btn-outline-secondary btn-sm mt-2"
+                                                    onClick={() => handleAddReply(comment.id)}
+                                                >
+                                                    Reply
+                                                </button>
+                                            </div>
+                                        )}
+                                        {/* Кнопка для переключения реплаев */}
+                                        {comment.replies && comment.replies.length > 0 && (
+                                            <button
+                                                className="btn btn-link p-0 mt-1 text-decoration-none"
+                                                style={{
+                                                    fontSize: '12px', // Уменьшение текста
+                                                    alignSelf: 'start',
+                                                }}
+                                                onClick={() => toggleReplies(comment.id)}
+                                            >
+                                                {expandedReplies[comment.id] ? 'Hide Replies' : 'View Replies'}
+                                            </button>
+                                        )}
+                                        {/* Отображение реплаев */}
+                                        {expandedReplies[comment.id] && comment.replies && comment.replies.length > 0 && (
+                                            <ul className="list-group list-group-flush ms-4">
+                                                {comment.replies.map((reply) => (
+                                                    <li key={reply.id} className="list-group-item py-2">
+                                                        <div className="d-flex">
+                                                            {reply.user?.avatar ? (
+                                                                <img
+                                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/users/${reply.user.username}/${reply.user.avatar?.name}`}
+                                                                    alt={`${reply.user?.username}'s avatar`}
+                                                                    className="rounded-circle me-2"
+                                                                    style={{
+                                                                        width: '30px',
+                                                                        height: '30px',
+                                                                        objectFit: 'cover',
+                                                                        alignSelf: 'start',
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <div
+                                                                    className="d-flex justify-content-center align-items-center rounded-circle bg-secondary text-white"
+                                                                    style={{
+                                                                        width: '30px',
+                                                                        height: '30px',
+                                                                        fontSize: '12px',
+                                                                        fontWeight: 'bold',
+                                                                        boxSizing: 'border-box',
+                                                                    }}
+                                                                >
+                                                                    {reply.user?.username[0].toUpperCase()}
+                                                                </div>
+                                                            )}
+                                                            <div className="d-flex flex-column w-100">
+                                                                <span className="d-flex justify-content-between align-items-center">
+                                                                    <strong>{reply.user?.username}</strong>
+                                                                    <span className="text-muted small">
+                                                                        {reply?.createdAt
+                                                                            ? `${formatDistanceToNow(new Date(reply.createdAt)).replace(
+                                                                                'about ',
+                                                                                ''
+                                                                            )}`
+                                                                            : 'Unknown'}
+                                                                    </span>
+                                                                </span>
+                                                                <p className="mb-0">{reply.content}</p>
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    {reply.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                                        <button
+                                                                            className="btn btn-sm btn-link text-muted p-0"
+                                                                            style={{
+                                                                                fontSize: '12px', // Уменьшение текста
+                                                                                alignSelf: 'start',
+                                                                            }}
+                                                                            onClick={() => handleDeleteReply(comment.id, reply.id)}
+                                                                        >
+                                                                            <i className="bi bi-trash"></i>
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         </div>

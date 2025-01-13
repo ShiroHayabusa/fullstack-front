@@ -147,7 +147,7 @@ export default function ViewGeneration() {
                         <Link to={`/spots/${spot.id}`} key={spot.id}>
                             <img
                                 src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos?.find(photo => photo.isMain)?.name}`}
-                                alt={spot.photos?.find(photo => photo.isMain).name}
+                                alt={spot.photos?.find(photo => photo.isMain)?.name}
                                 className="img-fluid mb-2"
                             />
                         </Link>

@@ -10,6 +10,7 @@ import GoogleMapWithMarker from '../components/GoogleMapWithMarker';
 
 export default function ViewSpot() {
     const [spot, setSpot] = useState({ caption: '', photos: [], latitude: null, longitude: null });
+
     const { id } = useParams();
     const mapContainerRef = useRef(null); // Ссылка на контейнер карты
     const navigate = useNavigate();
@@ -24,6 +25,8 @@ export default function ViewSpot() {
     const [likes, setLikes] = useState(0);
     const [hasLiked, setHasLiked] = useState(false);
 
+
+
     const loadSpot = async () => {
         try {
             const result = await axios.get(`http://localhost:8080/spots/${id}`, {
@@ -33,13 +36,7 @@ export default function ViewSpot() {
             });
             setSpot(result.data);
 
-            const commentsResult = await axios.get(`http://localhost:8080/spots/${id}/comments`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
-            setComments(commentsResult.data);
-
+            setComments(result.data.comments);
 
             const likesResult = await axios.get(`http://localhost:8080/spots/${id}/likes`, {
                 headers: {
@@ -52,6 +49,8 @@ export default function ViewSpot() {
             console.error('Ошибка загрузки данных:', error);
         }
     };
+
+
 
     useEffect(() => {
         if (!user) {
@@ -102,53 +101,6 @@ export default function ViewSpot() {
         };
     }, [handlePrevPhoto, handleNextPhoto, handleCloseModal]);
 
-    const initializeMap = async () => {
-        const loader = new Loader({
-            apiKey: "AIzaSyCAFPj_ck8L8ceN5wTWlyoWiLAutAxKJnI", // Замените на ваш API-ключ
-            version: "weekly",
-        });
-
-        try {
-            const google = await loader.importLibrary("maps"); // Загрузка библиотеки карт
-            const googleMarker = await loader.importLibrary("marker"); // Загрузка библиотеки маркеров
-
-            // Проверяем, что контейнер карты существует
-            if (!mapContainerRef.current) {
-                console.error("Контейнер карты не найден.");
-                return;
-            }
-
-            // Инициализация карты
-            const map = new google.Map(mapContainerRef.current, {
-                center: { lat: spot.latitude, lng: spot.longitude },
-                zoom: 13,
-            });
-
-            // Создание HTML-контента для маркера
-            const markerElement = document.createElement('div');
-            markerElement.innerHTML = `
-                <div style="background-color: white; border: 1px solid black; border-radius: 8px; padding: 4px 8px; font-size: 14px; color: black;">
-                    📍 ${spot.caption || 'Custom Marker'}
-                </div>
-            `;
-
-            // Инициализация AdvancedMarkerElement
-            new googleMarker.AdvancedMarkerElement({
-                map: map,
-                position: { lat: spot.latitude, lng: spot.longitude },
-                content: markerElement,
-            });
-        } catch (error) {
-            console.error("Ошибка загрузки Google Maps API:", error);
-        }
-    };
-
-    useEffect(() => {
-        if (spot.latitude && spot.longitude) {
-            initializeMap();
-        }
-    }, [spot.latitude, spot.longitude]);
-
     const deleteSpot = async () => {
         const confirmDelete = window.confirm(
             'Are you sure you want to delete this spot? This action cannot be undone.'
@@ -177,7 +129,7 @@ export default function ViewSpot() {
 
         try {
             const result = await axios.post(
-                `http://localhost:8080/spots/${id}/comments`,
+                `http://localhost:8080/spots/${id}/addComment`,
                 { content: newComment },
                 {
                     headers: {
@@ -666,9 +618,9 @@ export default function ViewSpot() {
                         <div className="container">
                             <div style={{ padding: '20px' }}>
                                 <GoogleMapWithMarker
+                                    spots={[spot]}
                                     latitude={spot.latitude}
                                     longitude={spot.longitude}
-                                    title={spot.id}
                                 />
                             </div>
                         </div>
