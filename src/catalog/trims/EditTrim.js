@@ -343,7 +343,7 @@ export default function EditTrim() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
+                <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>

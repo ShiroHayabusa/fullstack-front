@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AddModel() {
 
@@ -14,6 +15,7 @@ export default function AddModel() {
 
     const { name, years, description } = model;
     const { make } = useParams();
+    const { user } = useAuth();
 
     const onInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -32,7 +34,11 @@ export default function AddModel() {
         formData.append('description', description);
 
         try {
-            const response = await axios.post(`http://localhost:8080/catalog/${make}/addModel`, formData);
+            const response = await axios.post(`http://localhost:8080/catalog/${make}/addModel`, formData, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
             if (response.status === 200 || response.status === 201) {
                 console.log('Model added successfully');
                 navigate(`/catalog/${make}`);

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
+import Grid from '../../components/Grid';
 
 export default function ViewMake() {
 
@@ -14,6 +15,9 @@ export default function ViewMake() {
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const [trims, setTrims] = useState([]);
+    const [spotsWithoutPage, setSpotsWithoutPage] = useState([]);
+    const [totalCells, setTotalCells] = useState(null);
 
     useEffect(() => {
         if (!user) {
@@ -48,6 +52,47 @@ export default function ViewMake() {
         }
     };
 
+    // Получаем массив trims для данного make
+    const fetchTrims = async () => {
+        try {
+            const result = await axios.get(`http://localhost:8080/catalog/${make}/trims`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
+            // Предполагается, что result.data — это массив объектов trims
+            setTrims(result.data);
+            setTotalCells(result.data.length);
+            console.log("Полученные trims:", result.data);
+        } catch (error) {
+            console.error("Ошибка при получении данных trims", error);
+        }
+    };
+
+    // Получаем массив spots для данного make
+    const fetchSpotsWithoutPage = async () => {
+        try {
+            const result = await axios.get(`http://localhost:8080/spots/${make}/user`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
+            setSpotsWithoutPage(result.data);
+            console.log("Полученные spots:", result.data);
+        } catch (error) {
+            console.error("Ошибка при получении данных spots", error);
+        }
+    };
+
+    const matchingCount = trims.filter(trim =>
+        spotsWithoutPage.some(spot =>
+            spot.trim && spot.trim.id === trim.id
+        )
+    ).length;
+
+    const progressPercent = totalCells > 0 ? Math.round((matchingCount / totalCells) * 100) : 0;
+
+
     const fetchSpots = async () => {
         try {
             const result = await axios.get(`http://localhost:8080/catalog/${make}/makeSpots?page=${page}&size=10`, {
@@ -72,6 +117,8 @@ export default function ViewMake() {
     };
 
     useEffect(() => {
+        fetchTrims();
+        fetchSpotsWithoutPage();
         if (page > 0) {
             fetchSpots();
         }
@@ -120,11 +167,32 @@ export default function ViewMake() {
                                 onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/100'; }} // Fallback image 
                             />
                         </div>
-                        <div className="col-md-10">
+                        <div className="col-md-5">
                             <div className="card-body">
                                 <h3 className="card-title text-start">{make}</h3>
                                 <p className="card-text text-start">{makeDetails?.description}</p>
                             </div>
+                        </div>
+                        <div className="col-md-5 mb-3 text-start">
+                            <h6>Spots progress:</h6>
+                            <div className="progress mb-2">
+                                <div
+                                    className="progress-bar bg-success"
+                                    role="progressbar"
+                                    style={{ width: `${progressPercent}%` }}
+                                    aria-valuenow={progressPercent}
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                >
+                                    {progressPercent}%
+                                </div>
+                            </div>
+                            <Grid
+                                make={make}
+                                user={user}
+                                trims={trims}
+                                spotsWithouPage={spotsWithoutPage}
+                                totalCells={totalCells} />
                         </div>
                     </div>
                 </div>
