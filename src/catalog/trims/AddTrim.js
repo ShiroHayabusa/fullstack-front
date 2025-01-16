@@ -43,6 +43,8 @@ export default function AddTrim() {
     const [tunerList, setTunerList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
+    const [previewUrls, setPreviewUrls] = useState([]);
 
     const loadBodystyleEntity = async () => {
         const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
@@ -160,8 +162,17 @@ export default function AddTrim() {
             .catch((error) => console.log(error));
     };
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
+        const files = Array.from(event.target.files);
+        const previewUrls = files.map(file => URL.createObjectURL(file));
         setSelectedFiles([...event.target.files]);
+        setPreviewUrls(previewUrls);
+        setMainPhotoIndex(0);
+    };
+
+    const clearPreviews = () => {
+        previewUrls.forEach(url => URL.revokeObjectURL(url));
+        setPreviewUrls([]);
     };
 
     const onSubmit = async (e) => {
@@ -174,6 +185,7 @@ export default function AddTrim() {
         Object.keys(trim).forEach(key => {
             formData.append(key, trim[key]);
         });
+        formData.append("mainPhotoIndex", mainPhotoIndex);
 
         selectedFiles.forEach(file => {
             formData.append('photos', file);
@@ -193,6 +205,7 @@ export default function AddTrim() {
         } catch (error) {
             console.error('Error adding trim: ', error);
         }
+        clearPreviews();
     };
 
     return (
@@ -365,6 +378,28 @@ export default function AddTrim() {
                             onChange={handleFileChange}
                             multiple
                         />
+                        {previewUrls.length > 0 && (
+                            <div className="mt-3">
+                                <h5>Preview (Click to select main photo):</h5>
+                                <div className="d-flex flex-wrap">
+                                    {previewUrls.map((url, index) => (
+                                        <div
+                                            key={index}
+                                            className={`m-2 position-relative ${mainPhotoIndex === index ? "selected-photo" : "unselected-photo"}`}
+                                            style={{ cursor: "pointer", borderWidth: "2px" }}
+                                            onClick={() => setMainPhotoIndex(index)}
+                                        >
+                                            <img
+                                                src={url}
+                                                alt={`Preview ${index}`}
+                                                className="img-thumbnail"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="form-check form-switch mb-3 text-start">
                             <input

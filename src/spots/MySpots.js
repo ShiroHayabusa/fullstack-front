@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
+import { formatDistanceToNow } from 'date-fns';
+import Masonry from 'react-masonry-css';
+import '../components/Masonry.css'
 
 export default function Spots() {
     const [spots, setSpots] = useState([]);
@@ -10,6 +12,13 @@ export default function Spots() {
     const [spotsPerPage] = useState(20); // Количество элементов на странице
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    const breakpointColumnsObj = {
+        default: 4, // по умолчанию 4 колонки
+        1100: 3,
+        700: 2,
+        500: 1
+    };
 
     const loadSpots = async () => {
         try {
@@ -21,6 +30,36 @@ export default function Spots() {
             setSpots(result.data);
         } catch (error) {
             console.error("Failed to fetch spots", error);
+        }
+    };
+
+    const toggleLike = async (spotId) => {
+        try {
+            const response = await axios.post(
+                `http://localhost:8080/spots/${spotId}/like`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                }
+            );
+
+            console.log("API Response:", response.data);
+            // Update the spots state
+            setSpots((prevSpots) =>
+                prevSpots.map((spot) =>
+                    spot.id === spotId
+                        ? {
+                            ...spot,
+                            likeCount: response.data.likeCount,
+                            hasLiked: response.data.hasLiked,
+                        }
+                        : spot
+                )
+            );
+        } catch (error) {
+            console.error("Error toggling like:", error);
         }
     };
 
@@ -54,27 +93,78 @@ export default function Spots() {
                     </ol>
                 </nav>
                 <div className="row row-cols-1 row-cols-md-4 g-4">
-                    {currentSpots.map((spot) => (
-                        <div className="col" key={spot.id}>
-                            <Link to={`/spots/${spot.id}`} className="text-decoration-none text-black">
-                                <div className="card h-100">
-                                    <img
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot?.photos[0]?.name || 'defaultImage.jpg'}`}
-                                        className="card-img-top"
-                                        alt={spot?.photos[0]?.name || 'Default Image'}
-                                    />
-                                    <div className="card-body">
-                                        <p className="card-text text-start">Spotted by {spot.user?.username}</p>
-                                    </div>
-                                    <div className="card-footer">
-                                        <small className="text-body-secondary text-start">
-                                            {format(new Date(spot.createdAt), 'MMMM d yyyy HH:mm')}
-                                        </small>
+                    <Masonry
+                        breakpointCols={breakpointColumnsObj}
+                        className="my-masonry-grid"
+                        columnClassName="my-masonry-grid_column"
+                    >
+                        {currentSpots.map((spot) => {
+                            const mainPhoto = Array.isArray(spot.photos) && spot.photos.length > 0
+                                ? spot.photos.find((photo) => photo.isMain)
+                                : {};
+
+                            return (
+                                <div className="col" key={spot.id}>
+                                    <div className="card position-relative mb-3">
+                                        <Link to={`/spots/${spot.id}`}>
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${mainPhoto?.name || 'defaultImage.jpg'}`}
+                                                className="card-img-top"
+                                                alt={spot?.photos[0]?.name || 'Default Image'}
+                                            />
+                                        </Link>
+                                        <Link
+                                            to={`/users/${spot.user?.id}`}
+                                            className="position-absolute start-0 top-0 m-2 d-flex align-items-center text-decoration-none"
+                                            style={{ padding: "5px", borderRadius: "5px" }}
+                                        >
+                                            {spot.user.avatar ? (
+                                                <img
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/users/${spot.user.username}/${spot.user?.avatar}`}
+                                                    alt="Avatar"
+                                                    className="img-fluid rounded-circle me-2"
+                                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                    style={{ width: '30px', height: '30px', fontSize: '1rem' }}
+                                                >
+                                                    {spot.user?.username.charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <span className="text-white">{spot.user.username}</span>
+                                        </Link>
+                                        <div className="card-footer">
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <div className="d-flex align-items-center">
+                                                    {/* Кнопка лайка, при клике передается spot.id */}
+                                                    <button
+                                                        onClick={() => toggleLike(spot.id)}
+                                                        className="btn btn-like p-0 me-2"
+                                                    >
+                                                        <i className={`bi ${spot.hasLiked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}></i>
+                                                    </button>
+                                                    {/* Количество лайков */}
+                                                    <span className="me-3">
+                                                        {spot.likeCount}
+                                                    </span>
+                                                    {/* Иконка комментариев и их количество */}
+                                                    <i className="bi bi-chat me-1"></i>
+                                                    <span>{spot.commentCount}</span>
+                                                </div>
+                                                <span className="text-muted small">
+                                                    {spot?.createdAt
+                                                        ? `${formatDistanceToNow(new Date(spot.createdAt)).replace('about ', '')} ago`
+                                                        : 'Unknown'}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </Link>
-                        </div>
-                    ))}
+                            )
+                        })}
+                    </Masonry>
                 </div>
                 {/* Компонент пагинации */}
                 <Pagination

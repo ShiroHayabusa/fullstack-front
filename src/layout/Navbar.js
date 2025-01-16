@@ -46,7 +46,16 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
-                <Link className="navbar-brand" to="/">Loripin</Link>
+                <a class="navbar-brand" href="#">
+                    <img
+                        src="https://newloripinbucket.s3.amazonaws.com/image/logo/logo2.svg"
+                        alt="Logo"
+                        width="30"
+                        height="24"
+                        style={{filter: "invert(1)"}}
+                        class="d-inline-block align-text-top me-2" />
+                    <Link className="navbar-brand" to="/">Loripin</Link>
+                </a>
                 {/* Navbar Toggler for smaller screens */}
                 <button
                     className="navbar-toggler"

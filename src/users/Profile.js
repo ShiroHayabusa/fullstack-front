@@ -6,8 +6,14 @@ import { formatDistanceToNow } from 'date-fns';
 
 const Profile = () => {
     const [currentUser, setCurrentUser] = useState(null);
+
     const [loading, setLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState(null);
+
+    const [bio, setBio] = useState("");
+    const [bioDirty, setBioDirty] = useState(false);
+    const [bioMessage, setBioMessage] = useState("");
+    const [bioError, setBioError] = useState("");
 
     const [email, setEmail] = useState("");
     const [confirmEmail, setConfirmEmail] = useState("");
@@ -57,6 +63,7 @@ const Profile = () => {
             });
             setCurrentUser(response.data);
             setEmail(response.data.email || ""); // Initialize email state
+            setBio(response.data.bio || "");
             console.log("currentUser:", response.data)
         } catch (err) {
             console.error('Ошибка загрузки данных:', err);
@@ -108,6 +115,41 @@ const Profile = () => {
             return () => clearTimeout(timer);
         }
     }, [message]);
+
+
+    const handleBioChange = (e) => {
+        setBio(e.target.value);
+        setBioDirty(true);
+    };
+
+    const handleBioSave = async () => {
+        try {
+            // Пример запроса для обновления bio пользователя
+            const response = await axios.put(
+                `http://localhost:8080/users/update`,
+                {
+                    bio,
+                    username: currentUser.username
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            if (response.status === 200) {
+                // Обновляем currentUser и сбрасываем флаг
+                setCurrentUser((prev) => ({ ...prev, bio }));
+                setBioDirty(false);
+                setBioMessage("Bio успешно сохранён.");
+                setBioError("");
+            }
+        } catch (err) {
+            console.error("Ошибка сохранения bio:", err);
+            setBioError("Не удалось сохранить Bio.");
+        }
+    };
 
 
     const handleFileChange = async (event) => {
@@ -326,6 +368,32 @@ const Profile = () => {
                             <strong>Email: </strong>{currentUser?.email}{" "}
 
                         </p>
+                        <div className="form-floating mb-3">
+                            <textarea
+                                className="form-control"
+                                id="floatingTextarea2"
+                                style={{ height: '310px' }}
+                                name="bio"
+                                value={bio}
+                                onChange={handleBioChange}
+                            >
+                            </textarea>
+                            <label htmlFor="floatingTextarea2">Bio</label>
+                        </div>
+                        {bioDirty && (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={handleBioSave}
+                            >
+                                Save
+                            </button>
+                        )}
+                        {bioError && (
+                            <div className="alert alert-danger mt-3" role="alert">
+                                {bioError}
+                            </div>
+                        )}
                         <p>
                             <button
                                 className="btn btn-sm btn-link text-primary p-0 mt-3 text-decoration-none"

@@ -4,6 +4,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
 import Grid from '../../components/Grid';
+import Masonry from 'react-masonry-css';
+import '../../components/Masonry.css'
 
 export default function ViewMake() {
 
@@ -18,6 +20,13 @@ export default function ViewMake() {
     const [trims, setTrims] = useState([]);
     const [spotsWithoutPage, setSpotsWithoutPage] = useState([]);
     const [totalCells, setTotalCells] = useState(null);
+
+    const breakpointColumnsObj = {
+        default: 5,
+        1100: 4,
+        700: 3,
+        500: 2
+    };
 
     useEffect(() => {
         if (!user) {
@@ -217,19 +226,25 @@ export default function ViewMake() {
                     </div>
                 </div>
 
-                <div className="h5 pb-1 mb-3 text-black border-bottom border-black text-start">
+                <div className="h5 pb-1 mb-3 text-black border-bottom border-muted text-start">
                     Spots with {make}
                 </div>
                 <div className="row row-cols-2 row-cols-md-5">
-                    {spots.map((spot) => (
-                        <Link to={`/spots/${spot.id}`} key={spot.id}>
-                            <img
-                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos?.find(photo => photo.isMain)?.name}`}
-                                alt={spot.photos?.find(photo => photo.isMain).name}
-                                className="img-fluid mb-2"
-                            />
-                        </Link>
-                    ))}
+                    <Masonry
+                        breakpointCols={breakpointColumnsObj}
+                        className="my-masonry-grid"
+                        columnClassName="my-masonry-grid_column"
+                    >
+                        {spots.map((spot) => (
+                            <Link to={`/spots/${spot.id}`} key={spot.id}>
+                                <img
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos?.find(photo => photo.isMain)?.name}`}
+                                    alt={spot.photos?.find(photo => photo.isMain).name}
+                                    className="img-fluid mb-2"
+                                />
+                            </Link>
+                        ))}
+                    </Masonry>
                 </div>
                 {hasMore && (
                     <div className="text-center mt-3">

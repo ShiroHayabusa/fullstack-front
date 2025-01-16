@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext';
+import Masonry from 'react-masonry-css';
+import '../../components/Masonry.css'
 
 export default function ViewBodystyle() {
 
@@ -19,6 +21,13 @@ export default function ViewBodystyle() {
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth(); // Получаем пользователя из AuthContext
+
+    const breakpointColumnsObj = {
+        default: 5,
+        1100: 4,
+        700: 3,
+        500: 2
+    };
 
     useEffect(() => {
         if (!user) {
@@ -100,7 +109,7 @@ export default function ViewBodystyle() {
                         <li className="breadcrumb-item active" aria-current="page">{bodystyle.bodytype?.name}</li>
                     </ol>
                 </nav>
-                <div className="h5 pb-1 mb-3 text-black border-bottom border-black text-start">
+                <div className="h5 pb-1 mb-3 text-black border-bottom border-muted text-start">
                     {make} {model} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
                 </div>
                 <div className="row row-cols-1 row-cols-sm-2">
@@ -149,19 +158,25 @@ export default function ViewBodystyle() {
                     </div>
 
                 </div>
-                <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-black text-start">
+                <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-muted text-start">
                     Spots with {make} {model} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
                 </div>
                 <div className="row row-cols-2 row-cols-md-5">
-                    {spots.map((spot) => (
-                        <Link to={`/spots/${spot.id}`} key={spot.id}>
-                            <img
-                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos?.find(photo => photo.isMain)?.name}`}
-                                alt={spot.photos?.find(photo => photo.isMain).name}
-                                className="img-fluid mb-2"
-                            />
-                        </Link>
-                    ))}
+                    <Masonry
+                        breakpointCols={breakpointColumnsObj}
+                        className="my-masonry-grid"
+                        columnClassName="my-masonry-grid_column"
+                    >
+                        {spots.map((spot) => (
+                            <Link to={`/spots/${spot.id}`} key={spot.id}>
+                                <img
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos?.find(photo => photo.isMain)?.name}`}
+                                    alt={spot.photos?.find(photo => photo.isMain).name}
+                                    className="img-fluid mb-2"
+                                />
+                            </Link>
+                        ))}
+                    </Masonry>
                 </div>
                 {hasMore && (
                     <div className="text-center mt-3">

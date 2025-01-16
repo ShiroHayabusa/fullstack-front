@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Masonry from 'react-masonry-css';
+import '../../components/Masonry.css'
 
 export default function ViewGeneration() {
     const [bodystyles, setBodystyles] = useState([]);
@@ -17,6 +19,13 @@ export default function ViewGeneration() {
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth(); // Получаем пользователя из AuthContext
+
+    const breakpointColumnsObj = {
+        default: 5,
+        1100: 4,
+        700: 3,
+        500: 2
+    };
 
     // Объединяем все вызовы данных в один useEffect
     useEffect(() => {
@@ -106,13 +115,25 @@ export default function ViewGeneration() {
                         <li className="breadcrumb-item active" aria-current="page">{generation.name}</li>
                     </ol>
                 </nav>
+                <div className="row row-cols-1 row-cols-md-3 mb-3">
+                    <div className="col-md-3 mb-3 text-start">
+                        <h5>{make} {model}</h5>
+                        <h5>{generation.name}</h5>
+                        <span>{generation?.years}</span>
+                    </div>
+                    <div className="col-md-9">
+                        <p className="text-start">{generation?.description}</p>
+                    </div>
+                </div>
                 {facelifts.map((facelift) => (
                     <div className="mt-3" key={facelift.id}>
-                        <div className="h5 pb-1 text-black border-bottom border-black text-start">
-                            {facelift.name} {make} {model} {generation.name}
-                            {user?.roles.includes("ROLE_ADMIN") && (
-                                <Link to={`/catalog/${make}/${model}/${generationId}/${facelift.id}/editFacelift`} className="ms-3 text-decoration-none">Edit facelift</Link>
-                            )}
+                        <div className="h5 pb-1 text-black border-bottom border-muted text-start">
+                            <div className="h5 col-md-5 text-start">
+                                {facelift.name}
+                                {user?.roles.includes("ROLE_ADMIN") && (
+                                    <Link to={`/catalog/${make}/${model}/${generationId}/${facelift.id}/editFacelift`} className="ms-3 text-decoration-none">Edit facelift</Link>
+                                )}
+                            </div>
                         </div>
 
                         <div className="row row-cols-1 row-cols-md-3 g-3">
@@ -139,19 +160,25 @@ export default function ViewGeneration() {
 
                     </div>
                 ))}
-                <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-black text-start">
+                <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-muted text-start">
                     Spots with {make} {model} {generation.name}
                 </div>
                 <div className="row row-cols-2 row-cols-md-5">
-                    {spots.map((spot) => (
-                        <Link to={`/spots/${spot.id}`} key={spot.id}>
-                            <img
-                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos?.find(photo => photo.isMain)?.name}`}
-                                alt={spot.photos?.find(photo => photo.isMain)?.name}
-                                className="img-fluid mb-2"
-                            />
-                        </Link>
-                    ))}
+                    <Masonry
+                        breakpointCols={breakpointColumnsObj}
+                        className="my-masonry-grid"
+                        columnClassName="my-masonry-grid_column"
+                    >
+                        {spots.map((spot) => (
+                            <Link to={`/spots/${spot.id}`} key={spot.id}>
+                                <img
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos?.find(photo => photo.isMain)?.name}`}
+                                    alt={spot.photos?.find(photo => photo.isMain)?.name}
+                                    className="img-fluid mb-2"
+                                />
+                            </Link>
+                        ))}
+                    </Masonry>
                 </div>
                 {hasMore && (
                     <div className="text-center mt-3">

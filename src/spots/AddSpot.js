@@ -145,42 +145,6 @@ export default function AddSpot() {
         setPreviewUrls([]);
     };
 
-    const handleCountryChange = async (selectedOption) => {
-        setSelectedCountry(selectedOption);
-        setSelectedCity(null);
-        setCityOptions([]);
-        setLatitude(null);
-        setLongitude(null);
-        setLocationInfo({ city: '', country: selectedOption.label });
-
-        // Запрашиваем список городов для выбранной страны
-        try {
-            const response = await axios.get(
-                `http://localhost:8080/api/places/autocomplete`,
-                {
-                    params: {
-                        input: '',
-                        types: "(cities)",
-                        country: selectedOption.value, // Передаем код страны
-                        key: "AIzaSyCAFPj_ck8L8ceN5wTWlyoWiLAutAxKJnI",
-                    },
-                }
-            );
-
-            // Предположим, что ваш бэкенд поддерживает фильтрацию по стране
-            const suggestions = response.data.predictions.map((prediction) => ({
-                description: prediction.description,
-                placeId: prediction.place_id,
-            }));
-
-            setCityOptions(suggestions);
-        } catch (error) {
-            console.error("Ошибка загрузки предложений города:", error);
-            setCityOptions([]);
-        }
-    };
-
-
     const handleCityInput = async (inputValue) => {
         if (!inputValue || inputValue.length <= 2) {
             setCityOptions([]);
@@ -654,6 +618,7 @@ export default function AddSpot() {
                             options={optionsMake}
                             onChange={handleMakeChange}
                             isSearchable
+                            isClearable
                             placeholder="Select make"
                             value={selectedMake}
                         />
@@ -661,6 +626,7 @@ export default function AddSpot() {
                             options={optionsModel}
                             onChange={handleModelChange}
                             isSearchable
+                            isClearable
                             placeholder="Select model"
                             value={selectedModel}
                             isDisabled={!selectedMake}
@@ -670,6 +636,7 @@ export default function AddSpot() {
                             options={optionsGeneration}
                             onChange={handleGenerationChange}
                             isSearchable
+                            isClearable
                             placeholder="Select generation"
                             isDisabled={!selectedModel}
                             value={selectedGeneration}
@@ -679,6 +646,7 @@ export default function AddSpot() {
                             options={optionsFacelift}
                             onChange={handleFaceliftChange}
                             isSearchable
+                            isClearable
                             placeholder="Select facelift"
                             isDisabled={!selectedGeneration}
                             value={selectedFacelift}
@@ -688,6 +656,7 @@ export default function AddSpot() {
                             options={optionsBodystyle}
                             onChange={handleBodystyleChange}
                             isSearchable
+                            isClearable
                             placeholder="Select bodystyle"
                             isDisabled={!selectedFacelift}
                             value={selectedBodystyle}
@@ -697,6 +666,7 @@ export default function AddSpot() {
                             options={optionsTrim}
                             onChange={handleTrimChange}
                             isSearchable
+                            isClearable
                             placeholder="Select trim"
                             isDisabled={!selectedBodystyle}
                             value={selectedTrim}

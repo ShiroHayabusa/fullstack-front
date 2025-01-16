@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'
 import {
   GoogleMap,
   Marker,
@@ -9,7 +10,7 @@ import { reverseGeocode } from '../components/geocode';
 
 const mapContainerStyle = {
   width: '100%',
-  height: '400px',
+  height: '500px',
 };
 
 const defaultMapOptions = {
@@ -140,16 +141,27 @@ export default function GoogleMapWithMarker({
               textAlign: 'center',
             }}
           >
-            <img
-              src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${selectedSpot.user?.username}/${selectedSpot.photos?.find((p) => p.isMain)?.name}`}
-              alt={
-                selectedSpot.photos?.find((photo) => photo.isMain)?.name || ''
-              }
+            <Link
+              to={`/spots/${selectedSpot.id}`}
               style={{
-                maxHeight: '150px',
-                objectFit: 'cover',
+                display: 'block',
+                marginTop: '8px',
+                color: '#007BFF',
+                textDecoration: 'none',
+                fontWeight: 'bold',
               }}
-            />
+            >
+              <img
+                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${selectedSpot.user?.username}/${selectedSpot.id}/${selectedSpot.photos?.find((p) => p.isMain)?.name}`}
+                alt={
+                  selectedSpot.photos?.find((photo) => photo.isMain)?.name || ''
+                }
+                style={{
+                  maxHeight: '150px',
+                  objectFit: 'cover',
+                }}
+              />
+            </Link>
             <p style={{ margin: 0 }}>
               {selectedSpot.city && <span>{selectedSpot.city}, </span>}
               {selectedSpot.country && <span>{selectedSpot.country}</span>}

@@ -5,6 +5,8 @@ import { Modal, Button } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import GoogleMapWithMarker from '../../components/GoogleMapWithMarker';
+import Masonry from 'react-masonry-css';
+import '../../components/Masonry.css'
 
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
@@ -20,9 +22,19 @@ export default function ViewTrim() {
     const [replyContent, setReplyContent] = useState('');
     const [expandedReplies, setExpandedReplies] = useState({});
 
+    const breakpointColumnsObj = {
+        default: 2,
+        1100: 2,
+        700: 2,
+        500: 2
+    };
+
+
     const handleOpenModal = (index) => {
-        setCurrentPhotoIndex(index); // Устанавливаем индекс текущего фото
-        setShowModal(true); // Открываем модалку
+        if (trim && trim.photos && trim.photos.length > 0) {
+            setCurrentPhotoIndex(index); // Устанавливаем индекс текущего фото
+            setShowModal(true); // Открываем модалку
+        }
     };
 
     const handleCloseModal = () => {
@@ -114,9 +126,7 @@ export default function ViewTrim() {
         setComments(result.data.comments);
     }
 
-    if (!trim.photos || trim.photos.length === 0) {
-        return <div>Нет фотографий для отображения.</div>;
-    }
+    const photos = (trim && trim.photos) || [];
 
     const handleAddComment = async () => {
         if (!newComment.trim()) {
@@ -285,15 +295,20 @@ export default function ViewTrim() {
                         <Modal show={showModal} onHide={handleCloseModal} size="lg">
                             <Modal.Body>
                                 <div className="d-flex justify-content-center">
-                                    <img
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${trim.photos[currentPhotoIndex].name}`}
-                                        className="img-fluid"
-                                    />
+                                    {trim && trim.photos && trim.photos.length > 0 && trim.photos[currentPhotoIndex] ? (
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim?.bodystyle?.generation?.name}/${trim?.bodystyle?.facelift?.name}/${trim?.bodystyle?.bodytype?.name}/${trim?.name}/${trim.photos[currentPhotoIndex]?.name}`}
+                                            className="img-fluid"
+                                            alt="Car photo"
+                                        />
+                                    ) : (
+                                        <p>Фото не доступны</p>
+                                    )}
                                 </div>
                             </Modal.Body>
                             <Modal.Footer className="d-flex justify-content-between">
                                 <span>
-                                    Photo {currentPhotoIndex + 1} of {trim.photos.length}
+                                    Photo {trim && trim.photos ? currentPhotoIndex + 1 : 0} of {trim && trim.photos ? trim.photos.length : 0}
                                 </span>
                                 <div>
                                     <Button variant="outline-secondary btn-sm" onClick={handlePrevPhoto} className="me-2">
@@ -405,16 +420,22 @@ export default function ViewTrim() {
                             </div>
                         </div>
                         <div className="row row-cols-2 row-cols-md-2">
-                            {spots.map((spot) => (
-                                <Link to={`/spots/${spot.id}`}>
-                                    <img
-                                        key={spot.id}
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos?.find(photo => photo.isMain).name}`}
-                                        alt={spot.photos?.find(photo => photo.isMain).name}
-                                        className="img-fluid mb-2"
-                                    />
-                                </Link>
-                            ))}
+                            <Masonry
+                                breakpointCols={breakpointColumnsObj}
+                                className="my-masonry-grid"
+                                columnClassName="my-masonry-grid_column"
+                            >
+                                {spots.map((spot) => (
+                                    <Link to={`/spots/${spot.id}`}>
+                                        <img
+                                            key={spot.id}
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos?.find(photo => photo.isMain).name}`}
+                                            alt={spot.photos?.find(photo => photo.isMain).name}
+                                            className="img-fluid mb-2"
+                                        />
+                                    </Link>
+                                ))}
+                            </Masonry>
                         </div>
                         {/* Modal for Map */}
                         <Modal show={showMapModal} onHide={() => setShowMapModal(false)} size="lg" centered>
@@ -430,9 +451,9 @@ export default function ViewTrim() {
                     </div>
                 </div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-2">
-                    <div className="mt-4 mb-3">
+                    <div className="mb-3">
                         <textarea
-                            className="form-control"
+                            className="form-control mt-3"
                             rows="3"
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
@@ -441,179 +462,179 @@ export default function ViewTrim() {
                         <button className="btn btn-outline-secondary mt-2" onClick={handleAddComment}>
                             Comment
                         </button>
-                    </div>
-                    <h5 className='text-start'>Comments:</h5>
-                    <ul className="list-group list-group-flush text-start">
-                        {comments.map((comment) => (
-                            <li key={comment.id} className="list-group-item py-2">
-                                <div className="d-flex">
-                                    {/* Аватар пользователя */}
-                                    {comment.user.avatar ? (
-                                        <img
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/users/${comment.user.username}/${comment.user.avatar.name}`}
-                                            alt={`${comment.user.username}'s avatar`}
-                                            className="rounded-circle me-2"
-                                            style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                objectFit: 'cover',
-                                                alignSelf: 'start',
-                                            }}
-                                        />
-                                    ) : (
-                                        <div
-                                            className="rounded-circle me-2 d-flex justify-content-center align-items-center"
-                                            style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                backgroundColor: '#6c757d',
-                                                color: '#fff',
-                                                fontSize: '16px',
-                                                fontWeight: 'bold',
-                                                alignSelf: 'start',
-                                            }}
-                                        >
-                                            {comment.user.username[0].toUpperCase()}
-                                        </div>
-                                    )}
-                                    <div className="d-flex flex-column w-100">
-                                        {/* Имя пользователя и время */}
-                                        <span className="d-flex justify-content-between align-items-center">
-                                            <strong>{comment.user.username}</strong>
-                                            <span className="text-muted small">
-                                                {comment?.createdAt
-                                                    ? `${formatDistanceToNow(new Date(comment.createdAt)).replace('about ', '')}`
-                                                    : 'Unknown'}
-                                            </span>
-                                        </span>
-                                        {/* Контент комментария */}
-                                        <p className="mb-0">{comment.content}</p>
-                                        {/* Кнопка "Reply" */}
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <button
-                                                className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
+                        <h5 className='mt-2 text-start'>Comments:</h5>
+                        <ul className="list-group list-group-flush text-start">
+                            {comments.map((comment) => (
+                                <li key={comment.id} className="list-group-item py-2">
+                                    <div className="d-flex">
+                                        {/* Аватар пользователя */}
+                                        {comment.user.avatar ? (
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/users/${comment.user.username}/${comment.user.avatar.name}`}
+                                                alt={`${comment.user.username}'s avatar`}
+                                                className="rounded-circle me-2"
                                                 style={{
-                                                    fontSize: '12px', // Уменьшение текста
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    objectFit: 'cover',
                                                     alignSelf: 'start',
                                                 }}
-                                                onClick={() => handleReplyClick(comment.id)} // Открываем или закрываем форму
+                                            />
+                                        ) : (
+                                            <div
+                                                className="rounded-circle me-2 d-flex justify-content-center align-items-center"
+                                                style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    backgroundColor: '#6c757d',
+                                                    color: '#fff',
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold',
+                                                    alignSelf: 'start',
+                                                }}
                                             >
-                                                {replyingTo === comment.id ? 'Cancel' : 'Reply'}
-                                            </button>
-                                            {comment.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                {comment.user.username[0].toUpperCase()}
+                                            </div>
+                                        )}
+                                        <div className="d-flex flex-column w-100">
+                                            {/* Имя пользователя и время */}
+                                            <span className="d-flex justify-content-between align-items-center">
+                                                <strong>{comment.user.username}</strong>
+                                                <span className="text-muted small">
+                                                    {comment?.createdAt
+                                                        ? `${formatDistanceToNow(new Date(comment.createdAt)).replace('about ', '')}`
+                                                        : 'Unknown'}
+                                                </span>
+                                            </span>
+                                            {/* Контент комментария */}
+                                            <p className="mb-0">{comment.content}</p>
+                                            {/* Кнопка "Reply" */}
+                                            <div className="d-flex justify-content-between align-items-center">
                                                 <button
-                                                    className="btn btn-sm btn-link text-muted p-0"
+                                                    className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
                                                     style={{
                                                         fontSize: '12px', // Уменьшение текста
                                                         alignSelf: 'start',
                                                     }}
-                                                    onClick={() => handleDeleteComment(comment.id)}
+                                                    onClick={() => handleReplyClick(comment.id)} // Открываем или закрываем форму
                                                 >
-                                                    <i className="bi bi-trash"></i>
+                                                    {replyingTo === comment.id ? 'Cancel' : 'Reply'}
+                                                </button>
+                                                {comment.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                    <button
+                                                        className="btn btn-sm btn-link text-muted p-0"
+                                                        style={{
+                                                            fontSize: '12px', // Уменьшение текста
+                                                            alignSelf: 'start',
+                                                        }}
+                                                        onClick={() => handleDeleteComment(comment.id)}
+                                                    >
+                                                        <i className="bi bi-trash"></i>
+                                                    </button>
+                                                )}
+                                            </div>
+                                            {/* Форма для добавления ответа */}
+                                            {replyingTo === comment.id && (
+                                                <div className="mt-2">
+                                                    <textarea
+                                                        className="form-control"
+                                                        rows="2"
+                                                        value={replyContent}
+                                                        onChange={(e) => setReplyContent(e.target.value)}
+                                                        placeholder="Write your reply..."
+                                                    ></textarea>
+                                                    <button
+                                                        className="btn btn-outline-secondary btn-sm mt-2"
+                                                        onClick={() => handleAddReply(comment.id)}
+                                                    >
+                                                        Reply
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {/* Кнопка для переключения реплаев */}
+                                            {comment.replies && comment.replies.length > 0 && (
+                                                <button
+                                                    className="btn btn-link p-0 mt-1 text-decoration-none"
+                                                    style={{
+                                                        fontSize: '12px', // Уменьшение текста
+                                                        alignSelf: 'start',
+                                                    }}
+                                                    onClick={() => toggleReplies(comment.id)}
+                                                >
+                                                    {expandedReplies[comment.id] ? 'Hide Replies' : 'View Replies'}
                                                 </button>
                                             )}
-                                        </div>
-                                        {/* Форма для добавления ответа */}
-                                        {replyingTo === comment.id && (
-                                            <div className="mt-2">
-                                                <textarea
-                                                    className="form-control"
-                                                    rows="2"
-                                                    value={replyContent}
-                                                    onChange={(e) => setReplyContent(e.target.value)}
-                                                    placeholder="Write your reply..."
-                                                ></textarea>
-                                                <button
-                                                    className="btn btn-outline-secondary btn-sm mt-2"
-                                                    onClick={() => handleAddReply(comment.id)}
-                                                >
-                                                    Reply
-                                                </button>
-                                            </div>
-                                        )}
-                                        {/* Кнопка для переключения реплаев */}
-                                        {comment.replies && comment.replies.length > 0 && (
-                                            <button
-                                                className="btn btn-link p-0 mt-1 text-decoration-none"
-                                                style={{
-                                                    fontSize: '12px', // Уменьшение текста
-                                                    alignSelf: 'start',
-                                                }}
-                                                onClick={() => toggleReplies(comment.id)}
-                                            >
-                                                {expandedReplies[comment.id] ? 'Hide Replies' : 'View Replies'}
-                                            </button>
-                                        )}
-                                        {/* Отображение реплаев */}
-                                        {expandedReplies[comment.id] && comment.replies && comment.replies.length > 0 && (
-                                            <ul className="list-group list-group-flush ms-4">
-                                                {comment.replies.map((reply) => (
-                                                    <li key={reply.id} className="list-group-item py-2">
-                                                        <div className="d-flex">
-                                                            {reply.user?.avatar ? (
-                                                                <img
-                                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/users/${reply.user.username}/${reply.user.avatar?.name}`}
-                                                                    alt={`${reply.user?.username}'s avatar`}
-                                                                    className="rounded-circle me-2"
-                                                                    style={{
-                                                                        width: '30px',
-                                                                        height: '30px',
-                                                                        objectFit: 'cover',
-                                                                        alignSelf: 'start',
-                                                                    }}
-                                                                />
-                                                            ) : (
-                                                                <div
-                                                                    className="d-flex justify-content-center align-items-center rounded-circle bg-secondary text-white"
-                                                                    style={{
-                                                                        width: '30px',
-                                                                        height: '30px',
-                                                                        fontSize: '12px',
-                                                                        fontWeight: 'bold',
-                                                                        boxSizing: 'border-box',
-                                                                    }}
-                                                                >
-                                                                    {reply.user?.username[0].toUpperCase()}
-                                                                </div>
-                                                            )}
-                                                            <div className="d-flex flex-column w-100">
-                                                                <span className="d-flex justify-content-between align-items-center">
-                                                                    <strong>{reply.user?.username}</strong>
-                                                                    <span className="text-muted small">
-                                                                        {reply?.createdAt
-                                                                            ? `${formatDistanceToNow(new Date(reply.createdAt)).replace(
-                                                                                'about ',
-                                                                                ''
-                                                                            )}`
-                                                                            : 'Unknown'}
+                                            {/* Отображение реплаев */}
+                                            {expandedReplies[comment.id] && comment.replies && comment.replies.length > 0 && (
+                                                <ul className="list-group list-group-flush ms-4">
+                                                    {comment.replies.map((reply) => (
+                                                        <li key={reply.id} className="list-group-item py-2">
+                                                            <div className="d-flex">
+                                                                {reply.user?.avatar ? (
+                                                                    <img
+                                                                        src={`https://newloripinbucket.s3.amazonaws.com/image/users/${reply.user.username}/${reply.user.avatar?.name}`}
+                                                                        alt={`${reply.user?.username}'s avatar`}
+                                                                        className="rounded-circle me-2"
+                                                                        style={{
+                                                                            width: '30px',
+                                                                            height: '30px',
+                                                                            objectFit: 'cover',
+                                                                            alignSelf: 'start',
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <div
+                                                                        className="d-flex justify-content-center align-items-center rounded-circle bg-secondary text-white"
+                                                                        style={{
+                                                                            width: '30px',
+                                                                            height: '30px',
+                                                                            fontSize: '12px',
+                                                                            fontWeight: 'bold',
+                                                                            boxSizing: 'border-box',
+                                                                        }}
+                                                                    >
+                                                                        {reply.user?.username[0].toUpperCase()}
+                                                                    </div>
+                                                                )}
+                                                                <div className="d-flex flex-column w-100">
+                                                                    <span className="d-flex justify-content-between align-items-center">
+                                                                        <strong>{reply.user?.username}</strong>
+                                                                        <span className="text-muted small">
+                                                                            {reply?.createdAt
+                                                                                ? `${formatDistanceToNow(new Date(reply.createdAt)).replace(
+                                                                                    'about ',
+                                                                                    ''
+                                                                                )}`
+                                                                                : 'Unknown'}
+                                                                        </span>
                                                                     </span>
-                                                                </span>
-                                                                <p className="mb-0">{reply.content}</p>
-                                                                <div className="d-flex justify-content-between align-items-center">
-                                                                    {reply.user.username === user.username && ( // Показываем кнопку только для своих комментариев
-                                                                        <button
-                                                                            className="btn btn-sm btn-link text-muted p-0"
-                                                                            style={{
-                                                                                fontSize: '12px', // Уменьшение текста
-                                                                                alignSelf: 'start',
-                                                                            }}
-                                                                            onClick={() => handleDeleteReply(comment.id, reply.id)}
-                                                                        >
-                                                                            <i className="bi bi-trash"></i>
-                                                                        </button>
-                                                                    )}
+                                                                    <p className="mb-0">{reply.content}</p>
+                                                                    <div className="d-flex justify-content-between align-items-center">
+                                                                        {reply.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                                            <button
+                                                                                className="btn btn-sm btn-link text-muted p-0"
+                                                                                style={{
+                                                                                    fontSize: '12px', // Уменьшение текста
+                                                                                    alignSelf: 'start',
+                                                                                }}
+                                                                                onClick={() => handleDeleteReply(comment.id, reply.id)}
+                                                                            >
+                                                                                <i className="bi bi-trash"></i>
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

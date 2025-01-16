@@ -132,6 +132,12 @@ export default function AddBodystyle() {
             formData.append('photo', selectedFile);
         }
 
+
+        if (facelift === "default") {
+            setError("Please select a facelift option.");
+            return;
+        }
+        
         if (bodystyle.facelift) {
             formData.append('faceliftId', bodystyle.facelift);
         }
@@ -188,7 +194,7 @@ export default function AddBodystyle() {
                                 </option>
                             ))}
                         </select>
-
+                        {error && <div className="text-danger">{error}</div>}
                         <select onChange={onChange} name='bodytype' className="form-select mt-3 mb-3">
                             <option defaultValue>
                                 Select bodytype

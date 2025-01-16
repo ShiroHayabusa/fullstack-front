@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Select from "react-select";
 
 export default function EditTrim() {
 
@@ -33,13 +34,20 @@ export default function EditTrim() {
         generation: ''
     });
 
-    const [engineList, setEngineList] = useState([]);
-    const [transmissionList, setTransmissionList] = useState([]);
-    const [bodyList, setBodyList] = useState([]);
-    const [drivetrainList, setDrivetrainList] = useState([]);
-    const [tunerList, setTunerList] = useState([]);
+    const [engines, setEngines] = useState([]);
+    const [transmissions, setTransmissions] = useState([]);
+    const [bodies, setBodies] = useState([]);
+    const [drivetrains, setDrivetrains] = useState([]);
+    const [tuners, setTuners] = useState([]);
+
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
+
+    const [selectedDrivetrain, setSelectedDrivetrain] = useState(null);
+    const [selectedEngine, setSelectedEngine] = useState(null);
+    const [selectedTransmission, setSelectedTransmission] = useState(null);
+    const [selectedBody, setSelectedBody] = useState(null);
+    const [selectedTuner, setSelectedTuner] = useState(null);
 
     const [photos, setPhotos] = useState([]);
     const { user } = useAuth(); // Получаем пользователя из AuthContext
@@ -64,13 +72,8 @@ export default function EditTrim() {
                 name: response.data.name,
                 altName: response.data.altName,
                 description: response.data.description,
-                engine: response.data.engine?.id || "",
-                transmission: response.data.transmission?.id || "",
-                body: response.data.body?.id || "",
                 bodystyle: response.data.bodystyle,
-                drivetrain: response.data.drivetrain?.id || "",
                 years: response.data.years,
-                tuner: response.data.tuner?.id || "",
                 amount: response.data.amount,
                 maxSpeed: response.data.maxSpeed,
                 acceleration: response.data.acceleration,
@@ -82,6 +85,21 @@ export default function EditTrim() {
                 range: response.data.range,
                 photos: response.data.photos
             });
+            setSelectedEngine(
+                response.data.engine ? { value: response.data.engine.id, label: response.data.engine.name } : null
+            );
+            setSelectedTransmission(
+                response.data.transmission ? { value: response.data.transmission.id, label: response.data.transmission.name } : null
+            );
+            setSelectedBody(
+                response.data.body ? { value: response.data.body.id, label: response.data.body.name } : null
+            );
+            setSelectedDrivetrain(
+                response.data.drivetrain ? { value: response.data.drivetrain.id, label: response.data.drivetrain.name } : null
+            );
+            setSelectedTuner(
+                response.data.tuner ? { value: response.data.tuner.id, label: response.data.tuner.name } : null
+            );
         } catch (error) {
             setError('Error fetching trim details: ' + error.message);
         }
@@ -89,11 +107,11 @@ export default function EditTrim() {
 
     useEffect(() => {
         loadBodystyleEntity();
-        fetchEngineData();
-        fetchTransmissionData();
-        fetchBodyData();
-        fetchDrivetrainData();
-        fetchTunerData();
+        fetchEngines();
+        fetchTransmissions();
+        fetchBodies();
+        fetchDrivetrains();
+        fetchTuners();
         fetchTrim();
     }, []);
 
@@ -105,7 +123,7 @@ export default function EditTrim() {
         });
     };
 
-    const fetchEngineData = () => {
+    const fetchEngines = () => {
         axios
             .get(`http://localhost:8080/administration/engines/${make}`, {
                 headers: {
@@ -116,7 +134,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
-                    setEngineList(data)
+                    setEngines(data)
                 } else {
                     //error handle section 
                 }
@@ -124,7 +142,7 @@ export default function EditTrim() {
             .catch((error) => console.log(error));
     };
 
-    const fetchTransmissionData = () => {
+    const fetchTransmissions = () => {
         axios
             .get(`http://localhost:8080/administration/transmissions/${make}`, {
                 headers: {
@@ -135,7 +153,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
-                    setTransmissionList(data)
+                    setTransmissions(data)
                 } else {
                     //error handle section 
                 }
@@ -143,7 +161,7 @@ export default function EditTrim() {
             .catch((error) => console.log(error));
     };
 
-    const fetchBodyData = () => {
+    const fetchBodies = () => {
         axios
             .get(`http://localhost:8080/administration/bodies/${make}`, {
                 headers: {
@@ -154,7 +172,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
-                    setBodyList(data)
+                    setBodies(data)
                 } else {
                     //error handle section 
                 }
@@ -162,7 +180,7 @@ export default function EditTrim() {
             .catch((error) => console.log(error));
     };
 
-    const fetchDrivetrainData = () => {
+    const fetchDrivetrains = () => {
         axios
             .get('http://localhost:8080/administration/drivetrains', {
                 headers: {
@@ -173,7 +191,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
-                    setDrivetrainList(data)
+                    setDrivetrains(data)
                 } else {
                     //error handle section 
                 }
@@ -181,7 +199,48 @@ export default function EditTrim() {
             .catch((error) => console.log(error));
     };
 
-    const fetchTunerData = () => {
+    const optionsDrivetrain = drivetrains.map((drivetrain) => ({
+        value: drivetrain.id,
+        label: drivetrain.name,
+    }));
+    const optionsEngine = engines.map((engine) => ({
+        value: engine.id,
+        label: engine.name,
+    }));
+    const optionsTransmission = transmissions.map((transmission) => ({
+        value: transmission.id,
+        label: transmission.name,
+    }));
+    const optionsBody = bodies.map((body) => ({
+        value: body.id,
+        label: body.name,
+    }));
+    const optionsTuner = tuners.map((tuner) => ({
+        value: tuner.id,
+        label: tuner.name,
+    }));
+
+    const handleDrivetrainChange = (selectedOption) => {
+        setSelectedDrivetrain(selectedOption);
+    };
+
+    const handleEngineChange = (selectedOption) => {
+        setSelectedEngine(selectedOption);
+    };
+
+    const handleTransmissionChange = (selectedOption) => {
+        setSelectedTransmission(selectedOption);
+    };
+
+    const handleBodyChange = (selectedOption) => {
+        setSelectedBody(selectedOption);
+    };
+
+    const handleTunerChange = (selectedOption) => {
+        setSelectedTuner(selectedOption);
+    };
+
+    const fetchTuners = () => {
         axios
             .get('http://localhost:8080/catalog/tuners', {
                 headers: {
@@ -192,7 +251,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     //check the api call is success by stats code 200,201 ...etc
-                    setTunerList(data)
+                    setTuners(data)
                 } else {
                     //error handle section 
                 }
@@ -299,24 +358,24 @@ export default function EditTrim() {
             }
         });
 
-        if (trim.engine) {
-            formData.append('engineId', trim.engine);
+        if (selectedEngine) {
+            formData.append('engineId', selectedEngine.value);
         }
 
-        if (trim.transmission) {
-            formData.append('transmissionId', trim.transmission);
+        if (selectedTransmission) {
+            formData.append('transmissionId', selectedTransmission.value);
         }
 
-        if (trim.body) {
-            formData.append('bodyId', trim.body);
+        if (selectedBody) {
+            formData.append('bodyId', selectedBody.value);
         }
 
-        if (trim.drivetrain) {
-            formData.append('drivetrainId', trim.drivetrain);
+        if (selectedDrivetrain) {
+            formData.append('drivetrainId', selectedDrivetrain.value);
         }
 
-        if (trim.tuner) {
-            formData.append('tunerId', trim.tuner);
+        if (selectedTuner) {
+            formData.append('tunerId', selectedTuner.value);
         }
 
         if (selectedFile) {
@@ -440,83 +499,56 @@ export default function EditTrim() {
                             onChange={onInputChange}
                         />
 
-                        <select
-                            onChange={onInputChange}
-                            name='engine'
-                            className="form-select mt-3 mb-3"
-                            value={trim.engine}
-                        >
-                            <option value={"default"}>
-                                Select engine
-                            </option>
-                            {engineList.map((item) => (
-                                <option key={item.id} value={item.id} >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
 
-                        <select
-                            onChange={onInputChange}
-                            name='transmission'
-                            className="form-select mt-3 mb-3"
-                            value={trim.transmission}
-                        >
-                            <option value={"default"}>
-                                Select transmission
-                            </option>
-                            {transmissionList.map((item) => (
-                                <option key={item.id} value={item.id} >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            className="text-start mt-3"
+                            options={optionsEngine}
+                            onChange={handleEngineChange}
+                            isSearchable
+                            isClearable
+                            placeholder="Select engine"
+                            value={selectedEngine}
+                        />
 
-                        <select
-                            onChange={onInputChange}
-                            name='body'
-                            className="form-select mt-3 mb-3"
-                            value={trim.body}
-                        >
-                            <option value={"default"}>
-                                Select body
-                            </option>
-                            {bodyList.map((item) => (
-                                <option key={item.id} value={item.id} >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            className="text-start mt-3"
+                            options={optionsTransmission}
+                            onChange={handleTransmissionChange}
+                            isSearchable
+                            isClearable
+                            placeholder="Select transmission"
+                            value={selectedTransmission}
+                        />
 
-                        <select onChange={onInputChange}
-                            name='drivetrain'
-                            className="form-select mt-3 mb-3"
-                            value={trim.drivetrain}
-                        >
-                            <option value={"default"}>
-                                Select drivetrain
-                            </option>
-                            {drivetrainList.map((item) => (
-                                <option key={item.id} value={item.id} >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            className="text-start mt-3"
+                            options={optionsBody}
+                            onChange={handleBodyChange}
+                            isSearchable
+                            isClearable
+                            placeholder="Select body"
+                            value={selectedBody}
+                        />
 
-                        <select onChange={onInputChange}
-                            name='tuner'
-                            className="form-select mt-3 mb-3"
-                            value={trim.tuner}
-                        >
-                            <option value={"default"}>
-                                Select tuner
-                            </option>
-                            {tunerList.map((item) => (
-                                <option key={item.id} value={item.id} >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            className="text-start mt-3"
+                            options={optionsDrivetrain}
+                            onChange={handleDrivetrainChange}
+                            isSearchable
+                            isClearable
+                            placeholder="Select drivetrain"
+                            value={selectedDrivetrain}
+                        />
+
+                        <Select
+                            className="text-start mt-3"
+                            options={optionsTuner}
+                            onChange={handleTunerChange}
+                            isSearchable
+                            isClearable
+                            placeholder="Select tuner"
+                            value={selectedTuner}
+                        />
 
                         <input
                             type={'text'}
@@ -625,6 +657,6 @@ export default function EditTrim() {
                     </form>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

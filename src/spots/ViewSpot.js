@@ -43,7 +43,7 @@ export default function ViewSpot() {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
-            setLikes(likesResult.data.count);
+            setLikes(likesResult.data.likeCount);
             setHasLiked(likesResult.data.hasLiked);
         } catch (error) {
             console.error('Ошибка загрузки данных:', error);
@@ -203,7 +203,7 @@ export default function ViewSpot() {
                     },
                 }
             );
-            setLikes(response.data.count);
+            setLikes(response.data.likeCount);
             setHasLiked(response.data.hasLiked);
         } catch (error) {
             console.error('Ошибка переключения лайка:', error);
@@ -278,25 +278,33 @@ export default function ViewSpot() {
                     </div>
                 </div>
                 {user.username === spot.user?.username && (
-                    <ul className="nav mt-3 mb-3" style={{ display: "flex", alignItems: "center" }}>
+                    <ul className="nav mt-3 mb-3" style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
                         <li className="nav-item">
                             <button
-                                className="btn btn-outline-primary"
+                                className="btn btn-link text-decoration-none text-primary"
                                 onClick={() => navigate(`/spots/editSpot/${id}`)}
+                                style={{ fontSize: "16px", padding: 0 }} // Text-based button style
                             >
                                 Edit Spot
                             </button>
                         </li>
 
-                        <li className="nav-item" style={{ marginLeft: "auto" }}>
-                            <button className="btn btn-outline-danger" onClick={deleteSpot}>
-                                Delete Spot
+                        <li className="nav-item ms-3">
+                            <button
+                                onClick={deleteSpot}
+                                className="d-flex align-items-center"
+                                style={{
+                                    background: "none", // Remove background
+                                    border: "none", // Remove border
+                                    cursor: "pointer", // Add pointer cursor
+                                    color: "red", // Red color for the trash icon
+                                }}
+                            >
+                                <i className="bi bi-trash" style={{ fontSize: "20px" }}></i> {/* Trash can icon */}
                             </button>
                         </li>
-
                     </ul>
                 )}
-
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col">
                         {spot.photos && spot.photos.length > 0 && (
@@ -304,7 +312,7 @@ export default function ViewSpot() {
                                 {spot.photos.map((photo, index) => (
                                     <img
                                         key={index}
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${photo.name}`}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${photo.name}`}
                                         alt={photo.name}
                                         className="img-fluid mb-2"
                                         onClick={() => handleOpenModal(index)} // Открытие модального окна
@@ -349,9 +357,30 @@ export default function ViewSpot() {
                     </Modal>
                     <div className="col-md-5">
                         <h5 className="pb-1 mb-4 text-black border-bottom d-flex justify-content-between align-items-center">
-                            <span className="text-start">
-                                Spotted by {spot.user?.username}
-                            </span>
+                            <div className="d-flex align-items-center">
+                                <span className="me-2">Spotted by</span>
+                                <Link
+                                    to={`/users/${spot.user?.id}`}
+                                    className="d-flex align-items-center text-decoration-none text-black"
+                                >
+                                    {spot.user?.avatar ? (
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/users/${spot.user.username}/${spot.user?.avatar.name}`}
+                                            alt="Avatar"
+                                            className="img-fluid rounded-circle me-2"
+                                            style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        <div
+                                            className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                            style={{ width: '30px', height: '30px', fontSize: '1rem' }}
+                                        >
+                                            {spot.user?.username.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
+                                    <span>{spot.user?.username}</span>
+                                </Link>
+                            </div>
                             <span className="d-flex align-items-center">
                                 <i
                                     className={`bi bi-heart${hasLiked ? '-fill' : ''}`}
@@ -365,6 +394,7 @@ export default function ViewSpot() {
                                 <span className="ms-2">{likes}</span>
                             </span>
                         </h5>
+
                         <p className='text-start'>{spot.caption}</p>
                         <div className="text-start">
                             <table className="table table-borderless">
