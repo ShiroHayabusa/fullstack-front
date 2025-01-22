@@ -16,7 +16,7 @@ export default function AddMake() {
 
     const [countryList, setCountryList] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const { name, country, description, tuner } = make;
 
@@ -39,7 +39,7 @@ export default function AddMake() {
         formData.append('tuner', tuner);
 
         try {
-            const response = await axios.post('http://localhost:8080/catalog/addMake', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/addMake`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -55,7 +55,7 @@ export default function AddMake() {
 
     const fetchCountries = () => {
         axios
-            .get('http://localhost:8080/administration/countries', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/countries`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -63,10 +63,7 @@ export default function AddMake() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setCountryList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));

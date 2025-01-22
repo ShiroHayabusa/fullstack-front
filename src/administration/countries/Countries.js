@@ -6,14 +6,14 @@ import { useAuth } from '../../context/AuthContext';
 export default function Countries() {
 
     const [countries, setCountries] = useState([]);
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth(); 
 
     useEffect(() => {
         loadCountries()
     }, []);
 
     const loadCountries = async () => {
-        const result = await axios.get("http://localhost:8080/administration/countries", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/countries`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function Countries() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/administration/countries/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/countries/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 alert('Country deleted successfully');
-                window.location.href = '/administration/countries';
+                window.location.href = '/admin/countries';
                 loadCountries();
             } catch (error) {
                 console.error('Failed to delete country:', error);
@@ -46,14 +46,14 @@ export default function Countries() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/countries/addCountry'>Add Country</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/countries/addCountry'>Add Country</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href="/admin" className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Countries</li>
                     </ol>
                 </nav>
@@ -83,7 +83,7 @@ export default function Countries() {
                                     </td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/countries/editCountry/${country.id}`}
+                                            to={`/admin/countries/editCountry/${country.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteCountry(country.id)}

@@ -20,13 +20,12 @@ export default function EditGeneration() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the generation
         const fetchGenerationEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/editGeneration`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/editGeneration`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -45,7 +44,7 @@ export default function EditGeneration() {
 
         const fetchBodies = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/administration/bodies', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodies`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -92,7 +91,7 @@ export default function EditGeneration() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/editGeneration`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/editGeneration`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

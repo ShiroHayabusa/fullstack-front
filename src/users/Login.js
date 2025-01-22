@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const [identifier, setIdentifier] = useState(""); // Логин или email
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier, password }),
@@ -24,26 +24,24 @@ const Login = () => {
 
 
       if (!response.ok) {
-        // Получаем текст ошибки от сервера, если есть
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed. Please check your credentials.");
       }
 
       const data = await response.json();
 
-      localStorage.setItem("token", data.token); // Сохраняем токен в localStorage
-      navigate("/"); // Перенаправляем на домашнюю страницу
+      localStorage.setItem("token", data.token);
+      navigate("/");
 
       if (data.token) {
         login(data.token);
-        // Перенаправляем на главную
         navigate("/");
       } else {
         throw new Error("No token in response.");
       }
 
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError("Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }

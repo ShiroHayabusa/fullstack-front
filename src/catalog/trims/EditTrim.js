@@ -50,10 +50,10 @@ export default function EditTrim() {
     const [selectedTuner, setSelectedTuner] = useState(null);
 
     const [photos, setPhotos] = useState([]);
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const loadBodystyleEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -63,7 +63,7 @@ export default function EditTrim() {
 
     const fetchTrim = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -125,7 +125,7 @@ export default function EditTrim() {
 
     const fetchEngines = () => {
         axios
-            .get(`http://localhost:8080/administration/engines/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/engines/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -133,18 +133,15 @@ export default function EditTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setEngines(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
 
     const fetchTransmissions = () => {
         axios
-            .get(`http://localhost:8080/administration/transmissions/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/transmissions/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -152,18 +149,15 @@ export default function EditTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setTransmissions(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
 
     const fetchBodies = () => {
         axios
-            .get(`http://localhost:8080/administration/bodies/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -171,18 +165,15 @@ export default function EditTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setBodies(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
 
     const fetchDrivetrains = () => {
         axios
-            .get('http://localhost:8080/administration/drivetrains', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/drivetrains`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -190,11 +181,8 @@ export default function EditTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setDrivetrains(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
@@ -242,7 +230,7 @@ export default function EditTrim() {
 
     const fetchTuners = () => {
         axios
-            .get('http://localhost:8080/catalog/tuners', {
+            .get(`${process.env.REACT_APP_API_URL}/api/catalog/tuners`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -250,11 +238,9 @@ export default function EditTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
+
                     setTuners(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
@@ -262,7 +248,7 @@ export default function EditTrim() {
     const handleSetMain = async (photoId) => {
         try {
             const response = await axios.put(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/setMainPhoto/${photoId}`, null, {
+                `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/setMainPhoto/${photoId}`, null, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -270,7 +256,6 @@ export default function EditTrim() {
             );
 
             if (response.status === 200) {
-                // Update the photos in trim to reflect the new main photo
                 const updatedPhotos = trim.photos.map((photo) =>
                     photo.id === photoId
                         ? { ...photo, isMain: true }
@@ -286,7 +271,7 @@ export default function EditTrim() {
     const handleDelete = async (photoId) => {
         try {
             const response = await axios.delete(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/deletePhoto/${photoId}`, {
+                `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/deletePhoto/${photoId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -294,7 +279,6 @@ export default function EditTrim() {
             );
 
             if (response.status === 200) {
-                // Update the photos in trim locally
                 const updatedPhotos = trim.photos.filter((photo) => photo.id !== photoId);
                 setTrim({ ...trim, photos: updatedPhotos });
             }
@@ -316,7 +300,7 @@ export default function EditTrim() {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/addPhoto`,
+                `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/addPhoto`,
                 formData,
                 {
                     headers: {
@@ -327,7 +311,7 @@ export default function EditTrim() {
             );
 
             if (response.status === 200 || response.status === 201) {
-                const uploadedPhoto = response.data; // Backend returns the Photo object, including the name
+                const uploadedPhoto = response.data;
                 setTrim((prevTrim) => ({
                     ...prevTrim,
                     photos: [...prevTrim.photos, uploadedPhoto],
@@ -339,7 +323,7 @@ export default function EditTrim() {
             console.error("Error uploading photo:", err.message);
             setError("Failed to upload photo. Please try again.");
         } finally {
-            event.target.value = ""; // Сбрасываем input для загрузки следующего файла
+            event.target.value = "";
         }
 
     };
@@ -385,7 +369,7 @@ export default function EditTrim() {
 
         try {
             const response =
-                await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/editTrim`, formData, {
+                await axios.put(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}/editTrim`, formData, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },

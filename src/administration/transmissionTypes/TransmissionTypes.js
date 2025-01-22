@@ -13,7 +13,7 @@ export default function TransmissionTypes() {
     }, []);
 
     const loadTransmissionTypes = async () => {
-        const result = await axios.get("http://localhost:8080/administration/transmissionTypes", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/transmissionTypes`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function TransmissionTypes() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/administration/transmissionTypes/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/transmissionTypes/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 alert('Transmission type deleted successfully');
-                window.location.href = '/administration/transmissionTypes';
+                window.location.href = '/admin/transmissionTypes';
                 loadTransmissionTypes();
             } catch (error) {
                 console.error('Failed to delete transmission type:', error);
@@ -47,14 +47,14 @@ export default function TransmissionTypes() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/transmissionTypes/addTransmissionType'>Add transmission type</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/transmissionTypes/addTransmissionType'>Add transmission type</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Transmission types</li>
                     </ol>
                 </nav>
@@ -75,7 +75,7 @@ export default function TransmissionTypes() {
                                     <td className='text-start'>{transmissionType.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/transmissionTypes/editTransmissionType/${transmissionType.id}`}
+                                            to={`/admin/transmissionTypes/editTransmissionType/${transmissionType.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteTransmissionType(transmissionType.id)}

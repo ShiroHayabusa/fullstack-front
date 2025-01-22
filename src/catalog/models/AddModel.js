@@ -34,7 +34,7 @@ export default function AddModel() {
         formData.append('description', description);
 
         try {
-            const response = await axios.post(`http://localhost:8080/catalog/${make}/addModel`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/addModel`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

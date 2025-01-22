@@ -36,7 +36,7 @@ export default function Footer() {
 
                 </div>
                 <div className="text-center p-3" >             
-                    <a className="text-white text-decoration-none" href="https://loripin.com/">© Loripin.com</a>
+                    <a className="text-white text-decoration-none" href="https://loripin.com/">© Loripin Inc</a>
                 </div>
 
             </footer>

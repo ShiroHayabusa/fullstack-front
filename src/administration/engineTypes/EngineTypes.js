@@ -13,7 +13,7 @@ export default function EngineTypes() {
     }, []);
 
     const loadEngineTypes = async () => {
-        const result = await axios.get("http://localhost:8080/administration/engineTypes", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function EngineTypes() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/administration/engineTypes/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 alert('Engine type deleted successfully');
-                window.location.href = '/administration/engineTypes';
+                window.location.href = '/admin/engineTypes';
                 loadEngineTypes();
             } catch (error) {
                 console.error('Failed to delete engine type:', error);
@@ -46,14 +46,14 @@ export default function EngineTypes() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/engineTypes/addEngineType'>Add engine type</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/engineTypes/addEngineType'>Add engine type</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Engine types</li>
                     </ol>
                 </nav>
@@ -74,7 +74,7 @@ export default function EngineTypes() {
                                     <td className='text-start'>{engineType.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/engineTypes/editEngineType/${engineType.id}`}
+                                            to={`/admin/engineTypes/editEngineType/${engineType.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteEngineType(engineType.id)}

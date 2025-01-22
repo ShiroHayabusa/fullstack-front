@@ -25,31 +25,27 @@ export default function ViewEngine() {
 
     const loadEngine = async () => {
         const result = await axios.get(
-            `http://localhost:8080/administration/engines/${make}/${engineId}`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            `${process.env.REACT_APP_API_URL}/api/engines/${make}/${engineId}`);
         setEngine(result.data);
     }
 
     return (
 
         <div>
-            <ul className="nav">
-                <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to={`/administration/engines/${make}/${engineId}/editEngine`}
-                    >Edit Engine</Link>
-                </li>
-            </ul>
-
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <li className="nav-item">
+                        <Link className="nav-link active" aria-current="page" to={`/engines/${make}/${engineId}/editEngine`}
+                        >Edit Engine</Link>
+                    </li>
+                </ul>
+            )}
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
+                    <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li className="breadcrumb-item"><a href="/administration/engines" className="text-decoration-none">Engines</a></li>
-                        <li className="breadcrumb-item"><a href={`/administration/engines/${make}/`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item"><a href="/engines" className="text-decoration-none">Engines</a></li>
+                        <li className="breadcrumb-item"><a href={`/engines/${make}/`} className="text-decoration-none">{make}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{engine.name}</li>
                     </ol>
                 </nav>

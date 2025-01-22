@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EditEngineType() {
 
-    const { id } = useParams(); // Assuming the engine type ID is passed as a route parameter
+    const { id } = useParams();
     let navigate = useNavigate();
 
     const [engineType, setEngineType] = useState({
@@ -16,10 +16,9 @@ export default function EditEngineType() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the engineType
         const fetchEngineType = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/engineTypes/${id}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -50,7 +49,7 @@ export default function EditEngineType() {
         formData.append('name', engineType.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/engineTypes/${id}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -58,7 +57,7 @@ export default function EditEngineType() {
             if (response.status === 200) {
                 setSuccess('Engine type updated successfully');
                 setError('');
-                navigate('/administration/engineTypes');
+                navigate('/admin/engineTypes');
             }
         } catch (error) {
             setError('Error updating engineType: ' + error.message);
@@ -70,8 +69,8 @@ export default function EditEngineType() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/engineTypes' className="text-decoration-none">Engine types</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/engineTypes' className="text-decoration-none">Engine types</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add engine type</li>
                 </ol>
             </nav>
@@ -93,7 +92,7 @@ export default function EditEngineType() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/engineTypes`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/engineTypes`}>Cancel</Link>
                     </form>
                 </div>
             </div>

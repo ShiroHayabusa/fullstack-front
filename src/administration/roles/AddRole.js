@@ -27,15 +27,15 @@ export default function AddRole() {
         }
 
         try {
-            await axios.post('http://localhost:8080/administration/roles/addRole', role, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/roles/addRole`, role, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
             setSuccess(true);
-            setRole({ name: "" }); // Очистка формы
+            setRole({ name: "" });
             setTimeout(() => {
-                navigate('/administration/roles');
+                navigate('/admin/roles');
             }, 2000);
         } catch (error) {
             console.error("Error adding role", error);
@@ -48,8 +48,8 @@ export default function AddRole() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/roles' className="text-decoration-none">Roles</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/roles' className="text-decoration-none">Roles</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add role</li>
                 </ol>
             </nav>
@@ -73,7 +73,7 @@ export default function AddRole() {
                         <button type='submit' className="btn btn-outline-primary" disabled={!name.trim()}>
                             Submit
                         </button>
-                        <Link className="btn btn-outline-danger mx-2" to='/administration/roles'>
+                        <Link className="btn btn-outline-danger mx-2" to='/admin/roles'>
                             Cancel
                         </Link>
                     </form>

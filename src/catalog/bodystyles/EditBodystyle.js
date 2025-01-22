@@ -26,13 +26,12 @@ export default function EditBodystyle() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the bodystyle
         const fetchBodystyleEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -59,7 +58,7 @@ export default function EditBodystyle() {
 
         const fetchFaceliftList = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/faceliftList`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/faceliftList`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -72,7 +71,7 @@ export default function EditBodystyle() {
 
         const fetchMarketList = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/administration/markets', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/markets`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -85,7 +84,7 @@ export default function EditBodystyle() {
 
         const fetchBodytypeList = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodytypes`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -146,7 +145,7 @@ export default function EditBodystyle() {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, formData, {
+                `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, formData, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },

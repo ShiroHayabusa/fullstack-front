@@ -12,7 +12,7 @@ export default function ViewBody() {
     });
 
     const { make, bodyId } = useParams();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
         loadBody()
@@ -20,33 +20,30 @@ export default function ViewBody() {
 
     const loadBody = async () => {
         const result = await axios.get(
-            `http://localhost:8080/administration/bodies/${make}/${bodyId}`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            `${process.env.REACT_APP_API_URL}/api/bodies/${make}/${bodyId}`);
         setBody(result.data);
     }
 
     return (
 
         <div>
-            <ul className="nav">
-                <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to={`/administration/bodies/${make}/${bodyId}/editBody`}
-                    >Edit body</Link>
-                </li>
-            </ul>
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <li className="nav-item">
+                        <Link className="nav-link active" aria-current="page" to={`/bodies/${make}/${bodyId}/editBody`}
+                        >Edit body</Link>
+                    </li>
+                </ul>
+            )}
 
             <div className='container'>
 
 
                 <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
+                    <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li className="breadcrumb-item"><a href="/administration/bodies" className="text-decoration-none">Bodies</a></li>
-                        <li className="breadcrumb-item"><a href={`/administration/bodies/${make}/`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item"><a href="/bodies" className="text-decoration-none">Bodies</a></li>
+                        <li className="breadcrumb-item"><a href={`/bodies/${make}/`} className="text-decoration-none">{make}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{body.name}</li>
                     </ol>
                 </nav>

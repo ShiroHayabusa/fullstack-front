@@ -42,12 +42,12 @@ export default function AddTrim() {
     const [drivetrainList, setDrivetrainList] = useState([]);
     const [tunerList, setTunerList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
     const [previewUrls, setPreviewUrls] = useState([]);
 
     const loadBodystyleEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -69,7 +69,7 @@ export default function AddTrim() {
 
     const fetchEngineData = () => {
         axios
-            .get(`http://localhost:8080/administration/engines/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/engines/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -77,10 +77,7 @@ export default function AddTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setEngineList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -88,7 +85,7 @@ export default function AddTrim() {
 
     const fetchTransmissionData = () => {
         axios
-            .get(`http://localhost:8080/administration/transmissions/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/transmissions/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -96,10 +93,7 @@ export default function AddTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setTransmissionList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -107,7 +101,7 @@ export default function AddTrim() {
 
     const fetchBodyData = () => {
         axios
-            .get(`http://localhost:8080/administration/bodies/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -115,10 +109,7 @@ export default function AddTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setBodyList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -126,7 +117,7 @@ export default function AddTrim() {
 
     const fetchDrivetrainData = () => {
         axios
-            .get('http://localhost:8080/administration/drivetrains', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/drivetrains`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -134,10 +125,7 @@ export default function AddTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setDrivetrainList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -145,7 +133,7 @@ export default function AddTrim() {
 
     const fetchTunerData = () => {
         axios
-            .get('http://localhost:8080/catalog/tuners', {
+            .get(`${process.env.REACT_APP_API_URL}/api/catalog/tuners`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -153,11 +141,8 @@ export default function AddTrim() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setTunerList(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
@@ -177,10 +162,6 @@ export default function AddTrim() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        //  if (!bodystyle.facelift || !bodystyle.name || !selectedFile) {
-        //      setError('Please provide facelift, bodystyle and upload an image.');
-        //      return;
-        //  }
         const formData = new FormData();
         Object.keys(trim).forEach(key => {
             formData.append(key, trim[key]);
@@ -193,7 +174,7 @@ export default function AddTrim() {
 
         try {
             const response =
-                await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/addTrim`, formData, {
+                await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/addTrim`, formData, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },

@@ -1,44 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../components/ColumnContainer.css'
 
 export default function Catalog() {
 
   const [makes, setMakes] = useState([])
-  const navigate = useNavigate();
-  const { user } = useAuth(); // Получаем пользователя из AuthContext
+  const { user } = useAuth(); 
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    } else {
-      loadMakes();
-    }
-  }, [user, navigate]);
+    loadMakes();
+  }, []);
 
   const loadMakes = async () => {
     try {
-      const result = await axios.get("http://localhost:8080/catalog", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+      const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog`)
       setMakes(result.data);
     } catch (error) {
       console.error('Error loading makes:', error);
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        navigate("/login"); // Перенаправляем на страницу логина при ошибке доступа
-      }
     }
   };
 
   const deleteMake = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/make/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/deleteMake/${id}`, {
         headers: {
-          Authorization: `Bearer ${user.token}`, // Используем токен для авторизации
+          Authorization: `Bearer ${user.token}`, 
         },
       });
       loadMakes();
@@ -60,7 +48,6 @@ export default function Catalog() {
 
   return (
     <div>
-      {/* Кнопка Add Make отображается только для ROLE_ADMIN */}
       {user?.roles.includes("ROLE_ADMIN") && (
         <ul className="nav">
           <li className="nav-item">

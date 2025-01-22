@@ -13,8 +13,7 @@ const UserDetail = () => {
         if (!user) {
             navigate('/login');
         } else {
-            // Загружаем информацию о пользователе
-            fetch(`http://localhost:8080/admin/users/${userId}`, {
+            fetch(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +38,7 @@ const UserDetail = () => {
     const saveRoles = async () => {
         try {
             const response = await fetch(
-                `http://localhost:8080/admin/users/${userId}/assign-role`,
+                `${process.env.REACT_APP_API_URL}/api/admin/users/${userId}/assign-role`,
                 {
                     method: "PUT",
                     headers: {
@@ -51,7 +50,7 @@ const UserDetail = () => {
             );
 
             if (response.ok) {
-                navigate("/administration/users");
+                navigate("/admin/users");
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || "Failed to update roles");

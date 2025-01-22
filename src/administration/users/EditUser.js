@@ -10,10 +10,10 @@ export default function EditUser() {
         name: "",
         username: "",
         email: "",
-        roleIds: [] // Инициализируем roleIds
+        roleIds: []
     });
 
-    const [allRoles, setAllRoles] = useState([]); // Все доступные роли
+    const [allRoles, setAllRoles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -26,10 +26,9 @@ export default function EditUser() {
         setLoading(true);
         setError("");
         try {
-            const result = await axios.get(`http://localhost:8080/administration/users/${id}`);
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/users/${id}`);
             const userData = result.data;
 
-            // Гарантируем, что roleIds существует
             setUser({
                 ...userData,
                 roleIds: userData.roleIds || []
@@ -48,8 +47,8 @@ export default function EditUser() {
 
     const loadRoles = async () => {
         try {
-            const result = await axios.get("http://localhost:8080/administration/roles");
-            setAllRoles(result.data); // Убедитесь, что сервер возвращает список ролей
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/roles`);
+            setAllRoles(result.data);
         } catch (error) {
             console.error("Error loading roles:", error);
             setError("Failed to load roles. Please try again.");
@@ -72,8 +71,8 @@ export default function EditUser() {
         e.preventDefault();
 
         try {
-            await axios.put(`http://localhost:8080/administration/users/editUser/${id}`, user);
-            navigate('/administration/users');
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/users/editUser/${id}`, user);
+            navigate('/admin/users');
         } catch (error) {
             console.error("Error updating user:", error);
             setError("Failed to update user. Please try again.");
@@ -147,7 +146,7 @@ export default function EditUser() {
                         <button type='submit' className="btn btn-outline-primary" disabled={loading}>
                             Submit
                         </button>
-                        <Link className="btn btn-outline-danger mx-2" to='/administration/users'>
+                        <Link className="btn btn-outline-danger mx-2" to='/admin/users'>
                             Cancel
                         </Link>
                     </form>

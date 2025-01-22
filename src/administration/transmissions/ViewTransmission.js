@@ -21,32 +21,29 @@ export default function ViewTransmission() {
 
     const loadTransmission = async () => {
         const result = await axios.get(
-            `http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+            `${process.env.REACT_APP_API_URL}/api/transmissions/${make}/${transmissionId}`);
         setTransmission(result.data);
     }
 
     return (
 
         <div>
-            <ul className="nav">
-                <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to={`/administration/transmissions/${make}/${transmissionId}/editTransmission`}
-                    >Edit transmission</Link>
-                </li>
-            </ul>
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <li className="nav-item">
+                        <Link className="nav-link active" aria-current="page" to={`/transmissions/${make}/${transmissionId}/editTransmission`}
+                        >Edit transmission</Link>
+                    </li>
+                </ul>
+            )}
 
             <div className='container'>
 
                 <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
+                    <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li className="breadcrumb-item"><a href="/administration/transmissions" className="text-decoration-none">Transmissions</a></li>
-                        <li className="breadcrumb-item"><a href={`/administration/transmissions/${make}/`} className="text-decoration-none">{make}</a></li>
+                        <li className="breadcrumb-item"><a href="/transmissions" className="text-decoration-none">Transmissions</a></li>
+                        <li className="breadcrumb-item"><a href={`/transmissions/${make}/`} className="text-decoration-none">{make}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{transmission.name}</li>
                     </ol>
                 </nav>

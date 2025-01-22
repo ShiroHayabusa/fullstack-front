@@ -30,7 +30,7 @@ export default function AddFuel() {
         const formData = new FormData();
         formData.append('name', fuel.name);
         try {
-            const response = await axios.post('http://localhost:8080/administration/fuels/addFuel', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/fuels/addFuel`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +39,7 @@ export default function AddFuel() {
                 setSuccess('Fuel added successfully');
                 setError('');
                 setFuel({ name: "" });
-                navigate('/administration/fuels');
+                navigate('/admin/fuels');
             }
         } catch (error) {
             console.error('Error adding fuel: ', error.message);
@@ -51,8 +51,8 @@ export default function AddFuel() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/fuels' className="text-decoration-none">Fuels</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/fuels' className="text-decoration-none">Fuels</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add fuel</li>
                 </ol>
             </nav>
@@ -74,7 +74,7 @@ export default function AddFuel() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/fuels`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/fuels`}>Cancel</Link>
                     </form>
                 </div>
             </div>

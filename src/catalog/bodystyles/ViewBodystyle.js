@@ -17,10 +17,10 @@ export default function ViewBodystyle() {
     const { make, model, generationId, bodystyleId } = useParams();
 
     const [spots, setSpots] = useState([]);
-    const [page, setPage] = useState(0); // Текущая страница
+    const [page, setPage] = useState(0); 
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const breakpointColumnsObj = {
         default: 5,
@@ -30,49 +30,33 @@ export default function ViewBodystyle() {
     };
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        } else {
-            loadTrims();
-            fetchSpots();
-            loadBodystyle();
-        }
+        loadTrims();
+        fetchSpots();
+        loadBodystyle();
     }, [user]);
 
     const loadTrims = async () => {
         const result = await axios.get(
-            `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}/listTrim`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+            `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/listTrim`);
         setTrims(result.data);
     }
 
     const loadBodystyle = async () => {
         const result = await axios.get(
-            `http://localhost:8080/catalog/${make}/${model}/${generationId}/${bodystyleId}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+            `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}`);
         setBodystyle(result.data);
     }
 
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/spots/${bodystyleId}/bodystyleSpots?page=${page}&size=10`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${bodystyleId}/bodystyleSpots?page=${page}&size=10`);
             setSpots((prevSpots) => {
                 const newSpots = result.data.content.filter(
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
                 );
                 return [...prevSpots, ...newSpots];
-            }); // Добавляем новые записи
-            setHasMore(result.data.totalPages > page + 1); // Проверяем, есть ли ещё страницы
+            });
+            setHasMore(result.data.totalPages > page + 1);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }
@@ -154,7 +138,7 @@ export default function ViewBodystyle() {
                         })}
                     </div>
                     <div className='col-md-4'>
-                        sadasdasd
+                        
                     </div>
 
                 </div>

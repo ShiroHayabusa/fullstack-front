@@ -20,7 +20,7 @@ export default function Roles() {
         setLoading(true);
         setError("");
         try {
-            const result = await axios.get("http://localhost:8080/administration/roles", {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/roles`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +39,7 @@ export default function Roles() {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:8080/administration/roles/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/roles/${id}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -56,14 +56,14 @@ export default function Roles() {
             <ul className="nav">
                 <li className="nav-item">
                     <Link className="nav-link active" aria-current="page"
-                        to='/administration/roles/addRole'>Add Role</Link>
+                        to='/admin/roles/addRole'>Add Role</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Roles</li>
                     </ol>
                 </nav>
@@ -86,9 +86,9 @@ export default function Roles() {
                                         <td className='text-start'>{role.name}</td>
                                         <td>
                                             <Link className='btn btn-primary mx-2'
-                                                to={`/administration/roles/viewRole/${role.id}`}>View</Link>
+                                                to={`/admin/roles/viewRole/${role.id}`}>View</Link>
                                             <Link className='btn btn-outline-primary mx-2'
-                                                to={`/administration/roles/editRole/${role.id}`}>Edit</Link>
+                                                to={`/admin/roles/editRole/${role.id}`}>Edit</Link>
                                             <button className='btn btn-danger mx-2'
                                                 onClick={() => deleteRole(role.id)}>Delete</button>
                                         </td>

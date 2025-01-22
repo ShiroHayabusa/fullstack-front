@@ -5,16 +5,16 @@ import { Loader } from '@googlemaps/js-api-loader';
 import { Modal, Button } from 'react-bootstrap';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
-import ShareButtons from '../components/ShareButtons';
 import GoogleMapWithMarker from '../components/GoogleMapWithMarker';
+import { InlineShareButtons } from 'sharethis-reactjs';
 
 export default function ViewSpot() {
     const [spot, setSpot] = useState({ caption: '', photos: [], latitude: null, longitude: null });
 
     const { id } = useParams();
-    const mapContainerRef = useRef(null); // Ссылка на контейнер карты
+    const mapContainerRef = useRef(null);
     const navigate = useNavigate();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
@@ -29,19 +29,17 @@ export default function ViewSpot() {
 
     const loadSpot = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/spots/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
+            const headers = user?.token
+                ? { Authorization: `Bearer ${user.token}` }
+                : {};
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${id}`, {
+                headers,
             });
             setSpot(result.data);
 
             setComments(result.data.comments);
-
-            const likesResult = await axios.get(`http://localhost:8080/spots/${id}/likes`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
+            const likesResult = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${id}/likes`, {
+                headers,
             });
             setLikes(likesResult.data.likeCount);
             setHasLiked(likesResult.data.hasLiked);
@@ -53,23 +51,19 @@ export default function ViewSpot() {
 
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        } else {
-            loadSpot();
-        }
-    }, [user]);
+        loadSpot();
+    }, []);
 
-    const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
+    const [showModal, setShowModal] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
     const handleOpenModal = (index) => {
-        setCurrentPhotoIndex(index); // Устанавливаем индекс текущего фото
-        setShowModal(true); // Открываем модалку
+        setCurrentPhotoIndex(index);
+        setShowModal(true);
     };
 
     const handleCloseModal = () => {
-        setShowModal(false); // Закрываем модалку
+        setShowModal(false);
     };
 
     const handlePrevPhoto = () => {
@@ -107,7 +101,7 @@ export default function ViewSpot() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/spots/deleteSpot/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/spots/deleteSpot/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -129,7 +123,7 @@ export default function ViewSpot() {
 
         try {
             const result = await axios.post(
-                `http://localhost:8080/spots/${id}/addComment`,
+                `${process.env.REACT_APP_API_URL}/api/spots/${id}/addComment`,
                 { content: newComment },
                 {
                     headers: {
@@ -138,7 +132,7 @@ export default function ViewSpot() {
                 }
             );
             setComments((prevComments) => [result.data, ...prevComments]);
-            setNewComment(''); // Очищаем поле ввода
+            setNewComment('');
         } catch (error) {
             console.error('Ошибка добавления комментария:', error);
             alert('Не удалось добавить комментарий.');
@@ -146,14 +140,14 @@ export default function ViewSpot() {
     };
 
     const handleReplyClick = (commentId) => {
-        setReplyingTo((prev) => (prev === commentId ? null : commentId)); // Если форма открыта, закрываем её
+        setReplyingTo((prev) => (prev === commentId ? null : commentId));
     };
 
 
     const toggleReplies = (commentId) => {
         setExpandedReplies((prev) => ({
             ...prev,
-            [commentId]: !prev[commentId], // Инвертируем состояние для данного комментария
+            [commentId]: !prev[commentId],
         }));
     };
 
@@ -165,12 +159,12 @@ export default function ViewSpot() {
 
         try {
             const response = await axios.post(
-                `http://localhost:8080/comments/${parentId}/replies`,
+                `${process.env.REACT_APP_API_URL}/api/comments/${parentId}/replies`,
                 { content: replyContent },
                 { headers: { Authorization: `Bearer ${user.token}` } }
             );
 
-            // Обновление состояния комментариев
+
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === parentId
@@ -179,10 +173,10 @@ export default function ViewSpot() {
                 )
             );
 
-            // Раскрываем реплаи для родительского комментария
+
             setExpandedReplies((prev) => ({
                 ...prev,
-                [parentId]: true, // Устанавливаем состояние "развернуто" для родителя
+                [parentId]: true,
             }));
             setReplyContent('');
             setReplyingTo(null);
@@ -195,7 +189,7 @@ export default function ViewSpot() {
     const toggleLike = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:8080/spots/${id}/like`,
+                `${process.env.REACT_APP_API_URL}/api/spots/${id}/like`,
                 {},
                 {
                     headers: {
@@ -215,13 +209,12 @@ export default function ViewSpot() {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/comments/${commentId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
 
-            // Удаляем комментарий из состояния
             setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId));
         } catch (error) {
             console.error("Error deleting comment:", error);
@@ -234,13 +227,12 @@ export default function ViewSpot() {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:8080/api/comments/${commentId}/replies/${replyId}`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/comments/${commentId}/replies/${replyId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
 
-            // Удаляем реплай из состояния
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === commentId
@@ -256,7 +248,6 @@ export default function ViewSpot() {
             alert("Failed to delete reply. Please try again.");
         }
     };
-
 
     return (
         <div>
@@ -274,16 +265,32 @@ export default function ViewSpot() {
                         </ol>
                     </nav>
                     <div>
-                        <ShareButtons />
+                        <InlineShareButtons
+                            config={{
+                                color: 'social',
+                                enabled: true,
+                                font_size: 14,
+                                labels: 'null',
+                                language: 'en',
+                                networks: [
+                                    'facebook',
+                                    'twitter',
+                                    'reddit',
+                                    'email'
+                                ],
+                                padding: 10,
+                                radius: 10,
+                                size: 40,
+                            }} />
                     </div>
                 </div>
-                {user.username === spot.user?.username && (
+                {user?.username === spot.user?.username && (
                     <ul className="nav mt-3 mb-3" style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
                         <li className="nav-item">
                             <button
                                 className="btn btn-link text-decoration-none text-primary"
                                 onClick={() => navigate(`/spots/editSpot/${id}`)}
-                                style={{ fontSize: "16px", padding: 0 }} // Text-based button style
+                                style={{ fontSize: "16px", padding: 0 }}
                             >
                                 Edit Spot
                             </button>
@@ -294,13 +301,13 @@ export default function ViewSpot() {
                                 onClick={deleteSpot}
                                 className="d-flex align-items-center"
                                 style={{
-                                    background: "none", // Remove background
-                                    border: "none", // Remove border
-                                    cursor: "pointer", // Add pointer cursor
-                                    color: "red", // Red color for the trash icon
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    color: "red",
                                 }}
                             >
-                                <i className="bi bi-trash" style={{ fontSize: "20px" }}></i> {/* Trash can icon */}
+                                <i className="bi bi-trash" style={{ fontSize: "20px" }}></i>
                             </button>
                         </li>
                     </ul>
@@ -315,13 +322,13 @@ export default function ViewSpot() {
                                         src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${photo.name}`}
                                         alt={photo.name}
                                         className="img-fluid mb-2"
-                                        onClick={() => handleOpenModal(index)} // Открытие модального окна
+                                        onClick={() => handleOpenModal(index)}
                                     />
                                 ))}
                             </div>
                         )}
                     </div>
-                    {/* Bootstrap Modal */}
+
                     <Modal
                         show={showModal}
                         onHide={handleCloseModal}
@@ -331,7 +338,7 @@ export default function ViewSpot() {
                         <Modal.Body>
                             <div className="d-flex justify-content-center">
                                 <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.photos[currentPhotoIndex]?.name}`}
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[currentPhotoIndex]?.name}`}
                                     className="img-fluid"
                                     alt=""
                                 />
@@ -452,25 +459,26 @@ export default function ViewSpot() {
                         </div>
                         <div>
                             <div>
-
-                                <div className="mt-4 mb-3">
-                                    <textarea
-                                        className="form-control"
-                                        rows="3"
-                                        value={newComment}
-                                        onChange={(e) => setNewComment(e.target.value)}
-                                        placeholder="Add a comment"
-                                    ></textarea>
-                                    <button className="btn btn-outline-secondary mt-2" onClick={handleAddComment}>
-                                        Comment
-                                    </button>
-                                </div>
-                                <h5 className='text-start'>Comments:</h5>
+                                {user?.token ? (
+                                    <div className="mt-4 mb-3">
+                                        <textarea
+                                            className="form-control"
+                                            rows="3"
+                                            value={newComment}
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            placeholder="Add a comment"
+                                        ></textarea>
+                                        <button className="btn btn-outline-secondary mt-2" onClick={handleAddComment}>
+                                            Comment
+                                        </button>
+                                    </div>
+                                ) : null}
+                                <h5 className='text-start mt-3'>Comments:</h5>
                                 <ul className="list-group list-group-flush text-start">
                                     {comments.map((comment) => (
                                         <li key={comment.id} className="list-group-item py-2">
                                             <div className="d-flex">
-                                                {/* Аватар пользователя */}
+
                                                 {comment.user.avatar ? (
                                                     <img
                                                         src={`https://newloripinbucket.s3.amazonaws.com/image/users/${comment.user.username}/${comment.user.avatar.name}`}
@@ -500,7 +508,7 @@ export default function ViewSpot() {
                                                     </div>
                                                 )}
                                                 <div className="d-flex flex-column w-100">
-                                                    {/* Имя пользователя и время */}
+
                                                     <span className="d-flex justify-content-between align-items-center">
                                                         <strong>{comment.user.username}</strong>
                                                         <span className="text-muted small">
@@ -509,25 +517,25 @@ export default function ViewSpot() {
                                                                 : 'Unknown'}
                                                         </span>
                                                     </span>
-                                                    {/* Контент комментария */}
+
                                                     <p className="mb-0">{comment.content}</p>
-                                                    {/* Кнопка "Reply" */}
+
                                                     <div className="d-flex justify-content-between align-items-center">
                                                         <button
                                                             className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
                                                             style={{
-                                                                fontSize: '12px', // Уменьшение текста
+                                                                fontSize: '12px',
                                                                 alignSelf: 'start',
                                                             }}
-                                                            onClick={() => handleReplyClick(comment.id)} // Открываем или закрываем форму
+                                                            onClick={() => handleReplyClick(comment.id)}
                                                         >
                                                             {replyingTo === comment.id ? 'Cancel' : 'Reply'}
                                                         </button>
-                                                        {comment.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                        {comment?.user?.username === user?.username && (
                                                             <button
                                                                 className="btn btn-sm btn-link text-muted p-0"
                                                                 style={{
-                                                                    fontSize: '12px', // Уменьшение текста
+                                                                    fontSize: '12px',
                                                                     alignSelf: 'start',
                                                                 }}
                                                                 onClick={() => handleDeleteComment(comment.id)}
@@ -536,7 +544,7 @@ export default function ViewSpot() {
                                                             </button>
                                                         )}
                                                     </div>
-                                                    {/* Форма для добавления ответа */}
+
                                                     {replyingTo === comment.id && (
                                                         <div className="mt-2">
                                                             <textarea
@@ -554,12 +562,12 @@ export default function ViewSpot() {
                                                             </button>
                                                         </div>
                                                     )}
-                                                    {/* Кнопка для переключения реплаев */}
+
                                                     {comment.replies && comment.replies.length > 0 && (
                                                         <button
                                                             className="btn btn-link p-0 mt-1 text-decoration-none"
                                                             style={{
-                                                                fontSize: '12px', // Уменьшение текста
+                                                                fontSize: '12px',
                                                                 alignSelf: 'start',
                                                             }}
                                                             onClick={() => toggleReplies(comment.id)}
@@ -567,7 +575,7 @@ export default function ViewSpot() {
                                                             {expandedReplies[comment.id] ? 'Hide Replies' : 'View Replies'}
                                                         </button>
                                                     )}
-                                                    {/* Отображение реплаев */}
+
                                                     {expandedReplies[comment.id] && comment.replies && comment.replies.length > 0 && (
                                                         <ul className="list-group list-group-flush ms-4">
                                                             {comment.replies.map((reply) => (
@@ -613,11 +621,11 @@ export default function ViewSpot() {
                                                                             </span>
                                                                             <p className="mb-0">{reply.content}</p>
                                                                             <div className="d-flex justify-content-between align-items-center">
-                                                                                {reply.user.username === user.username && ( // Показываем кнопку только для своих комментариев
+                                                                                {reply.user.username === user.username && (
                                                                                     <button
                                                                                         className="btn btn-sm btn-link text-muted p-0"
                                                                                         style={{
-                                                                                            fontSize: '12px', // Уменьшение текста
+                                                                                            fontSize: '12px',
                                                                                             alignSelf: 'start',
                                                                                         }}
                                                                                         onClick={() => handleDeleteReply(comment.id, reply.id)}

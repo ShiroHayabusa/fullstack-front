@@ -1,0 +1,159 @@
+Date : 2025-01-16 00:03:11
+Directory : c:\Dev\fullstack\fullstack-front
+Total : 99 files,  5038 codes, 92 comments, 315 blanks, all 5445 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         94 |      4,351 |         90 |        310 |      4,751 |
+| JSON       |          2 |        618 |          0 |          0 |        618 |
+| XML        |          1 |         55 |          1 |          2 |         58 |
+| CSS        |          1 |         14 |          1 |          2 |         17 |
+| HTML       |          1 |          0 |          0 |          1 |          1 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                          | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                             |         99 |      5,038 |         92 |        315 |      5,445 |
+| . (Files)                                                                                     |          2 |        618 |          0 |          0 |        618 |
+| public                                                                                        |          2 |         55 |          1 |          3 |         59 |
+| src                                                                                           |         95 |      4,365 |         91 |        312 |      4,768 |
+| src (Files)                                                                                   |          3 |         52 |          4 |          2 |         58 |
+| src\administration                                                                            |         45 |        412 |          1 |         -6 |        407 |
+| src\administration (Files)                                                                    |          2 |         -1 |          0 |          0 |         -1 |
+| src\administration\bodies                                                                     |          6 |        -28 |          0 |         -8 |        -36 |
+| src\administration\bodytypes                                                                  |          3 |         37 |          0 |          0 |         37 |
+| src\administration\countries                                                                  |          3 |         37 |          0 |          0 |         37 |
+| src\administration\drivetrains                                                                |          3 |         38 |          0 |          0 |         38 |
+| src\administration\engineTypes                                                                |          3 |         37 |          0 |          0 |         37 |
+| src\administration\engines                                                                    |          5 |         49 |          0 |         -1 |         48 |
+| src\administration\fuels                                                                      |          3 |         37 |          0 |          0 |         37 |
+| src\administration\markets                                                                    |          3 |         68 |          0 |          2 |         70 |
+| src\administration\roles                                                                      |          4 |         63 |          0 |          0 |         63 |
+| src\administration\transmissionTypes                                                          |          3 |         37 |          0 |          1 |         38 |
+| src\administration\transmissions                                                              |          5 |         41 |          0 |          0 |         41 |
+| src\administration\users                                                                      |          2 |         -3 |          1 |          0 |         -2 |
+| src\catalog                                                                                   |         21 |      1,030 |          0 |         39 |      1,069 |
+| src\catalog\bodystyles                                                                        |          3 |        150 |          0 |          2 |        152 |
+| src\catalog\facelifts                                                                         |          2 |         36 |          0 |          4 |         40 |
+| src\catalog\generations                                                                       |          3 |        133 |          0 |          7 |        140 |
+| src\catalog\makes                                                                             |          3 |        182 |          3 |          8 |        193 |
+| src\catalog\models                                                                            |          3 |        126 |          0 |          4 |        130 |
+| src\catalog\trims                                                                             |          7 |        403 |         -3 |         14 |        414 |
+| src\components                                                                                |          5 |        282 |         29 |         43 |        354 |
+| src\context                                                                                   |          1 |         43 |         11 |         10 |         64 |
+| src\hooks                                                                                     |          1 |         26 |          2 |         10 |         38 |
+| src\layout                                                                                    |          2 |         65 |          2 |          7 |         74 |
+| src\pages                                                                                     |          4 |         22 |          0 |         -4 |         18 |
+| src\spots                                                                                     |          5 |      1,419 |         35 |         97 |      1,551 |
+| src\users                                                                                     |          8 |      1,014 |          7 |        114 |      1,135 |
++-----------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                      | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Dev\fullstack\fullstack-front\package-lock.json                                            | JSON       |        610 |          0 |          0 |        610 |
+| c:\Dev\fullstack\fullstack-front\package.json                                                 | JSON       |          8 |          0 |          0 |          8 |
+| c:\Dev\fullstack\fullstack-front\public\favicon.svg                                           | XML        |         55 |          1 |          2 |         58 |
+| c:\Dev\fullstack\fullstack-front\public\index.html                                            | HTML       |          0 |          0 |          1 |          1 |
+| c:\Dev\fullstack\fullstack-front\src\App.js                                                   | JavaScript |         40 |          0 |         -3 |         37 |
+| c:\Dev\fullstack\fullstack-front\src\ProtectedRoute.js                                        | JavaScript |         14 |          2 |          5 |         21 |
+| c:\Dev\fullstack\fullstack-front\src\administration\Administration.js                         | JavaScript |         -7 |          0 |          0 |         -7 |
+| c:\Dev\fullstack\fullstack-front\src\administration\BucketAvailabilityChecker.js              | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodies\AddBody.js                         | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodies\Bodies copy.js                     | JavaScript |        -62 |          0 |         -7 |        -69 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodies\Bodies.js                          | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodies\EditBody.js                        | JavaScript |         10 |          0 |          0 |         10 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodies\ListBody.js                        | JavaScript |          6 |          0 |         -1 |          5 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodies\ViewBody.js                        | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodytypes\AddBodytype.js                  | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodytypes\Bodytypes.js                    | JavaScript |         22 |          0 |          0 |         22 |
+| c:\Dev\fullstack\fullstack-front\src\administration\bodytypes\EditBodytype.js                 | JavaScript |          9 |          0 |          0 |          9 |
+| c:\Dev\fullstack\fullstack-front\src\administration\countries\AddCountry.js                   | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\countries\Countries.js                    | JavaScript |         22 |          0 |          0 |         22 |
+| c:\Dev\fullstack\fullstack-front\src\administration\countries\EditCountry.js                  | JavaScript |          9 |          0 |          0 |          9 |
+| c:\Dev\fullstack\fullstack-front\src\administration\drivetrains\AddDrivetrain.js              | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\drivetrains\Drivetrains.js                | JavaScript |         22 |          0 |          0 |         22 |
+| c:\Dev\fullstack\fullstack-front\src\administration\drivetrains\EditDrivetrain.js             | JavaScript |         10 |          0 |          0 |         10 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engineTypes\AddEngineType.js              | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engineTypes\EditEngineType.js             | JavaScript |          9 |          0 |          0 |          9 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engineTypes\EngineTypes.js                | JavaScript |         22 |          0 |          0 |         22 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engines\AddEngine.js                      | JavaScript |         14 |          0 |          1 |         15 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engines\EditEngine.js                     | JavaScript |         17 |          0 |          0 |         17 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engines\Engines.js                        | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engines\ListEngine.js                     | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\engines\ViewEngine.js                     | JavaScript |          6 |          0 |         -2 |          4 |
+| c:\Dev\fullstack\fullstack-front\src\administration\fuels\AddFuel.js                          | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\fuels\EditFuel.js                         | JavaScript |          9 |          0 |          0 |          9 |
+| c:\Dev\fullstack\fullstack-front\src\administration\fuels\Fuels.js                            | JavaScript |         22 |          0 |          0 |         22 |
+| c:\Dev\fullstack\fullstack-front\src\administration\markets\AddMarket.js                      | JavaScript |         10 |          0 |          0 |         10 |
+| c:\Dev\fullstack\fullstack-front\src\administration\markets\EditMarket.js                     | JavaScript |         37 |          0 |          2 |         39 |
+| c:\Dev\fullstack\fullstack-front\src\administration\markets\Markets.js                        | JavaScript |         21 |          0 |          0 |         21 |
+| c:\Dev\fullstack\fullstack-front\src\administration\roles\AddRole.js                          | JavaScript |         14 |          0 |          0 |         14 |
+| c:\Dev\fullstack\fullstack-front\src\administration\roles\EditRole.js                         | JavaScript |         18 |          0 |          0 |         18 |
+| c:\Dev\fullstack\fullstack-front\src\administration\roles\Roles.js                            | JavaScript |         17 |          0 |          0 |         17 |
+| c:\Dev\fullstack\fullstack-front\src\administration\roles\ViewRole.js                         | JavaScript |         14 |          0 |          0 |         14 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissionTypes\AddTransmissionType.js  | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissionTypes\EditTransmissionType.js | JavaScript |          9 |          0 |          0 |          9 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissionTypes\TransmissionTypes.js    | JavaScript |         22 |          0 |          1 |         23 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissions\AddTransmission.js          | JavaScript |         10 |          0 |          0 |         10 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissions\EditTransmission.js         | JavaScript |         13 |          0 |          0 |         13 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissions\ListTransmission.js         | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissions\Transmissions.js            | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\transmissions\ViewTransmission.js         | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\administration\users\Users.js                            | JavaScript |        -51 |          0 |         -3 |        -54 |
+| c:\Dev\fullstack\fullstack-front\src\administration\users\ViewUser.js                         | JavaScript |         48 |          1 |          3 |         52 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\bodystyles\AddBodystyle.js                       | JavaScript |         27 |          0 |          2 |         29 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\bodystyles\EditBodystyle.js                      | JavaScript |         21 |          0 |         -2 |         19 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\bodystyles\ViewBodystyle.js                      | JavaScript |        102 |          0 |          2 |        104 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\facelifts\AddFacelift.js                         | JavaScript |         26 |          0 |          3 |         29 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\facelifts\EditFacelift.js                        | JavaScript |         10 |          0 |          1 |         11 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\generations\AddGeneration.js                     | JavaScript |         10 |          0 |          0 |         10 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\generations\EditGeneration.js                    | JavaScript |         14 |          0 |          0 |         14 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\generations\ViewGeneration.js                    | JavaScript |        109 |          0 |          7 |        116 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\makes\AddMake.js                                 | JavaScript |         11 |          0 |          0 |         11 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\makes\EditMake.js                                | JavaScript |         14 |          0 |          0 |         14 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\makes\ViewMake.js                                | JavaScript |        157 |          3 |          8 |        168 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\models\AddModel.js                               | JavaScript |          6 |          0 |          0 |          6 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\models\EditModel.js                              | JavaScript |         10 |          0 |          0 |         10 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\models\ViewModel.js                              | JavaScript |        110 |          0 |          4 |        114 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\AddPhoto.js                                | JavaScript |        -54 |          0 |        -10 |        -64 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\AddTrim.js                                 | JavaScript |         58 |          0 |          1 |         59 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\DeletePhoto.js                             | JavaScript |        -23 |         -1 |         -5 |        -29 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\EditTrim.js                                | JavaScript |        116 |         -2 |         17 |        131 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\PhotoManagement.js                         | JavaScript |        -54 |         -3 |         -9 |        -66 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\SetMainPhoto.js                            | JavaScript |        -23 |         -1 |         -6 |        -30 |
+| c:\Dev\fullstack\fullstack-front\src\catalog\trims\ViewTrim.js                                | JavaScript |        383 |          4 |         26 |        413 |
+| c:\Dev\fullstack\fullstack-front\src\components\GoogleMapWithMarker.js                        | JavaScript |        145 |         14 |         16 |        175 |
+| c:\Dev\fullstack\fullstack-front\src\components\Grid.js                                       | JavaScript |         65 |         10 |         13 |         88 |
+| c:\Dev\fullstack\fullstack-front\src\components\Masonry.css                                   | CSS        |         14 |          1 |          2 |         17 |
+| c:\Dev\fullstack\fullstack-front\src\components\ShareButtons.js                               | JavaScript |         25 |          2 |          6 |         33 |
+| c:\Dev\fullstack\fullstack-front\src\components\geocode.js                                    | JavaScript |         33 |          2 |          6 |         41 |
+| c:\Dev\fullstack\fullstack-front\src\context\AuthContext.js                                   | JavaScript |         43 |         11 |         10 |         64 |
+| c:\Dev\fullstack\fullstack-front\src\hooks\useScript.js                                       | JavaScript |         26 |          2 |         10 |         38 |
+| c:\Dev\fullstack\fullstack-front\src\index.js                                                 | JavaScript |         -2 |          2 |          0 |          0 |
+| c:\Dev\fullstack\fullstack-front\src\layout\Footer.js                                         | JavaScript |          0 |          0 |         -2 |         -2 |
+| c:\Dev\fullstack\fullstack-front\src\layout\Navbar.js                                         | JavaScript |         65 |          2 |          9 |         76 |
+| c:\Dev\fullstack\fullstack-front\src\pages\Catalog.js                                         | JavaScript |         29 |          0 |          0 |         29 |
+| c:\Dev\fullstack\fullstack-front\src\pages\Home.js                                            | JavaScript |          7 |          0 |          0 |          7 |
+| c:\Dev\fullstack\fullstack-front\src\pages\ImageUpload.js                                     | JavaScript |        -30 |          0 |         -7 |        -37 |
+| c:\Dev\fullstack\fullstack-front\src\pages\Unathorized.js                                     | JavaScript |         16 |          0 |          3 |         19 |
+| c:\Dev\fullstack\fullstack-front\src\spots\AddSpot.js                                         | JavaScript |        440 |          5 |         39 |        484 |
+| c:\Dev\fullstack\fullstack-front\src\spots\EditSpot.js                                        | JavaScript |         87 |         22 |         -5 |        104 |
+| c:\Dev\fullstack\fullstack-front\src\spots\MySpots.js                                         | JavaScript |        242 |          4 |         19 |        265 |
+| c:\Dev\fullstack\fullstack-front\src\spots\Spots.js                                           | JavaScript |        198 |          4 |         15 |        217 |
+| c:\Dev\fullstack\fullstack-front\src\spots\ViewSpot.js                                        | JavaScript |        452 |          0 |         29 |        481 |
+| c:\Dev\fullstack\fullstack-front\src\users\ActivateAccount.js                                 | JavaScript |         50 |          0 |          8 |         58 |
+| c:\Dev\fullstack\fullstack-front\src\users\ForgotPassword.js                                  | JavaScript |         55 |          0 |          7 |         62 |
+| c:\Dev\fullstack\fullstack-front\src\users\Login.js                                           | JavaScript |         74 |          1 |          8 |         83 |
+| c:\Dev\fullstack\fullstack-front\src\users\Profile.js                                         | JavaScript |        403 |          5 |         45 |        453 |
+| c:\Dev\fullstack\fullstack-front\src\users\Register.js                                        | JavaScript |        130 |          0 |         11 |        141 |
+| c:\Dev\fullstack\fullstack-front\src\users\ResetPassword.js                                   | JavaScript |         72 |          0 |          8 |         80 |
+| c:\Dev\fullstack\fullstack-front\src\users\UserPage.js                                        | JavaScript |        175 |          1 |         19 |        195 |
+| c:\Dev\fullstack\fullstack-front\src\users\VerifyEmail.js                                     | JavaScript |         55 |          0 |          8 |         63 |
+| Total                                                                                         |            |      5,038 |         92 |        315 |      5,445 |
++-----------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

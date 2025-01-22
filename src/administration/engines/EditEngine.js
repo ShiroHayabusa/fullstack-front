@@ -25,10 +25,9 @@ export default function EditEngine() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the engine
         const fetchEngine = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/engines/${make}/${engineId}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/engines/${make}/${engineId}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -55,7 +54,7 @@ export default function EditEngine() {
 
     const fetchEngineTypes = () => {
         axios
-            .get('http://localhost:8080/administration/engineTypes', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -63,18 +62,16 @@ export default function EditEngine() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setEngineTypes(data)
-                } else {
-                    //error handle section 
-                }
+                } 
+                
             })
             .catch((error) => console.log(error));
     };
 
     const fetchFuels = () => {
         axios
-            .get('http://localhost:8080/administration/fuels', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/fuels`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -82,11 +79,8 @@ export default function EditEngine() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setFuels(data)
-                } else {
-                    //error handle section 
-                }
+                } 
             })
             .catch((error) => console.log(error));
     };
@@ -125,7 +119,7 @@ export default function EditEngine() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/engines/${make}/${engineId}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/engines/${make}/${engineId}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -133,7 +127,7 @@ export default function EditEngine() {
             if (response.status === 200) {
                 setSuccess('Engine updated successfully');
                 setError('');
-                navigate(`/administration/engines/${make}/${engineId}`);
+                navigate(`/admin/engines/${make}/${engineId}`);
             }
         } catch (error) {
             setError('Error updating engine: ' + error.message);
@@ -145,10 +139,10 @@ export default function EditEngine() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
-                    <li className="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li className="breadcrumb-item"><a href={`/administration/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/engines' className="text-decoration-none">Engines</a></li>
+                    <li className="breadcrumb-item"><a href={`/admin/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/admin/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit engine</li>
                 </ol>
             </nav>
@@ -251,7 +245,7 @@ export default function EditEngine() {
                         />
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/engines/${make}/${engineId}`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/engines/${make}/${engineId}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

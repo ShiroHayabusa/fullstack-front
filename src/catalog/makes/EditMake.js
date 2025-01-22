@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EditMake() {
 
-    const { make } = useParams(); // Assuming the make ID is passed as a route parameter
+    const { make } = useParams(); 
     let navigate = useNavigate();
 
     const [makeEntity, setMakeEntity] = useState({
@@ -20,13 +20,12 @@ export default function EditMake() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the make
         const fetchMakeEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/editMake/${make}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/editMake/${make}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -45,7 +44,7 @@ export default function EditMake() {
 
         const fetchCountries = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/administration/countries', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/countries`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -90,7 +89,7 @@ export default function EditMake() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/editMake/${make}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/catalog/editMake/${make}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

@@ -1,16 +1,16 @@
 .columns {
     display: flex;
-    flex-wrap: wrap; /* Для автоматического переноса колонок */
+    flex-wrap: wrap;
   }
   
   .column {
     flex: 1;
-    margin-right: 10px; /* Расстояние между колонками */
-    min-width: 200px; /* Минимальная ширина колонки */
+    margin-right: 10px; 
+    min-width: 200px; 
   }
   
   .item {
-    margin-bottom: 10px; /* Расстояние между элементами */
+    margin-bottom: 10px; 
   }
   
   .list-group-item {

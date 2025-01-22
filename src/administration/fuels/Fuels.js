@@ -13,7 +13,7 @@ export default function Fuels() {
     }, []);
 
     const loadFuels = async () => {
-        const result = await axios.get("http://localhost:8080/administration/fuels", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/fuels`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function Fuels() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/administration/fuels/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/fuels/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 alert('Fuel deleted successfully');
-                window.location.href = '/administration/fuels';
+                window.location.href = '/admin/fuels';
                 loadFuels();
             } catch (error) {
                 console.error('Failed to delete fuel:', error);
@@ -46,14 +46,14 @@ export default function Fuels() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/fuels/addFuel'>Add fuel</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/fuels/addFuel'>Add fuel</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Fuels</li>
                     </ol>
                 </nav>
@@ -74,7 +74,7 @@ export default function Fuels() {
                                     <td className='text-start'>{fuel.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/fuels/editFuel/${fuel.id}`}
+                                            to={`/admin/fuels/editFuel/${fuel.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteFuel(fuel.id)}

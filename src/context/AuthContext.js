@@ -1,19 +1,18 @@
-// AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
-// если вы используете jwtDecode для расшифровки токена:
+// if use jwtDecode to decrypt the token:
 import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
 
-// Утилита для получения пользователя из localStorage
-// (например, вытаскиваем токен, пробуем декодировать)
+// Utility for getting user from localStorage
+// (for example, we extract token, try to decode)
 function getUserFromLocalStorage() {
     const token = localStorage.getItem("token");
     if (!token) return null;
 
     try {
         const decoded = jwtDecode(token);
-        const roles = decoded.roles || []; // Предполагается, что `roles` хранится в токене
+        const roles = decoded.roles || []; // Assumes `roles` is stored in the token
         return { token, username: decoded.sub, roles };
     } catch (error) {
         console.error("Invalid token in localStorage", error);
@@ -21,22 +20,22 @@ function getUserFromLocalStorage() {
     }
 }
 
-// Хук, чтобы «вытянуть» контекст в любом компоненте
+// Hook to "pull" context in any component
 export function useAuth() {
     return useContext(AuthContext);
 }
 
-// Сам провайдер
+// The provider itself
 export function AuthProvider({ children }) {
-    // Изначально пробуем взять пользователя из localStorage
+    // Initially we try to take the user from localStorage
     const [user, setUser] = useState(() => getUserFromLocalStorage());
 
-    // Метод логина — сохраняет token в localStorage и обновляет state
+    // Login method - saves token to localStorage and updates state
     const login = (token) => {
         localStorage.setItem("token", token);
         try {
             const decoded = jwtDecode(token);
-            const roles = decoded.roles || []; // Извлекаем роли
+            const roles = decoded.roles || []; // Extract roles
             setUser({ token, username: decoded.sub, roles });
         } catch (err) {
             console.error("Login failed, invalid token", err);
@@ -44,15 +43,15 @@ export function AuthProvider({ children }) {
         }
     };
 
-    // Метод логаута — удаляет token и обнуляет state
+    // Logout method - removes token and resets state
     const logout = () => {
         localStorage.removeItem("token");
         setUser(null);
     };
 
-    // Можно делать эффекты, например, следить за user или token’ом
+    // can make effects, for example, follow the user or token
     useEffect(() => {
-        // Если user вдруг становится null (логаут), или при старте — можно делать доп. действия
+        // If user suddenly becomes null (logout), or at startup - can do additional actions
     }, [user]);
 
     return (

@@ -8,18 +8,14 @@ export default function ListBody() {
 
     const [bodies, setBodies] = useState([]);
     const { make } = useParams();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth(); 
 
     useEffect(() => {
         loadBodies()
     }, [make]);
 
     const loadBodies = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/bodies/${make}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}`);
         setBodies(result.data);
     }
 
@@ -36,16 +32,17 @@ export default function ListBody() {
 
     return (
         <div>
-            <ul className="nav">
-                <Link className="nav-link active" aria-current="page" to={`/administration/bodies/${make}/addBody`}
-                >Add body</Link>
-            </ul>
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <Link className="nav-link active" aria-current="page" to={`/bodies/${make}/addBody`}
+                    >Add body</Link>
+                </ul>
+            )}
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
+                    <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li className="breadcrumb-item"><a href="/administration/bodies" className="text-decoration-none">Bodies</a></li>
+                        <li className="breadcrumb-item"><a href="/bodies" className="text-decoration-none">Bodies</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{make}</li>
                     </ol>
                 </nav>
@@ -58,7 +55,7 @@ export default function ListBody() {
                                 <ul className="list-group">
                                     {groupedList[letter].map((body) => (
                                         <li className="list-group-item border-0" key={body.id}>
-                                            <a href={`/administration/bodies/${make}/${body.id}`} className="text-decoration-none">
+                                            <a href={`/bodies/${make}/${body.id}`} className="text-decoration-none">
                                                 <p>
                                                     {body.name}
                                                 </p>

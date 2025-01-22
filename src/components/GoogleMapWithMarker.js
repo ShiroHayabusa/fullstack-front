@@ -23,26 +23,26 @@ export default function GoogleMapWithMarker({
   latitude,
   longitude,
   title = 'Your Spot',
-  fitBounds = false, // <-- Управляющий флаг. По умолчанию false.
+  fitBounds = false, // <-- Control flag. Defaults to false.
   defaultZoom = 15,
 }) {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyAcxOK0QJ7PZ5WTK--7_kAHKtBRnhef9s0'
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
   });
 
-  // Ссылка на карту (Map) и локальные состояния
+  // Link to the Map and local states
   const [mapRef, setMapRef] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [locationInfo, setLocationInfo] = useState({});
 
-  // Сохраняем центр и зум в состоянии, чтобы не прыгало при ререндере
+  // Keep the center and zoom in the state so that it doesn't jump during rerendering
   const [mapCenter, setMapCenter] = useState({ lat: latitude, lng: longitude });
   const [mapZoom, setMapZoom] = useState(defaultZoom);
 
 
 
 
-  // При монтировании (или при изменении latitude/longitude) определим город/страну
+  // When mounting (or when changing latitude/longitude) we will determine the city/country
   useEffect(() => {
     if (latitude && longitude) {
       const fetchLocationInfo = async () => {
@@ -53,13 +53,13 @@ export default function GoogleMapWithMarker({
     }
   }, [latitude, longitude]);
 
-  // Когда карта (mapRef) готова, решаем — делать fitBounds или нет
-  // По флагу fitBounds (если true) и количеству spots
+  // When the map (mapRef) is ready, we decide whether to do fitBounds or not
+  // By the fitBounds flag (if true) and the number of spots
 
   useEffect(() => {
     if (!mapRef || spots.length === 0) return;
     if (spots.length > 1) {
-      // "Режим списка" — облет всех спотов
+      // "List mode" - fly around all spots
       const bounds = new window.google.maps.LatLngBounds();
 
       spots.forEach((spot) => {
@@ -67,22 +67,22 @@ export default function GoogleMapWithMarker({
       });
       mapRef.fitBounds(bounds);
     } else if (spots.length === 1) {
-      // "Страница одного спота" (или fitBounds=false), если у нас 1 спот
-      // Целиком доверяем этому одному споту
+      // "Single Spot Page" (or fitBounds=false), if we have 1 spot
+      // We trust this one spot completely
       const single = spots[0];
       setMapCenter({ lat: single.latitude, lng: single.longitude });
-      // Можем вручную задать зум (вместо fitBounds)
+      // We can manually set the zoom (instead of fitBounds)
       setMapZoom(defaultZoom);
     } else {
-      // Если spots > 1, но fitBounds = false — оставляем центр, который задан
-      // Или если spots.length === 1, но fitBounds тоже false —
-      // можно оставить mapCenter, который уже в стейте.
+      // If spots > 1, but fitBounds = false — leave the center that is set
+      // Or if spots.length === 1, but fitBounds is also false —
+      // you can leave mapCenter, which is already in the state.
     }
-    // Зависимости: mapRef, spots, fitBounds
+    // Dependencies: mapRef, spots, fitBounds
   }, [mapRef, spots, fitBounds, defaultZoom]);
 
-  if (loadError) return <div>Ошибка загрузки карты</div>;
-  if (!isLoaded) return <div>Загрузка карты...</div>;
+  if (loadError) return <div>Error loading map</div>;
+  if (!isLoaded) return <div>Loading map...</div>;
 
   return (
     <GoogleMap
@@ -92,7 +92,7 @@ export default function GoogleMapWithMarker({
       options={defaultMapOptions}
       onLoad={(map) => setMapRef(map)}
     >
-      {/* Рендерим маркеры */}
+      {/* Render markers */}
       {spots.length > 0 ? (
         spots
           .filter(
@@ -106,7 +106,7 @@ export default function GoogleMapWithMarker({
               position={{ lat: spot.latitude, lng: spot.longitude }}
               title={spot.title || `Спот ${spot.id}`}
               onClick={() => {
-                // Если уже выбран этот же спот, то при повторном клике сбрасываем
+                // If the same spot is already selected, then when you click again we reset it
                 if (selectedSpot?.id === spot.id) {
                   setSelectedSpot(null);
                 } else {
@@ -123,7 +123,7 @@ export default function GoogleMapWithMarker({
         />
       )}
 
-      {/* Оверлей при выборе спота */}
+      {/* Overlay when choosing a spot */}
       {selectedSpot && (
         <OverlayView
           position={{ lat: selectedSpot.latitude, lng: selectedSpot.longitude }}

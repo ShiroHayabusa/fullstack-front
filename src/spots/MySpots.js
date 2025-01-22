@@ -8,13 +8,13 @@ import '../components/Masonry.css'
 
 export default function Spots() {
     const [spots, setSpots] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1); // Текущая страница
-    const [spotsPerPage] = useState(20); // Количество элементов на странице
+    const [currentPage, setCurrentPage] = useState(1);
+    const [spotsPerPage] = useState(20);
     const { user } = useAuth();
     const navigate = useNavigate();
 
     const breakpointColumnsObj = {
-        default: 4, // по умолчанию 4 колонки
+        default: 4,
         1100: 3,
         700: 2,
         500: 1
@@ -22,7 +22,7 @@ export default function Spots() {
 
     const loadSpots = async () => {
         try {
-            const result = await axios.get('http://localhost:8080/spots/mySpots', {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/mySpots`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -36,7 +36,7 @@ export default function Spots() {
     const toggleLike = async (spotId) => {
         try {
             const response = await axios.post(
-                `http://localhost:8080/spots/${spotId}/like`,
+                `${process.env.REACT_APP_API_URL}/api/spots/${spotId}/like`,
                 {},
                 {
                     headers: {
@@ -46,7 +46,6 @@ export default function Spots() {
             );
 
             console.log("API Response:", response.data);
-            // Update the spots state
             setSpots((prevSpots) =>
                 prevSpots.map((spot) =>
                     spot.id === spotId
@@ -75,7 +74,6 @@ export default function Spots() {
     const indexOfFirstSpot = indexOfLastSpot - spotsPerPage;
     const currentSpots = spots.slice(indexOfFirstSpot, indexOfLastSpot);
 
-    // Изменение страницы
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
@@ -138,18 +136,15 @@ export default function Spots() {
                                         <div className="card-footer">
                                             <div className="d-flex justify-content-between align-items-center">
                                                 <div className="d-flex align-items-center">
-                                                    {/* Кнопка лайка, при клике передается spot.id */}
                                                     <button
                                                         onClick={() => toggleLike(spot.id)}
                                                         className="btn btn-like p-0 me-2"
                                                     >
                                                         <i className={`bi ${spot.hasLiked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}></i>
                                                     </button>
-                                                    {/* Количество лайков */}
                                                     <span className="me-3">
                                                         {spot.likeCount}
                                                     </span>
-                                                    {/* Иконка комментариев и их количество */}
                                                     <i className="bi bi-chat me-1"></i>
                                                     <span>{spot.commentCount}</span>
                                                 </div>
@@ -166,7 +161,7 @@ export default function Spots() {
                         })}
                     </Masonry>
                 </div>
-                {/* Компонент пагинации */}
+
                 <Pagination
                     spotsPerPage={spotsPerPage}
                     totalSpots={spots.length}
@@ -178,13 +173,13 @@ export default function Spots() {
     );
 }
 
-// Компонент пагинации
+// Pagination component
 function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
     const pageNumbers = [];
     const totalPages = Math.ceil(totalSpots / spotsPerPage);
-    const maxVisiblePages = 5; // Максимальное количество отображаемых страниц
+    const maxVisiblePages = 5; // Maximum number of pages to display
 
-    // Определение диапазона отображаемых страниц
+    // Define the range of pages to display
     const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -195,7 +190,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
     return (
         <nav className='mt-3'>
             <ul className="pagination justify-content-center" style={{ fontSize: '16px', fontWeight: '350', listStyleType: 'none', padding: 0 }}>
-                {/* Ссылка на первую страницу */}
+
                 {currentPage > 1 && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -206,7 +201,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 )}
-                {/* Ссылка на предыдущую страницу */}
+
                 {currentPage > 1 && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -217,7 +212,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 )}
-                {/* Номера страниц */}
+
                 {pageNumbers.map((number) => (
                     <li key={number} className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -232,7 +227,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 ))}
-                {/* Ссылка на следующую страницу */}
+
                 {currentPage < totalPages && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -243,7 +238,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 )}
-                {/* Ссылка на последнюю страницу */}
+
                 {currentPage < totalPages && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span

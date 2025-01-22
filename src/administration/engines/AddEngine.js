@@ -29,7 +29,7 @@ export default function AddEngine() {
 
     const fetchEngineTypes = () => {
         axios
-            .get('http://localhost:8080/administration/engineTypes', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -37,10 +37,7 @@ export default function AddEngine() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setEngineTypes(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -48,7 +45,7 @@ export default function AddEngine() {
 
     const fetchFuels = () => {
         axios
-            .get('http://localhost:8080/administration/fuels', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/fuels`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -56,10 +53,7 @@ export default function AddEngine() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setFuels(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -109,7 +103,7 @@ export default function AddEngine() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/administration/engines/${make}/addEngine`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/engines/${make}/addEngine`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -119,7 +113,7 @@ export default function AddEngine() {
                 setError('');
                 setEngine({ name: "" });
                 setSelectedFile(null);
-                navigate(`/administration/engines/${make}`);
+                navigate(`/admin/engines/${make}`);
             }
         } catch (error) {
             console.error('Error adding engine: ', error.message);
@@ -131,9 +125,9 @@ export default function AddEngine() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/engines' className="text-decoration-none">Engines</a></li>
-                    <li className="breadcrumb-item"><a href={`/administration/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/engines' className="text-decoration-none">Engines</a></li>
+                    <li className="breadcrumb-item"><a href={`/admin/engines/${make}`} className="text-decoration-none">{make}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add engine</li>
                 </ol>
             </nav>
@@ -219,7 +213,7 @@ export default function AddEngine() {
                         />
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/engines/${make}`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/engines/${make}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

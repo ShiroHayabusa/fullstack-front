@@ -10,7 +10,6 @@
     background-clip: padding-box;
   }
   
-  /* можно добавить стили для карточки, например margin-bottom */
   .my-masonry-grid_column > .card {
     margin-bottom: 1rem;
   }

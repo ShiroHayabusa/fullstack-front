@@ -31,7 +31,7 @@ export default function AddBodystyle() {
         name: ''
     });
 
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
         fetchBodytypeData();
@@ -41,7 +41,7 @@ export default function AddBodystyle() {
     }, [])
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generation}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -59,7 +59,7 @@ export default function AddBodystyle() {
 
     const fetchBodytypeData = () => {
         axios
-            .get('http://localhost:8080/administration/bodytypes', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -67,10 +67,7 @@ export default function AddBodystyle() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setBodytypeList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -78,7 +75,7 @@ export default function AddBodystyle() {
 
     const fetchFaceliftData = () => {
         axios
-            .get('http://localhost:8080/catalog/' + make + "/" + model + "/" + generation + '/faceliftList', {
+            .get(`${process.env.REACT_APP_API_URL}/api/catalog/` + make + "/" + model + "/" + generation + '/faceliftList', {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -86,11 +83,8 @@ export default function AddBodystyle() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
-                    setFaceliftList(data)
 
-                } else {
-                    //error handle section 
+                    setFaceliftList(data)
                 }
             })
             .catch((error) => console.log(error));
@@ -98,7 +92,7 @@ export default function AddBodystyle() {
 
     const fetchMarketData = () => {
         axios
-            .get('http://localhost:8080/administration/markets', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/markets`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -106,10 +100,7 @@ export default function AddBodystyle() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setMarketList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -137,7 +128,7 @@ export default function AddBodystyle() {
             setError("Please select a facelift option.");
             return;
         }
-        
+
         if (bodystyle.facelift) {
             formData.append('faceliftId', bodystyle.facelift);
         }
@@ -152,7 +143,7 @@ export default function AddBodystyle() {
 
         try {
             const response =
-                await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addBodystyle`, formData, {
+                await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}/addBodystyle`, formData, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },

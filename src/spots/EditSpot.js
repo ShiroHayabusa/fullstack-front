@@ -12,7 +12,7 @@ export default function EditSpot() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
 
-    // Списки опций
+
     const [makes, setMakes] = useState([]);
     const [models, setModels] = useState([]);
     const [generations, setGenerations] = useState([]);
@@ -20,7 +20,7 @@ export default function EditSpot() {
     const [bodystyles, setBodystyles] = useState([]);
     const [trims, setTrims] = useState([]);
 
-    // Выбранные опции
+
     const [selectedMake, setSelectedMake] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
     const [selectedGeneration, setSelectedGeneration] = useState(null);
@@ -28,27 +28,26 @@ export default function EditSpot() {
     const [selectedBodystyle, setSelectedBodystyle] = useState(null);
     const [selectedTrim, setSelectedTrim] = useState(null);
 
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
-    // Вспомогательная функция для сброса зависимых полей
     const resetDependentFields = (level) => {
         switch (level) {
             case 'make':
                 setSelectedModel(null);
                 setModels([]);
-            // Fall through
+
             case 'model':
                 setSelectedGeneration(null);
                 setGenerations([]);
-            // Fall through
+
             case 'generation':
                 setSelectedFacelift(null);
                 setFacelifts([]);
-            // Fall through
+
             case 'facelift':
                 setSelectedBodystyle(null);
                 setBodystyles([]);
-            // Fall through
+
             case 'bodystyle':
                 setSelectedTrim(null);
                 setTrims([]);
@@ -58,10 +57,9 @@ export default function EditSpot() {
         }
     };
 
-    // Функция для загрузки данных спота
     const fetchSpot = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/spots/${id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${id}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -95,11 +93,10 @@ export default function EditSpot() {
         }
     };
 
-    // Загрузка списка марок при монтировании компонента
     useEffect(() => {
         const fetchMakes = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -112,7 +109,6 @@ export default function EditSpot() {
         fetchMakes();
     }, [user.token]);
 
-    // Мемоизация опций для селектов
     const optionsMake = useMemo(() =>
         makes.map((make) => ({
             value: make.name,
@@ -149,12 +145,11 @@ export default function EditSpot() {
             label: trim.name,
         })), [trims]);
 
-    // Загрузка моделей при изменении selectedMake
     useEffect(() => {
         if (selectedMake) {
             const fetchModels = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}`, {
                         headers: {
                             Authorization: `Bearer ${user.token}`,
                         },
@@ -170,13 +165,12 @@ export default function EditSpot() {
         }
     }, [selectedMake, user.token]);
 
-    // Загрузка поколений при изменении selectedModel
     useEffect(() => {
         if (selectedModel && selectedMake) {
             const fetchGenerations = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`, {
+                        await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}`, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`,
                             },
@@ -192,13 +186,12 @@ export default function EditSpot() {
         }
     }, [selectedModel, selectedMake, user.token]);
 
-    // Загрузка фейслифтов при изменении selectedGeneration
     useEffect(() => {
         if (selectedGeneration && selectedMake && selectedModel) {
             const fetchFacelifts = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`, {
+                        await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`,
                             },
@@ -214,13 +207,12 @@ export default function EditSpot() {
         }
     }, [selectedGeneration, selectedMake, selectedModel, user.token]);
 
-    // Загрузка кузовов при изменении selectedFacelift
     useEffect(() => {
         if (selectedFacelift && selectedMake && selectedModel && selectedGeneration) {
             const fetchBodystyles = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`, {
+                        await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`,
                             },
@@ -236,13 +228,12 @@ export default function EditSpot() {
         }
     }, [selectedFacelift, selectedMake, selectedModel, selectedGeneration, user.token]);
 
-    // Загрузка комплектаций при изменении selectedBodystyle
     useEffect(() => {
         if (selectedBodystyle && selectedMake && selectedModel && selectedGeneration) {
             const fetchTrims = async () => {
                 try {
                     const response =
-                        await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`, {
+                        await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`,
                             },
@@ -258,7 +249,6 @@ export default function EditSpot() {
         }
     }, [selectedBodystyle, selectedMake, selectedModel, selectedGeneration, user.token]);
 
-    // Обработчики изменений селектов
     const handleMakeChange = (selectedOption) => {
         setSelectedMake(selectedOption);
         resetDependentFields('make');
@@ -288,12 +278,10 @@ export default function EditSpot() {
         setSelectedTrim(selectedOption);
     };
 
-    // Загрузка данных спота при монтировании
     useEffect(() => {
         fetchSpot();
     }, []);
 
-    // Обработчик ввода текста
     const onInputChange = (e) => {
         const { name, value } = e.target;
         setSpot({
@@ -302,7 +290,6 @@ export default function EditSpot() {
         });
     };
 
-    // Обработчик загрузки файла
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
 
@@ -316,7 +303,7 @@ export default function EditSpot() {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/spots/${id}/addPhoto`,
+                `${process.env.REACT_APP_API_URL}/api/spots/${id}/addPhoto`,
                 formData,
                 {
                     headers: {
@@ -327,7 +314,7 @@ export default function EditSpot() {
             );
 
             if (response.status === 200 || response.status === 201) {
-                const uploadedPhoto = response.data; // Backend returns the Photo object, including the name
+                const uploadedPhoto = response.data;
                 setSpot((prevSpot) => ({
                     ...prevSpot,
                     photos: [...prevSpot.photos, uploadedPhoto],
@@ -339,22 +326,20 @@ export default function EditSpot() {
             console.error("Error uploading photo:", err.message);
             setError("Failed to upload photo. Please try again.");
         } finally {
-            event.target.value = ""; // Сбрасываем input для загрузки следующего файла
+            event.target.value = "";
         }
     };
 
-    // Обработчик установки основной фотографии
     const handleSetMain = async (photoId) => {
         try {
             const response = await axios.put(
-                `http://localhost:8080/spots/${id}/setMainPhoto/${photoId}`, null, {
+                `${process.env.REACT_APP_API_URL}/api/spots/${id}/setMainPhoto/${photoId}`, null, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
 
             if (response.status === 200) {
-                // Update the photos in spot to reflect the new main photo
                 const updatedPhotos = spot.photos.map((photo) =>
                     photo.id === photoId
                         ? { ...photo, isMain: true }
@@ -367,18 +352,16 @@ export default function EditSpot() {
         }
     };
 
-    // Обработчик удаления фотографии
     const handleDelete = async (photoId) => {
         try {
             const response = await axios.delete(
-                `http://localhost:8080/spots/${id}/deletePhoto/${photoId}`, {
+                `${process.env.REACT_APP_API_URL}/api/spots/${id}/deletePhoto/${photoId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
 
             if (response.status === 200) {
-                // Update the photos in spot locally
                 const updatedPhotos = spot.photos.filter((photo) => photo.id !== photoId);
                 setSpot({ ...spot, photos: updatedPhotos });
             }
@@ -387,7 +370,6 @@ export default function EditSpot() {
         }
     };
 
-    // Обработчик отправки формы
     const onSubmit = async (e) => {
         e.preventDefault();
         const payload = {
@@ -400,16 +382,16 @@ export default function EditSpot() {
             trim: selectedTrim ? selectedTrim.value : null, // Long ID
         };
 
-        console.log('Payload:', payload); // For debugging purposes
+        console.log('Payload:', payload);
 
         try {
             const response =
-                await axios.put(`http://localhost:8080/spots/editSpot/${id}`,
+                await axios.put(`${process.env.REACT_APP_API_URL}/api/spots/editSpot/${id}`,
                     payload,
                     {
                         headers: {
                             Authorization: `Bearer ${user.token}`,
-                            'Content-Type': 'application/json', // Explicitly setting content type
+                            'Content-Type': 'application/json',
                         },
                     });
             if (response.status === 200 || response.status === 201) {
@@ -453,7 +435,7 @@ export default function EditSpot() {
                                     <div key={index} className='mb-2'>
                                         <img
                                             key={index}
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${photo.name}`}
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${id}/${photo.name}`}
                                             alt={photo.name}
                                             className="img-fluid mb-2"
                                         />

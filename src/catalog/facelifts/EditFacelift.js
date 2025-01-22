@@ -20,13 +20,12 @@ export default function EditFacelift() {
         name: ''
     });
 
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the model
         const fetchFaceliftEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -46,7 +45,7 @@ export default function EditFacelift() {
     }, [make, model, generationId, faceliftId]);
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -76,7 +75,7 @@ export default function EditFacelift() {
         formData.append('description', faceliftEntity.description);
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${faceliftId}/editFacelift`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${user.token}`

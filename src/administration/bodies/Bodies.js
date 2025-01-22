@@ -6,18 +6,14 @@ import { useAuth } from '../../context/AuthContext';
 export default function Bodies() {
 
     const [makes, setMakes] = useState([])
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth(); 
 
     useEffect(() => {
         loadMakes();
     }, []);
 
     const loadMakes = async () => {
-        const result = await axios.get("http://localhost:8080/catalog", {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog`);
         setMakes(result.data);
     };
 
@@ -36,8 +32,7 @@ export default function Bodies() {
         <div className='container'>
             <nav aria-label="breadcrumb" className='mt-3'>
                 <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>                    
                     <li className="breadcrumb-item active" aria-current="page">Bodies</li>
                 </ol>
             </nav>
@@ -50,7 +45,7 @@ export default function Bodies() {
                             <ul className="list-group">
                                 {groupedList[letter].map((make) => (
                                     <li className="list-group-item border-0" key={make.id}>
-                                        <a href={`/administration/bodies/${make.name}`} className="text-decoration-none">
+                                        <a href={`/bodies/${make.name}`} className="text-decoration-none">
                                             <p >
                                                 {make.name}
                                             </p>

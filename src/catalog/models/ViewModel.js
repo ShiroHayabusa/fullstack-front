@@ -11,10 +11,9 @@ export default function ViewModel() {
     const [modelDetails, setModelDetails] = useState(null);
     const { make, model } = useParams();
     const [spots, setSpots] = useState([]);
-    const [page, setPage] = useState(0); // Текущая страница
+    const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const navigate = useNavigate();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const breakpointColumnsObj = {
         default: 5,
@@ -25,11 +24,7 @@ export default function ViewModel() {
 
     const loadModelDetails = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/editModel`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/editModel`);
             setModelDetails(result.data);
         } catch (error) {
             console.error('Error loading model details:', error);
@@ -37,38 +32,26 @@ export default function ViewModel() {
     };
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        } else {
-            loadGenerations();
-            fetchSpots();
-            loadModelDetails();
-        }
-    }, [user]);
+        loadGenerations();
+        fetchSpots();
+        loadModelDetails();
+    }, []);
 
     const loadGenerations = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/` + make + '/' + model, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/` + make + '/' + model);
         setGenerations(result.data);
     }
 
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/modelSpots?page=${page}&size=10`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/modelSpots?page=${page}&size=10`);
             setSpots((prevSpots) => {
                 const newSpots = result.data.content.filter(
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
                 );
                 return [...prevSpots, ...newSpots];
-            }); // Добавляем новые записи
-            setHasMore(result.data.totalPages > page + 1); // Проверяем, есть ли ещё страницы
+            });
+            setHasMore(result.data.totalPages > page + 1);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }
@@ -114,10 +97,6 @@ export default function ViewModel() {
                 </div>
                 <div className="row row-cols-1 row-cols-md-3 g-3">
                     {generations.map((generation) => (
-                        //   <ul className="list-group list-group-flush" key={index}>
-                        //       <Link className="list-group-item" to={`/catalog/${make}/${model}/${generation.id}`}>{generation.name}</Link>
-                        //   </ul>
-
                         <div className="col" key={generation.id}>
                             <Link to={`/catalog/${make}/${model}/${generation.id}`} className="text-decoration-none text-black">
                                 <div className="card">

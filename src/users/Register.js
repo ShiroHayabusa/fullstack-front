@@ -35,7 +35,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/register", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,11 +43,12 @@ const Register = () => {
           email: formData.email,
           password: formData.password,
         }),
+
       });
 
       if (response.ok) {
         setMessage("Registration successful! Please check your email to activate your account");
-        setTimeout(() => navigate("/login"), 10000);
+        setTimeout(() => navigate("/login"), 6000);
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Registration failed.");

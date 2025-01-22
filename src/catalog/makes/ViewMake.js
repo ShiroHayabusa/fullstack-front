@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext';
 import '../../components/ColumnContainer.css'
 import Grid from '../../components/Grid';
@@ -13,10 +13,9 @@ export default function ViewMake() {
     const [makeDetails, setMakeDetails] = useState(null);
     const { make } = useParams();
     const [spots, setSpots] = useState([]);
-    const [page, setPage] = useState(0); // Текущая страница
+    const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const navigate = useNavigate();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
     const [trims, setTrims] = useState([]);
     const [spotsWithoutPage, setSpotsWithoutPage] = useState([]);
     const [totalCells, setTotalCells] = useState(null);
@@ -29,67 +28,50 @@ export default function ViewMake() {
     };
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        } else {
-            loadModels();
-            loadMakeDetails();
-            fetchSpots();
-        }
-    }, [make, user, navigate]);
+        loadModels();
+        loadMakeDetails();
+        fetchSpots();
+    }, []);
 
 
     const loadModels = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}`);
         setModels(result.data);
     }
 
     const loadMakeDetails = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/catalog/editMake/${make}`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/editMake/${make}`);
             setMakeDetails(result.data);
         } catch (error) {
             console.error('Error loading make details:', error);
         }
     };
 
-    // Получаем массив trims для данного make
     const fetchTrims = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/catalog/${make}/trims`, {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/trims`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
-            // Предполагается, что result.data — это массив объектов trims
             setTrims(result.data);
             setTotalCells(result.data.length);
-            console.log("Полученные trims:", result.data);
         } catch (error) {
-            console.error("Ошибка при получении данных trims", error);
+            console.error("Error fetching trims", error);
         }
     };
 
-    // Получаем массив spots для данного make
     const fetchSpotsWithoutPage = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/spots/${make}/user`, {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${make}/user`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
             setSpotsWithoutPage(result.data);
-            console.log("Полученные spots:", result.data);
         } catch (error) {
-            console.error("Ошибка при получении данных spots", error);
+            console.error("Error fetching spots", error);
         }
     };
 
@@ -104,18 +86,14 @@ export default function ViewMake() {
 
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/catalog/${make}/makeSpots?page=${page}&size=10`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/makeSpots?page=${page}&size=10`);
             setSpots((prevSpots) => {
                 const newSpots = result.data.content.filter(
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
                 );
                 return [...prevSpots, ...newSpots];
-            }); // Добавляем новые записи
-            setHasMore(result.data.totalPages > page + 1); // Проверяем, есть ли ещё страницы
+            });
+            setHasMore(result.data.totalPages > page + 1);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }
@@ -173,7 +151,6 @@ export default function ViewMake() {
                                 style={{ width: '200px', height: 'auto' }}
                                 alt={`${make} logo`}
                                 className='img-fluid mt-3'
-                                onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/100'; }} // Fallback image 
                             />
                         </div>
                         <div className="col-md-5">
@@ -182,27 +159,29 @@ export default function ViewMake() {
                                 <p className="card-text text-start">{makeDetails?.description}</p>
                             </div>
                         </div>
-                        <div className="col-md-5 mb-3 text-start">
-                            <h6>Spots progress:</h6>
-                            <div className="progress mb-2">
-                                <div
-                                    className="progress-bar bg-success"
-                                    role="progressbar"
-                                    style={{ width: `${progressPercent}%` }}
-                                    aria-valuenow={progressPercent}
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                >
-                                    {progressPercent}%
+                        {user?.token ? (
+                            <div className="col-md-5 mb-3 text-start">
+                                <h6>Spots progress:</h6>
+                                <div className="progress mb-2">
+                                    <div
+                                        className="progress-bar bg-success"
+                                        role="progressbar"
+                                        style={{ width: `${progressPercent}%` }}
+                                        aria-valuenow={progressPercent}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    >
+                                        {progressPercent}%
+                                    </div>
                                 </div>
+                                <Grid
+                                    make={make}
+                                    user={user}
+                                    trims={trims}
+                                    spotsWithouPage={spotsWithoutPage}
+                                    totalCells={totalCells} />
                             </div>
-                            <Grid
-                                make={make}
-                                user={user}
-                                trims={trims}
-                                spotsWithouPage={spotsWithoutPage}
-                                totalCells={totalCells} />
-                        </div>
+                        ) : null}
                     </div>
                 </div>
                 <div className='py-4'>

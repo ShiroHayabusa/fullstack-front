@@ -13,7 +13,7 @@ export default function Markets() {
     }, []);
 
     const loadMarkets = async () => {
-        const result = await axios.get("http://localhost:8080/administration/markets", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/markets`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function Markets() {
             );
             if (confirmDelete) {
                 try {
-                    await axios.delete(`http://localhost:8080/administration/markets/${id}`, {
+                    await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/markets/${id}`, {
                         headers: {
                             Authorization: `Bearer ${user.token}`,
                         },
                     });
                     alert('Market deleted successfully');
-                    window.location.href = '/administration/markets';
+                    window.location.href = '/admin/markets';
                     loadMarkets();
                 } catch (error) {
                     console.error('Failed to delete market:', error);
@@ -46,14 +46,14 @@ export default function Markets() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/markets/addMarket'>Add Market</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/markets/addMarket'>Add Market</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Markets</li>
                     </ol>
                 </nav>
@@ -76,7 +76,7 @@ export default function Markets() {
                                     <td className='text-start'>{market.country.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/markets/editMarket/${market.id}`}
+                                            to={`/admin/markets/editMarket/${market.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteMarket(market.id)}

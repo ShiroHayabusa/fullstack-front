@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EditCountry() {
 
-    const { id } = useParams(); // Assuming the country ID is passed as a route parameter
+    const { id } = useParams();
     let navigate = useNavigate();
 
     const [country, setCountry] = useState({
@@ -14,13 +14,12 @@ export default function EditCountry() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the country
         const fetchCountry = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/countries/${id}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/countries/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -59,7 +58,7 @@ export default function EditCountry() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/countries/${id}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/countries/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -67,7 +66,7 @@ export default function EditCountry() {
             if (response.status === 200) {
                 setSuccess('Country updated successfully');
                 setError('');
-                navigate('/administration/countries');
+                navigate('/admin/countries');
             }
         } catch (error) {
             setError('Error updating country: ' + error.message);
@@ -79,8 +78,8 @@ export default function EditCountry() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><a href="/">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration'>Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/countries'>Countries</a></li>
+                    <li className="breadcrumb-item"><a href='/admin'>Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/countries'>Countries</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add country</li>
                 </ol>
             </nav>
@@ -116,7 +115,7 @@ export default function EditCountry() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/countries`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/countries`}>Cancel</Link>
                     </form>
                 </div>
             </div>

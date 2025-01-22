@@ -19,7 +19,7 @@ export default function EditBodytype() {
         // Fetch the current details of the bodytype
         const fetchBodytype = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodytypes/${id}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -50,7 +50,7 @@ export default function EditBodytype() {
         formData.append('name', bodytype.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/bodytypes/${id}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -58,7 +58,7 @@ export default function EditBodytype() {
             if (response.status === 200) {
                 setSuccess('Bodytype updated successfully');
                 setError('');
-                navigate('/administration/bodytypes');
+                navigate('/admin/bodytypes');
             }
         } catch (error) {
             setError('Error updating bodytype: ' + error.message);
@@ -70,8 +70,8 @@ export default function EditBodytype() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/bodytypes' className="text-decoration-none">Bodytypes</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/bodytypes' className="text-decoration-none">Bodytypes</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add bodytype</li>
                 </ol>
             </nav>
@@ -93,7 +93,7 @@ export default function EditBodytype() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/bodytypes`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/bodytypes`}>Cancel</Link>
                     </form>
                 </div>
             </div>

@@ -16,13 +16,12 @@ export default function EditModel() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the model
         const fetchModelEntity = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/catalog/${make}/${model}/editModel`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/editModel`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -62,7 +61,7 @@ export default function EditModel() {
         formData.append('years', modelEntity.years);
 
         try {
-            const response = await axios.put(`http://localhost:8080/catalog/${make}/${model}/editModel`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/editModel`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

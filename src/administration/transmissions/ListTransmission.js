@@ -16,11 +16,7 @@ export default function ListTransmission() {
 
 
     const loadTransmissions = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/transmissions/${make}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/transmissions/${make}`);
         setTransmissions(result.data);
     }
 
@@ -37,16 +33,17 @@ export default function ListTransmission() {
 
     return (
         <div>
-            <ul className="nav">
-                <Link className="nav-link active" aria-current="page" to={`/administration/transmissions/${make}/addTransmission`}
-                >Add transmission</Link>
-            </ul>
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <Link className="nav-link active" aria-current="page" to={`/transmissions/${make}/addTransmission`}
+                    >Add transmission</Link>
+                </ul>
+            )}
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
+                    <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li className="breadcrumb-item"><a href="/administration/transmissions" className="text-decoration-none">Transmissions</a></li>
+                        <li className="breadcrumb-item"><a href="/transmissions" className="text-decoration-none">Transmissions</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{make}</li>
                     </ol>
                 </nav>
@@ -59,7 +56,7 @@ export default function ListTransmission() {
                                 <ul className="list-group">
                                     {groupedList[letter].map((transmission) => (
                                         <li className="list-group-item border-0" key={transmission.id}>
-                                            <a href={`/administration/transmissions/${make}/${transmission.id}`} className="text-decoration-none">
+                                            <a href={`/transmissions/${make}/${transmission.id}`} className="text-decoration-none">
                                                 <p>
                                                     {transmission.name}
                                                 </p>

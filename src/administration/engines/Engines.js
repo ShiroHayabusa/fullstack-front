@@ -13,11 +13,7 @@ export default function Engines() {
     }, []);
 
     const loadMakes = async () => {
-        const result = await axios.get("http://localhost:8080/catalog", {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog`);
         setMakes(result.data);
     };
 
@@ -37,7 +33,6 @@ export default function Engines() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Engines</li>
                 </ol>
             </nav>
@@ -50,7 +45,7 @@ export default function Engines() {
                             <ul className="list-group">
                                 {groupedList[letter].map((make) => (
                                     <li className="list-group-item border-0" key={make.id}>
-                                        <a href={`/administration/engines/${make.name}`} className="text-decoration-none">
+                                        <a href={`/engines/${make.name}`} className="text-decoration-none">
                                             <p >
                                                 {make.name}
                                             </p>

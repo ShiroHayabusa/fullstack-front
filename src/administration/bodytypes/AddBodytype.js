@@ -30,7 +30,7 @@ export default function AddBodytype() {
         const formData = new FormData();
         formData.append('name', bodytype.name);
         try {
-            const response = await axios.post('http://localhost:8080/administration/bodytypes/addBodytype', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes/addBodytype`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +39,7 @@ export default function AddBodytype() {
                 setSuccess('Bodytype added successfully');
                 setError('');
                 setBodytype({ name: "" });
-                navigate('/administration/bodytypes');
+                navigate('/admin/bodytypes');
             }
         } catch (error) {
             console.error('Error adding bodytype: ', error.message);
@@ -51,8 +51,8 @@ export default function AddBodytype() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/bodytypes' className="text-decoration-none">Bodytypes</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/bodytypes' className="text-decoration-none">Bodytypes</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add bodytype</li>
                 </ol>
             </nav>
@@ -74,7 +74,7 @@ export default function AddBodytype() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/bodytypes`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/bodytypes`}>Cancel</Link>
                     </form>
                 </div>
             </div>

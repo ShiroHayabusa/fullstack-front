@@ -30,7 +30,7 @@ export default function AddEngineType() {
         const formData = new FormData();
         formData.append('name', engineType.name);
         try {
-            const response = await axios.post('http://localhost:8080/administration/engineTypes/addEngineType', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/engineTypes/addEngineType`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +39,7 @@ export default function AddEngineType() {
                 setSuccess('Engine type added successfully');
                 setError('');
                 setEngineType({ name: "" });
-                navigate('/administration/engineTypes');
+                navigate('/admin/engineTypes');
             }
         } catch (error) {
             console.error('Error adding engine type: ', error.message);
@@ -51,8 +51,8 @@ export default function AddEngineType() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/engineTypes' className="text-decoration-none">Engine types</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/engineTypes' className="text-decoration-none">Engine types</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add engine type</li>
                 </ol>
             </nav>
@@ -74,7 +74,7 @@ export default function AddEngineType() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/engineTypes`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/engineTypes`}>Cancel</Link>
                     </form>
                 </div>
             </div>

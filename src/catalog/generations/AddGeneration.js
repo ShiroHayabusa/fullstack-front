@@ -17,7 +17,7 @@ export default function AddGeneration() {
     const [selectedFile, setSelectedFile] = useState(null);
     const { name, years, description } = generation;
     const { make, model } = useParams();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const onInputChange = (e) => {
         setGeneration({ ...generation, [e.target.name]: e.target.value });
@@ -25,7 +25,7 @@ export default function AddGeneration() {
 
     const fetchBodies = () => {
         axios
-            .get(`http://localhost:8080/administration/bodies/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/bodies/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -33,10 +33,7 @@ export default function AddGeneration() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setBodyList(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -56,7 +53,7 @@ export default function AddGeneration() {
         formData.append('body', generation.body);
         formData.append('photo', selectedFile);
         try {
-            const response = await axios.post(`http://localhost:8080/catalog/${make}/${model}/addGeneration`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/addGeneration`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

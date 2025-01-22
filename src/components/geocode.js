@@ -1,9 +1,7 @@
-// src/components/geocode.js
 import axios from 'axios';
 
-// Обратное геокодирование: координаты -> город и страна
 export const reverseGeocode = async (lat, lng) => {
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Используйте переменные окружения
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
 
     try {
@@ -28,13 +26,13 @@ export const reverseGeocode = async (lat, lng) => {
 
                 return { city, country };
             } else {
-                throw new Error('Нет результатов для данного местоположения.');
+                throw new Error('No results for this location.');
             }
         } else {
-            throw new Error(`Geocoding API ошибка: ${data.status}`);
+            throw new Error(`Geocoding API error: ${data.status}`);
         }
     } catch (error) {
-        console.error('Ошибка при обратном геокодировании:', error);
+        console.error('Error in reverse geocoding:', error);
         return { city: null, country: null };
     }
 };

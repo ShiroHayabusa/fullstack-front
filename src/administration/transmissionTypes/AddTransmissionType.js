@@ -30,7 +30,7 @@ export default function AddTransmissionType() {
         const formData = new FormData();
         formData.append('name', transmissionType.name);
         try {
-            const response = await axios.post('http://localhost:8080/administration/transmissionTypes/addTransmissionType', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/transmissionTypes/addTransmissionType`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +39,7 @@ export default function AddTransmissionType() {
                 setSuccess('Transmission type added successfully');
                 setError('');
                 setTransmissionType({ name: "" });
-                navigate('/administration/transmissionTypes');
+                navigate('/admin/transmissionTypes');
             }
         } catch (error) {
             console.error('Error adding transmission type: ', error.message);
@@ -51,8 +51,8 @@ export default function AddTransmissionType() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/transmissionTypes' className="text-decoration-none">Transmission types</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/transmissionTypes' className="text-decoration-none">Transmission types</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add transmission type</li>
                 </ol>
             </nav>
@@ -74,7 +74,7 @@ export default function AddTransmissionType() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/transmissionTypes`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/transmissionTypes`}>Cancel</Link>
                     </form>
                 </div>
             </div>

@@ -20,10 +20,10 @@ export default function AddFacelift() {
         name: ''
     });
 
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generation}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -47,7 +47,7 @@ export default function AddFacelift() {
         formData.append('years', years);
         formData.append('description', description);
 
-        await axios.post(`http://localhost:8080/catalog/${make}/${model}/${generation}/addFacelift`, formData, {
+        await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}/addFacelift`, formData, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },

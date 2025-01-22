@@ -13,7 +13,7 @@ export default function Drivetrains() {
     }, []);
 
     const loadDrivetrains = async () => {
-        const result = await axios.get("http://localhost:8080/administration/drivetrains", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/drivetrains`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function Drivetrains() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/administration/drivetrains/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/drivetrains/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 alert('Drivetrain deleted successfully');
-                window.location.href = '/administration/drivetrains';
+                window.location.href = '/admin/drivetrains';
                 loadDrivetrains();
             } catch (error) {
                 console.error('Failed to delete drivetrain:', error);
@@ -46,14 +46,14 @@ export default function Drivetrains() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/drivetrains/addDrivetrain'>Add drivetrain</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/drivetrains/addDrivetrain'>Add drivetrain</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Drivetrains</li>
                     </ol>
                 </nav>
@@ -74,7 +74,7 @@ export default function Drivetrains() {
                                     <td className='text-start'>{drivetrain.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/drivetrains/editDrivetrain/${drivetrain.id}`}
+                                            to={`/admin/drivetrains/editDrivetrain/${drivetrain.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteDrivetrain(drivetrain.id)}

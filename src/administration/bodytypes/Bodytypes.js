@@ -13,7 +13,7 @@ export default function Bodytypes() {
     }, []);
 
     const loadBodytypes = async () => {
-        const result = await axios.get("http://localhost:8080/administration/bodytypes", {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -27,13 +27,13 @@ export default function Bodytypes() {
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/administration/bodytypes/${id}`, {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/bodytypes/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 alert('Body type deleted successfully');
-                window.location.href = '/administration/bodytypes';
+                window.location.href = '/admin/bodytypes';
                 loadBodytypes();
             } catch (error) {
                 console.error('Failed to delete body type:', error);
@@ -46,14 +46,14 @@ export default function Bodytypes() {
         <div>
             <ul className="nav">
                 <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to='/administration/bodytypes/addBodytype'>Add bodytype</Link>
+                    <Link className="nav-link active" aria-current="page" to='/admin/bodytypes/addBodytype'>Add bodytype</Link>
                 </li>
             </ul>
             <div className='container'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                        <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                         <li className="breadcrumb-item active" aria-current="page">Bodytypes</li>
                     </ol>
                 </nav>
@@ -74,7 +74,7 @@ export default function Bodytypes() {
                                     <td className='text-start'>{bodytype.name}</td>
                                     <td>
                                         <Link className='btn btn-outline-primary mx-2'
-                                            to={`/administration/bodytypes/editBodytype/${bodytype.id}`}
+                                            to={`/admin/bodytypes/editBodytype/${bodytype.id}`}
                                         >Edit</Link>
                                         <button className='btn btn-danger mx-2'
                                             onClick={() => deleteBodytype(bodytype.id)}

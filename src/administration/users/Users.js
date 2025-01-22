@@ -12,7 +12,7 @@ const UserList = () => {
         if (!user) {
             navigate('/login');
         } else {
-            fetch("http://localhost:8080/api/admin/users", {
+            fetch(`${process.env.REACT_APP_API_URL}/api/admin/users`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -24,7 +24,7 @@ const UserList = () => {
     }, [user]);
 
     const viewUser = (userId) => {
-        navigate(`/administration/users/${userId}`);
+        navigate(`/admin/users/${userId}`);
     };
 
     return (
@@ -32,7 +32,7 @@ const UserList = () => {
             <nav aria-label="breadcrumb" className="mt-3">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href="/admin" className="text-decoration-none">Administration</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Users</li>
                 </ol>
             </nav>

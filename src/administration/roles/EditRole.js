@@ -34,12 +34,12 @@ export default function EditRole() {
         }
 
         try {
-            await axios.put(`http://localhost:8080/administration/roles/editRole/${id}`, role, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/roles/editRole/${id}`, role, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
-            navigate('/administration/roles');
+            navigate('/admin/roles');
         } catch (error) {
             console.error("Error updating role", error);
             setError("Failed to update the role. Please try again.");
@@ -50,7 +50,7 @@ export default function EditRole() {
         setLoading(true);
         setError("");
         try {
-            const result = await axios.get(`http://localhost:8080/administration/roles/${id}`, {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/roles/${id}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -69,8 +69,8 @@ export default function EditRole() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/roles' className="text-decoration-none">Roles</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/roles' className="text-decoration-none">Roles</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit role {role.name}</li>
                 </ol>
             </nav>
@@ -101,7 +101,7 @@ export default function EditRole() {
                         >
                             Submit
                         </button>
-                        <Link className="btn btn-outline-danger mx-2" to='/administration/roles'>
+                        <Link className="btn btn-outline-danger mx-2" to='/admin/roles'>
                             Cancel
                         </Link>
                     </form>

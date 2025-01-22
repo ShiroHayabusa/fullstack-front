@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EditTransmissionType() {
 
-    const { id } = useParams(); // Assuming the transmission type ID is passed as a route parameter
+    const { id } = useParams(); 
     let navigate = useNavigate();
 
     const [transmissionType, setTransmissionType] = useState({
@@ -16,10 +16,9 @@ export default function EditTransmissionType() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the transmissionType
         const fetchTransmissionType = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/transmissionTypes/${id}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/transmissionTypes/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -50,7 +49,7 @@ export default function EditTransmissionType() {
         formData.append('name', transmissionType.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/transmissionTypes/${id}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/transmissionTypes/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -58,7 +57,7 @@ export default function EditTransmissionType() {
             if (response.status === 200) {
                 setSuccess('Transmission type updated successfully');
                 setError('');
-                navigate('/administration/transmissionTypes');
+                navigate('/admin/transmissionTypes');
             }
         } catch (error) {
             setError('Error updating transmissionType: ' + error.message);
@@ -70,8 +69,8 @@ export default function EditTransmissionType() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/transmissionTypes' className="text-decoration-none">Transmission types</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/transmissionTypes' className="text-decoration-none">Transmission types</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit transmission type</li>
                 </ol>
             </nav>
@@ -93,7 +92,7 @@ export default function EditTransmissionType() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/transmissionTypes`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/transmissionTypes`}>Cancel</Link>
                     </form>
                 </div>
             </div>

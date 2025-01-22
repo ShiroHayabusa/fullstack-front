@@ -7,7 +7,7 @@ function BucketAvailabilityChecker() {
 
   const checkBucketAvailability = async () => {
     try {
-      const response = await fetch('http://localhost:8080/check-bucket-availability', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/check-bucket-availability`, {
         headers: {
             Authorization: `Bearer ${user.token}`,
         },

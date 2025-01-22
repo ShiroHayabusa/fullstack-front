@@ -15,10 +15,10 @@ export default function ViewGeneration() {
     const { make, model, generationId } = useParams();
 
     const [spots, setSpots] = useState([]);
-    const [page, setPage] = useState(0); // Текущая страница
+    const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth();
 
     const breakpointColumnsObj = {
         default: 5,
@@ -27,49 +27,32 @@ export default function ViewGeneration() {
         500: 2
     };
 
-    // Объединяем все вызовы данных в один useEffect
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        } else {
-            const loadData = async () => {
-                await Promise.all([loadFacelifts(), loadBodystyles(), loadGeneration()]);
-            };
-            loadData();
-            fetchSpots();
-        }
-    }, [user]);
+        const loadData = async () => {
+            await Promise.all([loadFacelifts(), loadBodystyles(), loadGeneration()]);
+        };
+        loadData();
+        fetchSpots();
+    }, []);
 
     const loadFacelifts = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/faceliftList`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/faceliftList`);
         setFacelifts(result.data);
     };
 
     const loadBodystyles = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}/bodystyles`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/bodystyles`);
         setBodystyles(result.data);
     };
 
     const loadGeneration = async () => {
-        const result = await axios.get(`http://localhost:8080/catalog/${make}/${model}/${generationId}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}`);
         setGeneration(result.data);
     };
 
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/spots/${generationId}/generationSpots?page=${page}&size=10`, {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${generationId}/generationSpots?page=${page}&size=10`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -79,8 +62,8 @@ export default function ViewGeneration() {
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
                 );
                 return [...prevSpots, ...newSpots];
-            }); // Добавляем новые записи
-            setHasMore(result.data.totalPages > page + 1); // Проверяем, есть ли ещё страницы
+            });
+            setHasMore(result.data.totalPages > page + 1);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }

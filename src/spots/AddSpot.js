@@ -22,7 +22,6 @@ export default function AddSpot() {
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
     const [error, setError] = useState('');
 
-    const [citySuggestions, setCitySuggestions] = useState([]);
     const [selectedCity, setSelectedCity] = useState("");
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
@@ -45,13 +44,13 @@ export default function AddSpot() {
     const [selectedTrim, setSelectedTrim] = useState(null);
 
     const [locationInfo, setLocationInfo] = useState({ city: '', country: '' });
+    const [isLoading, setIsLoading] = useState(false);
 
     const { caption } = spot;
 
     const { user } = useAuth();
 
     const [selectedCountry, setSelectedCountry] = useState(null);
-    const [countryOptions, setCountryOptions] = useState([]);
     const [cityOptions, setCityOptions] = useState([]);
     const [isExifProcessing, setIsExifProcessing] = useState(false);
 
@@ -66,17 +65,17 @@ export default function AddSpot() {
         setPreviewUrls(previewUrls);
         setMainPhotoIndex(0);
 
-        setIsExifProcessing(true); // Начинаем обработку EXIF
+        setIsExifProcessing(true);
 
         try {
-            const { lat, lng } = await getExifData(files[0]); // Используем обертку
+            const { lat, lng } = await getExifData(files[0]);
             setLatitude(lat);
             setLongitude(lng);
             const location = await fetchLocationInfo(lat, lng);
             setLocationInfo(location);
             setCity(location.city);
             setCountry(location.country);
-            setError(null); // Убираем сообщение об ошибке
+            setError(null);
         } catch (error) {
             console.error("Error processing file:", error.message);
             setError(error.message);
@@ -87,7 +86,7 @@ export default function AddSpot() {
             setLongitude(null);
             setLocationInfo({ city: '', country: '' });
         } finally {
-            setIsExifProcessing(false); // Завершаем обработку EXIF
+            setIsExifProcessing(false);
         }
     };
 
@@ -122,7 +121,7 @@ export default function AddSpot() {
 
     const fetchLocationInfo = async (lat, lng) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/places/reverse`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/places/reverse`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -152,7 +151,7 @@ export default function AddSpot() {
         }
         try {
             const response = await axios.get(
-                `http://localhost:8080/api/places/autocomplete`, {
+                `${process.env.REACT_APP_API_URL}/api/places/autocomplete`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -166,22 +165,21 @@ export default function AddSpot() {
                     const parts = prediction.structured_formatting.secondary_text.split(', ');
                     return {
                         value: prediction.place_id,
-                        label: prediction.description, // Город + Страна
-                        city: prediction.structured_formatting.main_text, // Город
-                        country: parts[parts.length - 1], // Страна
+                        label: prediction.description,
+                        city: prediction.structured_formatting.main_text,
+                        country: parts[parts.length - 1],
                     };
                 });
                 setCityOptions(suggestions);
             } else {
-                console.error("Пустой результат от бэкенда:", response.data);
+                console.error("Empty result from backend:", response.data);
                 setCityOptions([]);
             }
         } catch (error) {
-            console.error("Ошибка загрузки городов:", error);
+            console.error("Error loading cities:", error);
         }
     };
 
-    // Обработка выбора города
     const handleCitySelect = (selectedOption) => {
         if (selectedOption) {
             setSelectedCity(selectedOption);
@@ -191,7 +189,6 @@ export default function AddSpot() {
                 country: selectedOption.country,
             });
 
-            // Получение координат для города
             getCityCoordinates(selectedOption.value).then(({ lat, lng }) => {
                 setCity(selectedOption.city);
                 setCountry(selectedOption.country);
@@ -199,9 +196,8 @@ export default function AddSpot() {
                 setLatitude(lat);
             })
         } else {
-            // Если пользователь очистил выбор
             setSelectedCity(null);
-            setCityInputValue(''); // Очищаем поле ввода
+            setCityInputValue('');
             setLocationInfo({ city: '', country: '' });
             setCity('');
             setCountry('');
@@ -213,7 +209,7 @@ export default function AddSpot() {
     const getCityCoordinates = async (placeId) => {
         try {
             const response = await axios.get(
-                `http://localhost:8080/api/places/details`, {
+                `${process.env.REACT_APP_API_URL}/api/places/details`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -228,7 +224,7 @@ export default function AddSpot() {
             setLongitude(location.lng);
             return { lat: location.lat, lng: location.lng };
         } catch (error) {
-            console.error("Ошибка получения координат города:", error);
+            console.error("Error getting city coordinates:", error);
         }
     };
 
@@ -238,7 +234,7 @@ export default function AddSpot() {
         } else {
             const fetchMakes = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/catalog`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog`, {
                         headers: {
                             Authorization: `Bearer ${user.token}`,
                         },
@@ -253,8 +249,8 @@ export default function AddSpot() {
     }, [user]);
 
     const optionsMake = makes.map((make) => ({
-        value: make.name, // Приводим к нижнему регистру для value
-        label: make.name, // Оригинальное имя для отображения
+        value: make.name,
+        label: make.name,
     }));
 
     useEffect(() => {
@@ -264,7 +260,7 @@ export default function AddSpot() {
             if (selectedMake) {
                 const fetchModels = async () => {
                     try {
-                        const response = await axios.get(`http://localhost:8080/catalog/${selectedMake.value}`, {
+                        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}`, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`,
                             },
@@ -282,8 +278,8 @@ export default function AddSpot() {
     }, [selectedMake, user]);
 
     const optionsModel = models.map((model) => ({
-        value: model.name, // Приводим к нижнему регистру для value
-        label: model.name, // Оригинальное имя для отображения
+        value: model.name,
+        label: model.name,
     }));
 
     useEffect(() => {
@@ -294,7 +290,7 @@ export default function AddSpot() {
                 const fetchGenerations = async () => {
                     try {
                         const response =
-                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}`, {
+                            await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}`, {
                                 headers: {
                                     Authorization: `Bearer ${user.token}`,
                                 },
@@ -324,7 +320,7 @@ export default function AddSpot() {
                 const fetchFacelifts = async () => {
                     try {
                         const response =
-                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`, {
+                            await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/faceliftList`, {
                                 headers: {
                                     Authorization: `Bearer ${user.token}`,
                                 },
@@ -354,7 +350,7 @@ export default function AddSpot() {
                 const fetchBodystyles = async () => {
                     try {
                         const response =
-                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`, {
+                            await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedFacelift.value}/bodystyles`, {
                                 headers: {
                                     Authorization: `Bearer ${user.token}`,
                                 },
@@ -384,7 +380,7 @@ export default function AddSpot() {
                 const fetchTrims = async () => {
                     try {
                         const response =
-                            await axios.get(`http://localhost:8080/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`, {
+                            await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/${selectedGeneration.value}/${selectedBodystyle.value}/listTrim`, {
                                 headers: {
                                     Authorization: `Bearer ${user.token}`,
                                 },
@@ -408,44 +404,43 @@ export default function AddSpot() {
 
     const handleMakeChange = (selectedOption) => {
         setSelectedMake(selectedOption);
-        setSelectedModel(null); // Сбрасываем выбор модели
-        setSelectedGeneration(null); // Сбрасываем выбор поколения
-        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        setSelectedModel(null);
+        setSelectedGeneration(null);
+        setSelectedFacelift(null);
+        setSelectedBodystyle(null);
+        setSelectedTrim(null);
     };
 
     const handleModelChange = (selectedOption) => {
         setSelectedModel(selectedOption);
-        setSelectedGeneration(null); // Сбрасываем выбор поколения
-        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        setSelectedGeneration(null);
+        setSelectedFacelift(null);
+        setSelectedBodystyle(null);
+        setSelectedTrim(null);
     };
 
     const handleGenerationChange = (selectedOption) => {
         setSelectedGeneration(selectedOption);
-        setSelectedFacelift(null); // Сбрасываем выбор фейслифта
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        setSelectedFacelift(null);
+        setSelectedBodystyle(null);
+        setSelectedTrim(null);
     };
 
     const handleFaceliftChange = (selectedOption) => {
         setSelectedFacelift(selectedOption);
-        setSelectedBodystyle(null); // Сбрасываем выбор кузова
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        setSelectedBodystyle(null);
+        setSelectedTrim(null);
     };
 
     const handleBodystyleChange = (selectedOption) => {
         setSelectedBodystyle(selectedOption);
-        setSelectedTrim(null); // Сбрасываем выбор комплектации
+        setSelectedTrim(null);
     };
 
     const handleTrimChange = (selectedOption) => {
         setSelectedTrim(selectedOption);
     };
 
-    // Обработка выбора города из дропдауна
     const handleCitySelection = (selectedOption) => {
         if (selectedOption) {
             handleCitySelect(selectedOption.description, selectedOption.placeId);
@@ -455,9 +450,12 @@ export default function AddSpot() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        // Проверяем, есть ли координаты
+        if (isLoading) return;
+        setIsLoading(true);
+
         if (latitude === null || longitude === null) {
-            alert("Пожалуйста, укажите местоположение спота.");
+            alert("Please indicate the location of the spot.");
+            setIsLoading(false);
             return;
         }
 
@@ -491,7 +489,7 @@ export default function AddSpot() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/spots/addSpot`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/spots/addSpot`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -502,7 +500,11 @@ export default function AddSpot() {
                 navigate(`/spots`);
             }
         } catch (error) {
-            console.error("Ошибка добавления Spot:", error);
+            console.error("Error adding Spot:", error);
+            alert("An error occurred while adding the spot. Please try again.");
+        } finally {
+
+            setIsLoading(false);
         }
         clearPreviews();
     };
@@ -558,48 +560,48 @@ export default function AddSpot() {
                         <div className='text-start mt-3'>
                             {selectedFiles.length > 0 && !isExifProcessing && (
                                 <>
-                                    {/* Отображение страны и города, если координаты найдены */}
-                                    {latitude && longitude && (
+                                    {latitude && longitude ? (
                                         <>
-                                            <p><strong>Country:</strong> {locationInfo.country || 'Не найдена'}</p>
-                                            <p><strong>City:</strong> {locationInfo.city || 'Не найден'}</p>
-                                            <p><strong>City:</strong> {latitude || 'Не найден'}</p>
-                                            <p><strong>City:</strong> {longitude || 'Не найден'}</p>
+                                            <p><strong>Country:</strong> {locationInfo.country || 'Not found'}</p>
+                                            <p><strong>City:</strong> {locationInfo.city || 'Not found'}</p>
+                                            <p><strong>Latitude:</strong> {latitude || 'Not found'}</p>
+                                            <p><strong>Longitude:</strong> {longitude || 'Not found'}</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {error && (
+                                                <div className="alert alert-danger mt-3" role="alert">
+                                                    {error}
+                                                </div>
+                                            )}
+
+                                            <Select
+                                                options={cityOptions}
+                                                inputValue={cityInputValue}
+                                                onInputChange={(value) => {
+                                                    setCityInputValue(value);
+                                                    handleCityInput(value);
+                                                }}
+                                                onChange={(selectedOption) => {
+                                                    handleCitySelect(selectedOption);
+                                                }}
+                                                isSearchable
+                                                placeholder="Enter city name..."
+                                                isClearable
+                                            />
                                         </>
                                     )}
-
-                                    {/* Отображение ошибки, если данные отсутствуют */}
-                                    {error && !latitude && !longitude && (
-                                        <div className="alert alert-danger mt-3" role="alert">
-                                            {error}
-                                        </div>
-                                    )}
-
-                                    {/* Поле Select всегда доступно */}
-                                    <Select
-                                        options={cityOptions}
-                                        inputValue={cityInputValue} // Управляемое состояние для текста ввода
-                                        onInputChange={(value) => {
-                                            setCityInputValue(value); // Обновляем текст
-                                            handleCityInput(value);  // Загружаем автозаполнение
-                                        }}
-                                        onChange={(selectedOption) => {
-                                            handleCitySelect(selectedOption); // Обрабатываем выбор города
-                                        }}
-                                        isSearchable
-                                        placeholder="Enter city name..."
-                                        isClearable
-                                    />
                                 </>
                             )}
                             {isExifProcessing && (
-                                <p>Обрабатываются данные изображения...</p>
+                                <p>Processing image data...</p>
                             )}
                         </div>
 
                     </div>
                     <div className="col">
-                        <div className="form-floating mb-3">
+                        <div className="form mb-3 text-start">
+                            <label htmlFor="floatingTextarea2" className="form-label text-start">Caption:</label>
                             <textarea
                                 className="form-control"
                                 id="floatingTextarea2"
@@ -607,9 +609,8 @@ export default function AddSpot() {
                                 name="caption"
                                 value={caption}
                                 onChange={onChange}
-                                required>
+                            >
                             </textarea>
-                            <label htmlFor="floatingTextarea2">Caption</label>
                         </div>
                     </div>
                     <div className="col">
@@ -674,7 +675,6 @@ export default function AddSpot() {
                     </div>
 
                     <div className="col mt-3">
-                        {/* Дропдаун для выбора города, отображается только если выбрана страна */}
                         {selectedCountry && (
                             <div className="col mt-3">
                                 <label><strong>City</strong></label>
@@ -701,7 +701,16 @@ export default function AddSpot() {
                         )}
                     </div>
                 </div>
-                <button type="submit" className="btn btn-outline-primary mt-3">Add Spot</button>
+                {isLoading ? (
+                    <button className="btn btn-outline-primary mt-3" type="button" disabled>
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
+                ) : (
+                    <button className="btn btn-outline-primary mt-3" type="submit">
+                        Add spot
+                    </button>
+                )}
                 <Link className="btn btn-outline-danger mx-2 mt-3" to="/spots">Cancel</Link>
             </form>
         </div>

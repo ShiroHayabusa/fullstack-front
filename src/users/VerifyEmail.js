@@ -12,11 +12,11 @@ const VerifyEmail = () => {
     useEffect(() => {
         const verifyEmail = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/users/profile/verify-changed-email/${email}+${token}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile/verify-changed-email/${email}+${token}`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${user.token}`,
-                        'Content-Type': 'application/json', // Optional but recommended
+                        'Content-Type': 'application/json', 
                     },
                 });
 
@@ -25,17 +25,17 @@ const VerifyEmail = () => {
                 if (response.ok) {
                     const message = await response.text();
                     setMessage(message);
-                    setError(""); // Сбрасываем сообщение об ошибке
-                    setTimeout(() => navigate("/user/profile"), 3000); // Перенаправляем на страницу логина через 6 секунд
+                    setError(""); 
+                    setTimeout(() => navigate("/user/profile"), 3000); 
                 } else {
                     const errorData = await response.json();
                     console.log("Verification failed:", errorData);
-                    setMessage(""); // Сбрасываем сообщение об успехе
+                    setMessage(""); 
                     setError(errorData.message || "Failed to verify email.");
                 }
             } catch (err) {
                 console.error("Error during verification:", err);
-                setMessage(""); // Сбрасываем сообщение об успехе
+                setMessage(""); 
                 setError("An error occurred. Please try again later.");
             }
         };
@@ -43,7 +43,7 @@ const VerifyEmail = () => {
         if (token) {
             verifyEmail();
         } else {
-            setMessage(""); // Сбрасываем сообщение об успехе
+            setMessage(""); 
             setError("Verification token is missing.");
         }
     }, [token, navigate]);

@@ -14,20 +14,18 @@ const Navbar = () => {
     const loadUser = async () => {
 
         try {
-            const response = await axios.get(`http://localhost:8080/user/profile`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/profile`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
             setCurrentUser(response.data);
-            console.log("currentUser:", response.data)
         } catch (err) {
-            console.error('Ошибка загрузки данных:', err);
+            console.error('Error loading data:', err);
             if (err.response && err.response.status === 401) {
-                // If token is invalid, redirect to login
                 navigate('/login');
             } else {
-                setError("Не удалось загрузить данные профиля.");
+                setError("Failed to load profile data.");
             }
         }
     };
@@ -46,17 +44,16 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
-                <a class="navbar-brand" href="#">
+                <a className="navbar-brand" href="#">
                     <img
                         src="https://newloripinbucket.s3.amazonaws.com/image/logo/logo2.svg"
                         alt="Logo"
                         width="30"
                         height="24"
-                        style={{filter: "invert(1)"}}
-                        class="d-inline-block align-text-top me-2" />
+                        style={{ filter: "invert(1)" }}
+                        className="d-inline-block align-text-top me-2" />
                     <Link className="navbar-brand" to="/">Loripin</Link>
                 </a>
-                {/* Navbar Toggler for smaller screens */}
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -70,7 +67,6 @@ const Navbar = () => {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    {/* Navbar Links */}
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
                             <Link className="nav-link text-white" to="/catalog">Catalog</Link>
@@ -80,7 +76,7 @@ const Navbar = () => {
                         </li>
                         {user?.roles.includes("ROLE_ADMIN") && (
                             <li className="nav-item">
-                                <Link className="nav-link text-white" to="/administration">Administration</Link>
+                                <Link className="nav-link text-white" to="/admin">Admin</Link>
                             </li>
                         )}
                     </ul>
@@ -98,7 +94,6 @@ const Navbar = () => {
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
                                     >
-                                        {/* Avatar */}
                                         {currentUser?.avatarUrl && (
                                             <img
                                                 src={`https://newloripinbucket.s3.amazonaws.com/${currentUser?.avatarUrl}`}
@@ -125,9 +120,8 @@ const Navbar = () => {
                             </ul>
 
                         ) : (
-                            // Если пользователь НЕ залогинен, проверяем, не на странице логина ли он
                             !isOnLoginPage && (
-                                <Link to="/login" className="btn btn-outline-primary">
+                                <Link to="/login" className="btn btn-outline-light">
                                     Sign in
                                 </Link>
                             )

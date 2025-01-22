@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EditTransmission() {
 
-    const { make, transmissionId } = useParams(); // Assuming the engine ID is passed as a route parameter
+    const { make, transmissionId } = useParams();
     let navigate = useNavigate();
 
     const [transmission, setTransmission] = useState({
@@ -20,10 +20,9 @@ export default function EditTransmission() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the engine
         const fetchTransmission = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/transmissions/${make}/${transmissionId}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -45,7 +44,7 @@ export default function EditTransmission() {
 
     const fetchTransmissionTypes = () => {
         axios
-            .get('http://localhost:8080/administration/transmissionTypes', {
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/transmissionTypes`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -53,10 +52,7 @@ export default function EditTransmission() {
             .then((response) => {
                 const { data } = response;
                 if (response.status === 200) {
-                    //check the api call is success by stats code 200,201 ...etc
                     setTransmissionTypes(data)
-                } else {
-                    //error handle section 
                 }
             })
             .catch((error) => console.log(error));
@@ -91,7 +87,7 @@ export default function EditTransmission() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/transmissions/${make}/${transmissionId}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/transmissions/${make}/${transmissionId}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -99,7 +95,7 @@ export default function EditTransmission() {
             if (response.status === 200) {
                 setSuccess('Transmission updated successfully');
                 setError('');
-                navigate(`/administration/transmissions/${make}/${transmissionId}`);
+                navigate(`/admin/transmissions/${make}/${transmissionId}`);
             }
         } catch (error) {
             setError('Error updating transmission: ' + error.message);
@@ -111,10 +107,10 @@ export default function EditTransmission() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/transmissions' className="text-decoration-none">Transmissions</a></li>
-                    <li className="breadcrumb-item"><a href={`/administration/transmissions/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li className="breadcrumb-item"><a href={`/administration/transmissions/${make}/${transmissionId}`} className="text-decoration-none">{transmission.name}</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/transmissions' className="text-decoration-none">Transmissions</a></li>
+                    <li className="breadcrumb-item"><a href={`/admin/transmissions/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/admin/transmissions/${make}/${transmissionId}`} className="text-decoration-none">{transmission.name}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit transmission</li>
                 </ol>
             </nav>
@@ -174,7 +170,7 @@ export default function EditTransmission() {
                         />
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/transmissions/${make}/${transmissionId}`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/transmissions/${make}/${transmissionId}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

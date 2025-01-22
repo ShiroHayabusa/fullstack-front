@@ -2,11 +2,13 @@
 import './App.css';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useEffect } from 'react';
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import Home from './pages/Home';
 import { Outlet, BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from "./context/AuthContext"; // <-- импортируем провайдер
+import { AuthProvider } from "./context/AuthContext";
+import CookieConsent from "react-cookie-consent";
 
 import Makes from './pages/Catalog';
 import AddMake from './catalog/makes/AddMake'
@@ -41,7 +43,7 @@ import EditRole from './administration/roles/EditRole';
 import ViewRole from './administration/roles/ViewRole';
 import Roles from './administration/roles/Roles';
 
-import Administration from './administration/Administration';
+import Admin from './administration/Admin';
 
 import AddCountry from './administration/countries/AddCountry';
 import EditCountry from './administration/countries/EditCountry';
@@ -107,21 +109,90 @@ import VerifyEmail from './users/VerifyEmail';
 import ProtectedRoute from "./ProtectedRoute";
 import Unauthorized from './pages/Unathorized';
 import UserPage from './users/UserPage'
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const routerOptions = {
   future: {
-    v7_startTransition: true, // Включаем флаг
+    v7_startTransition: true,
   },
 };
 
 function App() {
+
+  const enableAnalytics = () => {
+    console.log("Analytics enabled.");
+    window.gtag("consent", "update", {
+      analytics_storage: "granted",
+    });
+  };
+
+  const disableAnalytics = () => {
+    console.log("Analytics disabled.");
+    window.gtag("consent", "update", {
+      analytics_storage: "denied",
+    });
+    document.cookie = "_ga=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "_gid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  };
+
+  useEffect(() => {
+    const consent = localStorage.getItem("cookieConsent");
+    if (consent === "accepted") {
+      enableAnalytics();
+    } else if (consent === "declined") {
+      disableAnalytics();
+    }
+  }, []);
+
   return (
     <div className="App">
+
+      <CookieConsent
+        location="bottom"
+        buttonText="Accept"
+        declineButtonText="Decline"
+        enableDeclineButton
+        cookieName="myCookieConsent"
+        style={{ background: "#2B373B" }}
+        buttonStyle={{
+          color: "#4e503b",
+          fontSize: "13px",
+        }}
+        declineButtonStyle={{
+          background: "#e74c3c",
+          color: "#fff",
+        }}
+        expires={150}
+        onAccept={() => {
+          localStorage.setItem("cookieConsent", "accepted");
+          enableAnalytics();
+          console.log("Cookies accepted!");
+        }}
+        onDecline={() => {
+          localStorage.setItem("cookieConsent", "declined");
+          disableAnalytics();
+          console.log("Cookies declined!");
+        }}
+      >
+        This website uses cookies to enhance the user experience. By continuing to
+        visit this site, you agree to our use of cookies. Read our{" "}
+        <a
+          href="/privacyPolicy"
+          style={{ color: "#f1d600", textDecoration: "underline" }}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Privacy Policy
+        </a>
+        .
+      </CookieConsent>
+
       <AuthProvider>
         <Router>
           <Navbar />
           <Routes>
             <Route exact path='/' element={<Home />} />
+            <Route exact path='/privacyPolicy' element={<PrivacyPolicy />} />
             <Route exact path='/login' element={<Login />} />
             <Route exact path='/users/register' element={<Register />} />
             <Route exact path='/users/forgot-password/' element={<ForgotPassword />} />
@@ -156,9 +227,21 @@ function App() {
             <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId/editTrim' element={<EditTrim />} />
             <Route exact path='/catalog/:make/:model/:generationId/:bodystyleId/:trimId' element={<ViewTrim />} />
 
+            <Route exact path='/engines' element={<Engines />} />
+            <Route exact path='/engines/:make' element={<ListEngine />} />
+            <Route exact path='/engines/:make/:engineId' element={<ViewEngine />} />
+
+            <Route exact path='/transmissions' element={<Transmissions />} />
+            <Route exact path='/transmissions/:make' element={<ListTransmission />} />
+            <Route exact path='/transmissions/:make/:transmissionId' element={<ViewTransmission />} />
+
+            <Route exact path='/bodies' element={<Bodies />} />
+            <Route exact path='/bodies/:make' element={<ListBody />} />
+            <Route exact path='/bodies/:make/:bodyId' element={<ViewBody />} />
+
             <Route exact path='/spots/addSpot' element={<AddSpot />} />
             <Route exact path='/spots/editSpot/:id' element={<EditSpot />} />
-            <Route exact path='/spots/' element={<Spots />} />
+            <Route exact path='/spots' element={<Spots />} />
             <Route exact path='/spots/:id' element={<ViewSpot />} />
             <Route exact path='/spots/mySpots' element={<MySpots />} />
 
@@ -166,9 +249,8 @@ function App() {
 
             <Route exact path="/unauthorized" element={<Unauthorized />} />
 
-            {/* Защита всех маршрутов после /administration */}
             <Route
-              path="/administration/*"
+              path="/admin/*"
               element={
                 <ProtectedRoute roles={["ROLE_ADMIN"]}>
                   <AdministrationRoutes />
@@ -184,7 +266,7 @@ function App() {
               <Route exact path='roles/viewRole/:id' element={<ViewRole />} />
               <Route exact path='roles' element={<Roles />} />
 
-              <Route exact path='' element={<Administration />} />
+              <Route exact path='' element={<Admin />} />
 
               <Route exact path='check-bucket-availability' element={<BucketAvailabilityChecker />} />
 
@@ -198,22 +280,12 @@ function App() {
 
               <Route exact path='engines/:make/addEngine' element={<AddEngine />} />
               <Route exact path='engines/:make/:engineId/editEngine' element={<EditEngine />} />
-              <Route exact path='engines' element={<Engines />} />
-              <Route exact path='engines/:make' element={<ListEngine />} />
-              <Route exact path='engines/:make/:engineId' element={<ViewEngine />} />
-
 
               <Route exact path='transmissions/:make/addTransmission' element={<AddTransmission />} />
               <Route exact path='transmissions/:make/:transmissionId/editTransmission' element={<EditTransmission />} />
-              <Route exact path='transmissions' element={<Transmissions />} />
-              <Route exact path='transmissions/:make' element={<ListTransmission />} />
-              <Route exact path='transmissions/:make/:transmissionId' element={<ViewTransmission />} />
 
               <Route exact path='bodies/:make/addBody' element={<AddBody />} />
               <Route exact path='bodies/:make/:bodyId/editBody' element={<EditBody />} />
-              <Route exact path='bodies' element={<Bodies />} />
-              <Route exact path='bodies/:make' element={<ListBody />} />
-              <Route exact path='bodies/:make/:bodyId' element={<ViewBody />} />
 
               <Route exact path='drivetrains/addDrivetrain' element={<AddDrivetrain />} />
               <Route exact path='drivetrains/editDrivetrain/:id' element={<EditDrivetrain />} />

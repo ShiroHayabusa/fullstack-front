@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const ActivateAccount = () => {
-  const { token } = useParams(); // Получаем токен из URL
+  const { token } = useParams(); 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const ActivateAccount = () => {
   useEffect(() => {
     const activateAccount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/auth/activate-account/${token}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/activate-account/${token}`, {
           method: "GET",
         });
 
@@ -20,17 +20,17 @@ const ActivateAccount = () => {
           const successData = await response.json();
           console.log("Activation successful:", successData);
           setMessage("Your account has been successfully activated. You can now log in.");
-          setError(""); // Сбрасываем сообщение об ошибке
-          setTimeout(() => navigate("/login"), 5000); // Перенаправляем на страницу логина через 6 секунд
+          setError("");
+          setTimeout(() => navigate("/login"), 6000);
         } else {
           const errorData = await response.json();
           console.log("Activation failed:", errorData);
-          setMessage(""); // Сбрасываем сообщение об успехе
+          setMessage("");
           setError(errorData.message || "Failed to activate account.");
         }
       } catch (err) {
         console.error("Error during activation:", err);
-        setMessage(""); // Сбрасываем сообщение об успехе
+        setMessage(""); 
         setError("An error occurred. Please try again later.");
       }
     };
@@ -38,7 +38,7 @@ const ActivateAccount = () => {
     if (token) {
       activateAccount();
     } else {
-      setMessage(""); // Сбрасываем сообщение об успехе
+      setMessage(""); 
       setError("Activation token is missing.");
     }
   }, [token, navigate]);

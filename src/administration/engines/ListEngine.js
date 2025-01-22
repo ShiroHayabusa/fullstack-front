@@ -16,11 +16,7 @@ export default function ListEngine() {
 
 
     const loadEngines = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/engines/${make}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-        });
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/engines/${make}`);
         setEngines(result.data);
     }
 
@@ -37,16 +33,17 @@ export default function ListEngine() {
 
     return (
         <div>
-            <ul className="nav">
-                <Link className="nav-link active" aria-current="page" to={`/administration/engines/${make}/addEngine`}
-                >Add Engine</Link>
-            </ul>
+            {user?.roles.includes("ROLE_ADMIN") && (
+                <ul className="nav">
+                    <Link className="nav-link active" aria-current="page" to={`/engines/${make}/addEngine`}
+                    >Add Engine</Link>
+                </ul>
+            )}
             <div className='container'>
                 <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
+                    <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                        <li className="breadcrumb-item"><a href="/administration/engines" className="text-decoration-none">Engines</a></li>
+                        <li className="breadcrumb-item"><a href="/engines" className="text-decoration-none">Engines</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{make}</li>
                     </ol>
                 </nav>
@@ -59,7 +56,7 @@ export default function ListEngine() {
                                 <ul className="list-group">
                                     {groupedList[letter].map((engine) => (
                                         <li className="list-group-item border-0" key={engine.id}>
-                                            <a href={`/administration/engines/${make}/${engine.id}`} className="text-decoration-none">
+                                            <a href={`/engines/${make}/${engine.id}`} className="text-decoration-none">
                                                 <p>
                                                     {engine.name}
                                                 </p>

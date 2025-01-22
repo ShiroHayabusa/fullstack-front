@@ -30,7 +30,7 @@ export default function AddDrivetrain() {
         const formData = new FormData();
         formData.append('name', drivetrain.name);
         try {
-            const response = await axios.post('http://localhost:8080/administration/drivetrains/addDrivetrain', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/drivetrains/addDrivetrain`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -39,7 +39,7 @@ export default function AddDrivetrain() {
                 setSuccess('Drivetrain added successfully');
                 setError('');
                 setDrivetrain({ name: "" });
-                navigate('/administration/drivetrains');
+                navigate('/admin/drivetrains');
             }
         } catch (error) {
             console.error('Error adding drivetrain: ', error.message);
@@ -51,8 +51,8 @@ export default function AddDrivetrain() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/drivetrains' className="text-decoration-none">Drivetrains</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/drivetrains' className="text-decoration-none">Drivetrains</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add drivetrain</li>
                 </ol>
             </nav>
@@ -74,7 +74,7 @@ export default function AddDrivetrain() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/drivetrains`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/drivetrains`}>Cancel</Link>
                     </form>
                 </div>
             </div>

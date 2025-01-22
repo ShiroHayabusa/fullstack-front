@@ -18,7 +18,7 @@ export default function AddBody() {
     const [success, setSuccess] = useState('');
 
     const { name, description } = body;
-    const { user } = useAuth(); // Получаем пользователя из AuthContext
+    const { user } = useAuth(); 
 
     const onInputChange = (e) => {
         setBody({ ...body, [e.target.name]: e.target.value });
@@ -41,7 +41,7 @@ export default function AddBody() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/administration/bodies/${make}/addBody`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/bodies/${make}/addBody`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -50,7 +50,7 @@ export default function AddBody() {
                 setSuccess('Body added successfully');
                 setError('');
                 setBody({ name: "" });
-                navigate(`/administration/bodies/${make}`);
+                navigate(`/admin/bodies/${make}`);
             }
         } catch (error) {
             console.error('Error adding body: ', error.message);
@@ -62,9 +62,9 @@ export default function AddBody() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/bodies' className="text-decoration-none">Bodies</a></li>
-                    <li className="breadcrumb-item"><a href={`/administration/bodies/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/bodies' className="text-decoration-none">Bodies</a></li>
+                    <li className="breadcrumb-item"><a href={`/admin/bodies/${make}`} className="text-decoration-none">{make}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add body</li>
                 </ol>
             </nav>
@@ -94,7 +94,7 @@ export default function AddBody() {
                         />
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/bodies/${make}`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/bodies/${make}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

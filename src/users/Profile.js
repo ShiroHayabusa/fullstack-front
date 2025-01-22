@@ -49,29 +49,28 @@ const Profile = () => {
 
     const loadUser = async () => {
         if (!user || !user.token) {
-            setError("Отсутствует токен аутентификации.");
+            setError("Authentication token missing");
             setLoading(false);
-            navigate('/login'); // Redirect to login page
+            navigate('/login');
             return;
         }
 
         try {
-            const response = await axios.get(`http://localhost:8080/user/profile`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/profile`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             });
             setCurrentUser(response.data);
-            setEmail(response.data.email || ""); // Initialize email state
+            setEmail(response.data.email || "");
             setBio(response.data.bio || "");
             console.log("currentUser:", response.data)
         } catch (err) {
-            console.error('Ошибка загрузки данных:', err);
+            console.error('Error loading data:', err);
             if (err.response && err.response.status === 401) {
-                // If token is invalid, redirect to login
                 navigate('/login');
             } else {
-                setError("Не удалось загрузить данные профиля.");
+                setError("Failed to load profile data.");
             }
         } finally {
             setLoading(false);
@@ -90,7 +89,7 @@ const Profile = () => {
         if (avatarMessage) {
             const timer = setTimeout(() => {
                 setAvatarMessage('');
-            }, 3000); // Сообщение исчезнет через 5 секунд
+            }, 3000);
 
             return () => clearTimeout(timer);
         }
@@ -100,7 +99,7 @@ const Profile = () => {
         if (emailMessage) {
             const timer = setTimeout(() => {
                 setEmailMessage('');
-            }, 6000); // Сообщение исчезнет через 5 секунд
+            }, 6000); 
 
             return () => clearTimeout(timer);
         }
@@ -110,7 +109,7 @@ const Profile = () => {
         if (message) {
             const timer = setTimeout(() => {
                 setMessage('');
-            }, 5000); // Сообщение исчезнет через 5 секунд
+            }, 6000);
 
             return () => clearTimeout(timer);
         }
@@ -124,9 +123,8 @@ const Profile = () => {
 
     const handleBioSave = async () => {
         try {
-            // Пример запроса для обновления bio пользователя
             const response = await axios.put(
-                `http://localhost:8080/users/update`,
+                `${process.env.REACT_APP_API_URL}/api/users/update`,
                 {
                     bio,
                     username: currentUser.username
@@ -142,12 +140,12 @@ const Profile = () => {
                 // Обновляем currentUser и сбрасываем флаг
                 setCurrentUser((prev) => ({ ...prev, bio }));
                 setBioDirty(false);
-                setBioMessage("Bio успешно сохранён.");
+                setBioMessage("Bio saved successfully.");
                 setBioError("");
             }
         } catch (err) {
             console.error("Ошибка сохранения bio:", err);
-            setBioError("Не удалось сохранить Bio.");
+            setBioError("Failed to save Bio.");
         }
     };
 
@@ -177,7 +175,7 @@ const Profile = () => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/user/profile/updateAvatar`,
+                `${process.env.REACT_APP_API_URL}/api/user/profile/updateAvatar`,
                 formData,
                 {
                     headers: {
@@ -189,8 +187,7 @@ const Profile = () => {
 
             if (response.status === 200 || response.status === 201) {
                 const updatedAvatarUrl = `${response.data.avatarUrl}`;
-                const updatedUser = response.data; // Backend returns the Photo object, including the name
-                // Update the currentUser state with the new avatar URL
+                const updatedUser = response.data;
                 setCurrentUser((prev) => ({
                     ...prev,
                     avatarUrl: updatedAvatarUrl,
@@ -205,26 +202,25 @@ const Profile = () => {
             setAvatarError(errorMsg);
         } finally {
             setUploading(false);
-            event.target.value = ""; // Сбрасываем input для загрузки следующего файла
+            event.target.value = "";
         }
     };
 
     const toggleChangeEmailForm = () => {
         setShowChangeEmailForm((prev) => !prev);
-        setEmail(""); // Reset email inputs when toggling
+        setEmail("");
         setConfirmEmail("");
     };
 
     const toggleChangePasswordForm = () => {
         setShowChangePasswordForm((prev) => !prev);
-        setPassword(""); // Reset password inputs when toggling
+        setPassword("");
         setConfirmPassword("");
     };
 
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
 
-        // Reset messages
         setMessage('');
         setError('');
 
@@ -239,7 +235,7 @@ const Profile = () => {
         }
         try {
             const response = await axios.post(
-                `http://localhost:8080/user/profile/change-password`,
+                `${process.env.REACT_APP_API_URL}/user/profile/change-password`,
                 {
                     oldPassword,
                     newPassword: password,
@@ -263,9 +259,9 @@ const Profile = () => {
         } catch (err) {
             console.error('Error during password change:', err);
             if (err.response && err.response.data) {
-                setError(err.response.data.message || 'Не удалось изменить пароль.');
+                setError(err.response.data.message || 'Failed to change password.');
             } else {
-                setError('Произошла ошибка. Попробуйте позже.');
+                setError('An error has occurred. Please try again later..');
             }
         } finally {
             setShowChangePasswordForm(false);
@@ -282,7 +278,7 @@ const Profile = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8080/user/profile/changeEmail`,
+                `${process.env.REACT_APP_API_URL}/api/user/profile/changeEmail`,
                 { email },
                 {
                     headers: {
@@ -295,8 +291,6 @@ const Profile = () => {
             if (response.status === 200) {
                 setEmailMessage(response.data);
                 setEmailError("");
-                // Optionally, update user context or refresh user data
-                // Hide the email change form after success
                 setShowChangeEmailForm(false);
             }
         } catch (err) {
@@ -307,7 +301,7 @@ const Profile = () => {
     };
 
     if (loading) {
-        return <div>Загрузка...</div>;
+        return <div>Loading...</div>;
     }
 
     return (
@@ -323,7 +317,6 @@ const Profile = () => {
             </div>
             <div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-                    {/* Avatar Section */}
                     <div className="col mb-4">
                         {currentUser.avatarUrl ? (
                             <img
@@ -361,7 +354,6 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/* User Info Section */}
                     <div className="col text-start">
                         <p>Your account was created <strong>{currentUser?.createdAt ? `${formatDistanceToNow(new Date(currentUser.createdAt), { addSuffix: true })}` : 'Неизвестно'}</strong></p>
                         <p>
@@ -403,7 +395,6 @@ const Profile = () => {
                             </button>
                         </p>
 
-                        {/* Change Email Form */}
                         {showChangeEmailForm && (
                             <form onSubmit={handleEmailSubmit}>
                                 <div className="mb-3">
@@ -437,7 +428,6 @@ const Profile = () => {
                         {emailMessage && <div className="alert alert-success mt-3" role="alert">{emailMessage}</div>}
                         {emailError && <div className="alert alert-danger mt-3" role="alert">{emailError}</div>}
 
-                        {/* Change Password Form */}
                         <button
                             className="btn btn-sm btn-link text-primary p-0 mb-3 text-decoration-none"
                             onClick={toggleChangePasswordForm}
@@ -515,7 +505,6 @@ const Profile = () => {
 
                     </div>
 
-                    {/* User Statistics Section */}
                     <div className="col text-start">
                         <h5>Statistics</h5>
                         <p>Spots: {stats.spots}</p>

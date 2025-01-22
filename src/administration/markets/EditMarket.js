@@ -22,7 +22,7 @@ export default function EditMarket() {
     }, []);
 
     const loadMarket = async () => {
-        const result = await axios.get(`http://localhost:8080/administration/markets/updateMarket/${id}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/markets/updateMarket/${id}`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -34,7 +34,7 @@ export default function EditMarket() {
     };
 
     const fetchCountries = async () => {
-        const result = await axios.get('http://localhost:8080/administration/countries', {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/countries`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -63,7 +63,7 @@ export default function EditMarket() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/markets/${id}/editMarket`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/markets/${id}/editMarket`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -71,7 +71,7 @@ export default function EditMarket() {
             if (response.status === 200) {
                 setSuccess('Market updated successfully');
                 setError('');
-                navigate(`/administration/markets`);
+                navigate(`/admin/markets`);
             }
         } catch (error) {
             setError('Error updating market: ' + error.message);
@@ -83,7 +83,7 @@ export default function EditMarket() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Markets</li>
 
                 </ol>
@@ -121,7 +121,7 @@ export default function EditMarket() {
                     </select>
                 </div>
                 <button type='submit' className='btn btn-primary'>Submit</button>
-                <button onClick={() => navigate('/administration/markets')} className='btn btn-danger mx-2'>Cancel</button>
+                <button onClick={() => navigate('/admin/markets')} className='btn btn-danger mx-2'>Cancel</button>
             </form>
         </div>
     );

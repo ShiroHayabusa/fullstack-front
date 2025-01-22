@@ -17,10 +17,9 @@ export default function EditBody() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the body
         const fetchBody = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/bodies/${make}/${bodyId}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodies/${make}/${bodyId}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -54,7 +53,7 @@ export default function EditBody() {
         });
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/bodies/${make}/${bodyId}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/bodies/${make}/${bodyId}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -62,7 +61,7 @@ export default function EditBody() {
             if (response.status === 200) {
                 setSuccess('Body updated successfully');
                 setError('');
-                navigate(`/administration/bodies/${make}/${bodyId}`);
+                navigate(`/admin/bodies/${make}/${bodyId}`);
             }
         } catch (error) {
             setError('Error updating body: ' + error.message);
@@ -74,8 +73,8 @@ export default function EditBody() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className='text-decoration-none'>Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className='text-decoration-none'>Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/bodies' className='text-decoration-none'>Bodies</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className='text-decoration-none'>Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/bodies' className='text-decoration-none'>Bodies</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add body</li>
                 </ol>
             </nav>
@@ -106,7 +105,7 @@ export default function EditBody() {
                         />
 
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/bodies/${make}/${bodyId}`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/bodies/${make}/${bodyId}`}>Cancel</Link>
                     </form>
                 </div>
             </div>

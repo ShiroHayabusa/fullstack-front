@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function EditFuel() {
 
-    const { id } = useParams(); // Assuming the fuel ID is passed as a route parameter
+    const { id } = useParams();
     let navigate = useNavigate();
 
     const [fuel, setFuel] = useState({
@@ -16,10 +16,9 @@ export default function EditFuel() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // Fetch the current details of the fuel
         const fetchFuel = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/administration/fuels/${id}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/fuels/${id}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -50,7 +49,7 @@ export default function EditFuel() {
         formData.append('name', fuel.name);
 
         try {
-            const response = await axios.put(`http://localhost:8080/administration/fuels/${id}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/fuels/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -58,7 +57,7 @@ export default function EditFuel() {
             if (response.status === 200) {
                 setSuccess('Fuel updated successfully');
                 setError('');
-                navigate('/administration/fuels');
+                navigate('/admin/fuels');
             }
         } catch (error) {
             setError('Error updating fuel: ' + error.message);
@@ -70,8 +69,8 @@ export default function EditFuel() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href='/administration' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/administration/fuels' className="text-decoration-none">Fuels</a></li>
+                    <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href='/admin/fuels' className="text-decoration-none">Fuels</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add fuel</li>
                 </ol>
             </nav>
@@ -93,7 +92,7 @@ export default function EditFuel() {
                             />
                         </div>
                         <button type='submit' className="btn btn-outline-primary">Submit</button>
-                        <Link className="btn btn-outline-danger mx-2" to={`/administration/fuels`}>Cancel</Link>
+                        <Link className="btn btn-outline-danger mx-2" to={`/admin/fuels`}>Cancel</Link>
                     </form>
                 </div>
             </div>

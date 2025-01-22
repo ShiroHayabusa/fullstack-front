@@ -5,7 +5,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get('/user')
+    axios.get('/api/user')
       .then(response => setUser(response.data))
       .catch(error => console.error('Error fetching user data:', error));
   }, []);
