@@ -26,9 +26,6 @@ const UserPage = () => {
     const [stats, setStats] = useState({
         spots: 0,
         comments: 0,
-        likes: 0,
-        subscribers: 0,
-        subscriptions: 0
     });
 
     const navigate = useNavigate();
@@ -38,15 +35,10 @@ const UserPage = () => {
     const fetchUser = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
+            console.log("Fetched User Data:", response.data); // Debugging log
             setCurrentUser(response.data);
-            console.log("currentUser:", response.data)
         } catch (err) {
-            console.error('Error loading data:', err);
-            if (err.response && err.response.status === 401) {
-                navigate('/login');
-            } else {
-                setError("Failed to load profile data.");
-            }
+            console.error('Error loading user:', err);
         } finally {
             setLoading(false);
         }
@@ -83,6 +75,28 @@ const UserPage = () => {
         }
     }, [page]);
 
+    const loadUserStats = async () => {
+        if (!user || !user.token) return;
+
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_URL}/api/users/${userId}/stats`,
+                {
+                    headers: { Authorization: `Bearer ${user.token}` },
+                }
+            );
+            setStats(response.data);
+        } catch (error) {
+            console.error("Failed to fetch user stats:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            loadUserStats();
+        }
+    }, [currentUser]);
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -109,7 +123,7 @@ const UserPage = () => {
                             className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-2"
                             style={{ width: '30px', height: '30px', fontSize: '1rem' }}
                         >
-                            {currentUser?.username.charAt(0).toUpperCase()}
+                            {currentUser?.username?.charAt(0).toUpperCase() ?? "?"}
                         </div>
                     )}
                     <span>{currentUser?.username}</span>
@@ -119,9 +133,12 @@ const UserPage = () => {
             <div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col text-start">
-                        <p>User account was created <strong>{currentUser?.createdAt ? `${formatDistanceToNow(new Date(currentUser.createdAt), { addSuffix: true })}` : 'Неизвестно'}</strong></p>
+                        <h3>Rating: {currentUser.rating}</h3>
+                        <h5>Leaderboard position: {currentUser.ranking}</h5>
+                        <p>User account was created <strong>{currentUser?.createdAt ? `${formatDistanceToNow(new Date(currentUser.createdAt), { addSuffix: true })}` : 'Unknown'}</strong></p>
                         {/*<p>Subscribers: {stats.subscribers}</p>
                         <p>Subscriptions: {stats.subscriptions}</p>*/}
+
                     </div>
 
                     <div className="col text-start">
@@ -129,12 +146,10 @@ const UserPage = () => {
                         {currentUser?.bio}
                     </div>
 
-                    {/*<div className="col text-start">
+                    <div className="col text-start">
                         <p>Spots: {stats.spots}</p>
                         <p>Comments: {stats.comments}</p>
-                        <p>Likes: {stats.likes}</p>
-
-                    </div> */}
+                    </div>
                 </div>
             </div>
             <div className="h5 pb-1 mt-5 mb-3 text-black border-bottom border-black text-start">

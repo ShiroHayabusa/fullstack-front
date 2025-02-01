@@ -44,7 +44,7 @@ export default function EditGeneration() {
 
         const fetchBodies = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodies`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },

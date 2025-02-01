@@ -40,10 +40,8 @@ const Profile = () => {
     const [stats, setStats] = useState({
         spots: 0,
         comments: 0,
-        likes: 0,
-        subscribers: 0,
-        subscriptions: 0
     });
+    
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -99,7 +97,7 @@ const Profile = () => {
         if (emailMessage) {
             const timer = setTimeout(() => {
                 setEmailMessage('');
-            }, 6000); 
+            }, 6000);
 
             return () => clearTimeout(timer);
         }
@@ -235,7 +233,7 @@ const Profile = () => {
         }
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/user/profile/change-password`,
+                `${process.env.REACT_APP_API_URL}/api/user/profile/change-password`,
                 {
                     oldPassword,
                     newPassword: password,
@@ -299,6 +297,28 @@ const Profile = () => {
             setEmailError(errorMsg);
         }
     };
+
+    const loadUserStats = async () => {
+        if (!user || !user.token) return;
+
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_URL}/api/users/${currentUser.id}/stats`,
+                {
+                    headers: { Authorization: `Bearer ${user.token}` },
+                }
+            );
+            setStats(response.data);
+        } catch (error) {
+            console.error("Failed to fetch user stats:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            loadUserStats();
+        }
+    }, [currentUser]);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -450,7 +470,7 @@ const Profile = () => {
                                         type="button"
                                         className="btn btn-sm p-0 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"
                                         onClick={() => setShowOldPassword(prev => !prev)}
-                                        aria-label={showOldPassword ? "Скрыть пароль" : "Показать пароль"}
+                                        aria-label={showOldPassword ? "Hide password" : "Show Password"}
                                     >
                                         <i className={`bi ${showOldPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                                     </button>
@@ -469,7 +489,7 @@ const Profile = () => {
                                         type="button"
                                         className="btn btn-sm p-0 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"
                                         onClick={() => setShowPassword(prev => !prev)}
-                                        aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                                        aria-label={showPassword ? "Hide password" : "Show Password"}
                                     >
                                         <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                                     </button>
@@ -488,7 +508,7 @@ const Profile = () => {
                                         type="button"
                                         className="btn btn-sm p-0 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"
                                         onClick={() => setShowConfirmPassword(prev => !prev)}
-                                        aria-label={showConfirmPassword ? "Скрыть пароль" : "Показать пароль"}
+                                        aria-label={showConfirmPassword ? "Hide password" : "Show Password"}
                                     >
                                         <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                                     </button>
@@ -506,6 +526,8 @@ const Profile = () => {
                     </div>
 
                     <div className="col text-start">
+                        <h3>Rating: {currentUser.rating} pts</h3>
+                        <h5>Leaderboard position: {currentUser.ranking}</h5>
                         <h5>Statistics</h5>
                         <p>Spots: {stats.spots}</p>
                         <p>Comments: {stats.comments}</p>

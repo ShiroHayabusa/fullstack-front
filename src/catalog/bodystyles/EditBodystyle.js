@@ -139,17 +139,17 @@ export default function EditBodystyle() {
             formData.append('faceliftId', bodystyleEntity.facelift);
         }
 
-        if (bodystyleEntity.market) {
+        if (bodystyleEntity.market && bodystyleEntity.market !== "default") {
             formData.append('marketId', bodystyleEntity.market);
         }
 
         try {
             const response = await axios.put(
                 `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/editBodystyle`, formData, {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                });
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
 
             if (response.status === 200) {
                 setSuccess('Make updated successfully');

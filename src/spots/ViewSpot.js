@@ -7,6 +7,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import GoogleMapWithMarker from '../components/GoogleMapWithMarker';
 import { InlineShareButtons } from 'sharethis-reactjs';
+import { useSwipeable } from 'react-swipeable';
+
 
 export default function ViewSpot() {
     const [spot, setSpot] = useState({ caption: '', photos: [], latitude: null, longitude: null });
@@ -78,6 +80,15 @@ export default function ViewSpot() {
         );
     };
 
+    const swipeHandlers = useSwipeable({
+        onSwipedLeft: () => handleNextPhoto(),
+        onSwipedRight: () => handlePrevPhoto(),
+         delta: 10, 
+         preventDefaultTouchmoveEvent: true,
+         trackTouch: true,
+         trackMouse: true, 
+    });
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "ArrowLeft") {
@@ -117,7 +128,7 @@ export default function ViewSpot() {
 
     const handleAddComment = async () => {
         if (!newComment.trim()) {
-            alert('Комментарий не может быть пустым.');
+            alert('Comment cannot be empty.');
             return;
         }
 
@@ -134,8 +145,8 @@ export default function ViewSpot() {
             setComments((prevComments) => [result.data, ...prevComments]);
             setNewComment('');
         } catch (error) {
-            console.error('Ошибка добавления комментария:', error);
-            alert('Не удалось добавить комментарий.');
+            console.error('Error adding comment:', error);
+            alert('Failed to add comment.');
         }
     };
 
@@ -200,7 +211,7 @@ export default function ViewSpot() {
             setLikes(response.data.likeCount);
             setHasLiked(response.data.hasLiked);
         } catch (error) {
-            console.error('Ошибка переключения лайка:', error);
+            console.error('Like switching error:', error);
         }
     };
 
@@ -335,7 +346,7 @@ export default function ViewSpot() {
                         size="lg"
                     >
 
-                        <Modal.Body>
+                        <Modal.Body {...swipeHandlers}>
                             <div className="d-flex justify-content-center">
                                 <img
                                     src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[currentPhotoIndex]?.name}`}
@@ -664,10 +675,7 @@ export default function ViewSpot() {
                         </div>
                         <div>
                             <p className='text-start mx-5'>
-                                City: {spot?.city}
-                            </p>
-                            <p className='text-start mx-5'>
-                                Country: {spot?.country}
+                                {spot?.city}, {spot?.country}
                             </p>
                         </div>
                     </div>

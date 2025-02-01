@@ -18,7 +18,7 @@ export default function EditTrim() {
         drivetrain: "",
         years: "",
         tuner: "",
-        amount: "",
+        productionCount: "",
         maxSpeed: "",
         acceleration: "",
         uniq: false,
@@ -74,7 +74,7 @@ export default function EditTrim() {
                 description: response.data.description,
                 bodystyle: response.data.bodystyle,
                 years: response.data.years,
-                amount: response.data.amount,
+                productionCount: response.data.productionCount,
                 maxSpeed: response.data.maxSpeed,
                 acceleration: response.data.acceleration,
                 uniq: response.data.uniq,
@@ -546,9 +546,9 @@ export default function EditTrim() {
                         <input
                             type={'text'}
                             className='form-control mt-3 mb-3'
-                            placeholder='Enter amount'
-                            name='amount'
-                            value={trim.amount}
+                            placeholder='Enter production count'
+                            name='productionCount'
+                            value={trim.productionCount}
                             onChange={onInputChange}
                         />
 

@@ -34,7 +34,7 @@ export default function ListBody() {
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
                 <ul className="nav">
-                    <Link className="nav-link active" aria-current="page" to={`/bodies/${make}/addBody`}
+                    <Link className="nav-link active" aria-current="page" to={`/admin/bodies/${make}/addBody`}
                     >Add body</Link>
                 </ul>
             )}

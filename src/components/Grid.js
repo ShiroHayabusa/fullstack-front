@@ -16,7 +16,7 @@ const ContributionGrid = ({ make, user, trims, spotsWithouPage, totalCells }) =>
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(20, ${cellSize}px)`,
+        gridTemplateColumns: `repeat(30, ${cellSize}px)`,
         gap: 2,
         padding: 0,
         margin: 0,

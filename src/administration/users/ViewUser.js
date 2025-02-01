@@ -70,8 +70,8 @@ const UserDetail = () => {
             <nav aria-label="breadcrumb" className="mt-3">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                    <li className="breadcrumb-item"><a href="/administration" className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href="/administration/users" className="text-decoration-none">Users</a></li>
+                    <li className="breadcrumb-item"><a href="/admin" className="text-decoration-none">Administration</a></li>
+                    <li className="breadcrumb-item"><a href="/admin/users" className="text-decoration-none">Users</a></li>
                     <li className="breadcrumb-item active" aria-current="page">{userEntity.username}</li>
                 </ol>
             </nav>

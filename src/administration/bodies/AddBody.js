@@ -50,7 +50,7 @@ export default function AddBody() {
                 setSuccess('Body added successfully');
                 setError('');
                 setBody({ name: "" });
-                navigate(`/admin/bodies/${make}`);
+                navigate(`/bodies/${make}`);
             }
         } catch (error) {
             console.error('Error adding body: ', error.message);

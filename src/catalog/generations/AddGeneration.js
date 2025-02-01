@@ -25,7 +25,7 @@ export default function AddGeneration() {
 
     const fetchBodies = () => {
         axios
-            .get(`${process.env.REACT_APP_API_URL}/api/admin/bodies/${make}`, {
+            .get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

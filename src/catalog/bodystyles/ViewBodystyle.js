@@ -17,7 +17,7 @@ export default function ViewBodystyle() {
     const { make, model, generationId, bodystyleId } = useParams();
 
     const [spots, setSpots] = useState([]);
-    const [page, setPage] = useState(0); 
+    const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -72,6 +72,19 @@ export default function ViewBodystyle() {
         }
     }, [page]);
 
+    const getRarityLabel = (productionCount) => {
+        if (productionCount === 1) return { label: "Unique", color: "bg-danger text-white" };
+        if (productionCount >= 2 && productionCount <= 10) return { label: "Ultra Exclusive", color: "bg-warning text-dark" };
+        if (productionCount >= 11 && productionCount <= 50) return { label: "Exclusive", color: "bg-primary text-white" };
+        if (productionCount >= 51 && productionCount <= 200) return { label: "Super Rare", color: "bg-success text-white" };
+        if (productionCount >= 201 && productionCount <= 500) return { label: "Rare", color: "bg-info text-dark" };
+        if (productionCount >= 501 && productionCount <= 1000) return { label: "Limited Edition", color: "bg-secondary text-white" };
+        if (productionCount >= 1001 && productionCount <= 5000) return { label: "Special Series", color: "bg-dark text-white" };
+        if (productionCount >= 5001 && productionCount <= 20000) return { label: "Semi-Mass Produced", color: "bg-light text-dark border" };
+        if (productionCount >= 20001 && productionCount <= 100000) return { label: "Mass Produced", color: "bg-light text-dark border" };
+        return { label: "Common", color: "bg-light text-dark border" }; // Default
+    };
+
     return (
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
@@ -102,6 +115,9 @@ export default function ViewBodystyle() {
                             const mainPhoto = Array.isArray(trim.photos) && trim.photos.length > 0
                                 ? trim.photos.find((photo) => photo.isMain)
                                 : {};
+
+                            const rarity = getRarityLabel(trim.productionCount); // Get rarity label & color
+
                             return (
                                 <Link
                                     to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`}
@@ -116,15 +132,21 @@ export default function ViewBodystyle() {
                                                     alt=''
                                                     style={{ maxWidth: '100%', objectFit: 'cover' }}
                                                     onError={(e) => {
-                                                        e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Путь к резервному изображению
+                                                        e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Placeholder image
                                                     }}
-                                                ></img>
+                                                />
                                             </div>
                                             <div className="col-md-9 text-start">
                                                 <div className="card-body">
-                                                    <h5 className="card-title">
-                                                        {trim.name}
-                                                    </h5>
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <h5 className="card-title">
+                                                            {trim.name} {" "}
+                                                        </h5>
+                                                        <span className={`badge ${rarity.color}`} style={{ fontSize: "0.9em", padding: "5px 10px", borderRadius: "8px" }}>
+                                                            {rarity.label}
+                                                        </span>
+
+                                                    </div>
                                                     <p className="card-text">{trim.years}</p>
                                                     <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
                                                 </div>
@@ -132,13 +154,12 @@ export default function ViewBodystyle() {
                                         </div>
                                     </div>
                                 </Link>
-
                             );
-
                         })}
+
                     </div>
                     <div className='col-md-4'>
-                        
+
                     </div>
 
                 </div>

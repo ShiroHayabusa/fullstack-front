@@ -9,6 +9,7 @@ const Home = () => {
   const { user } = useAuth();
   const [spots, setSpots] = useState([]);
   const [trims, setTrims] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   const breakpointColumnsObj = {
     default: 5,
@@ -47,35 +48,24 @@ const Home = () => {
     }
   };
 
+  const loadLeaderboard = async () => {
+    try {
+      const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/leaderboard`);
+      setLeaderboard(result.data);
+    } catch (error) {
+      console.error("Failed to fetch leaderboard", error);
+    }
+  };
+
   useEffect(() => {
     loadLatestSpots();
     loadLatestTrims();
+    loadLeaderboard();
   }, []);
 
 
   return (
     <div className="container mt-5">
-
-
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-        <div className="col-md-9">
-          <div className=" pb-1 mb-3 text-black border-bottom border-black text-start">
-            <p className="text-start">Welcome to our platform, created by car enthusiasts for car enthusiasts! ! We hope you enjoy your experience on our website.
-
-              It still under development, and many exciting new features are on the way, However, the core functionality is already in place.
-              Right now, you can register and start adding your own car spots.
-
-              If you have any questions or need assistance, feel free to contact us at info@loripin.com.
-              <br /><br />
-
-              Best regards,<br />
-              The Loripin Team.
-              <p>Drive the Passion, Spot the Cars!</p>
-
-            </p>
-          </div>
-        </div>
-      </div>
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
         <div className="col-md-4 me-5 mb-3 border-end">
           <h5 className="text-start">Latest spots:</h5>
@@ -106,6 +96,22 @@ const Home = () => {
               </figure>
             </Link>
           ))}
+        </div>
+        <div className="col-md-3 border-start text-start mb-3">
+          <h5 className="text-start">🏆 Leaderboard</h5>
+          <ul className="list-group list-group-flush">
+            {leaderboard.map((user, index) => (
+              <li key={user.id} className="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  {index + 1}.
+                  <Link to={`/users/${user.id}`} className="text-decoration-none ms-2">
+                    {user.username}
+                  </Link>
+                </div>
+                <span>{user.rating} pts</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div >

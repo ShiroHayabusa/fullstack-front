@@ -8,6 +8,7 @@ import GoogleMapWithMarker from '../../components/GoogleMapWithMarker';
 import Masonry from 'react-masonry-css';
 import '../../components/Masonry.css'
 import { InlineShareButtons } from 'sharethis-reactjs';
+import { useSwipeable } from 'react-swipeable';
 
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false);
@@ -54,6 +55,15 @@ export default function ViewTrim() {
         );
     };
 
+    const swipeHandlers = useSwipeable({
+        onSwipedLeft: () => handleNextPhoto(),
+        onSwipedRight: () => handlePrevPhoto(),
+        delta: 10,
+        preventDefaultTouchmoveEvent: true,
+        trackTouch: true,
+        trackMouse: true,
+    });
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "ArrowLeft") {
@@ -80,7 +90,7 @@ export default function ViewTrim() {
         drivetrain: '',
         years: '',
         tuner: '',
-        amount: '',
+        productionCount: '',
         maxSpeed: '',
         acceleration: '',
         weight: '',
@@ -234,6 +244,19 @@ export default function ViewTrim() {
         }
     };
 
+    const getRarityLabel = (productionCount) => {
+        if (productionCount === 1) return { label: "Unique", color: "bg-danger text-white" };
+        if (productionCount >= 2 && productionCount <= 10) return { label: "Ultra Exclusive", color: "bg-warning text-dark" };
+        if (productionCount >= 11 && productionCount <= 50) return { label: "Exclusive", color: "bg-primary text-white" };
+        if (productionCount >= 51 && productionCount <= 200) return { label: "Super Rare", color: "bg-success text-white" };
+        if (productionCount >= 201 && productionCount <= 500) return { label: "Rare", color: "bg-info text-dark" };
+        if (productionCount >= 501 && productionCount <= 1000) return { label: "Limited Edition", color: "bg-secondary text-white" };
+        if (productionCount >= 1001 && productionCount <= 5000) return { label: "Special Series", color: "bg-dark text-white" };
+        if (productionCount >= 5001 && productionCount <= 20000) return { label: "Semi-Mass Produced", color: "bg-light text-dark border" };
+        if (productionCount >= 20001 && productionCount <= 100000) return { label: "Mass Produced", color: "bg-light text-dark border" };
+        return { label: "Common", color: "bg-light text-dark border" }; // Default
+    };
+
     return (
 
         <div>
@@ -261,8 +284,11 @@ export default function ViewTrim() {
                 </nav>
                 <div className="d-flex justify-content-between align-items-center border-bottom border-muted mb-3">
                     <div className="h5 text-black text-start">
-                        {make + ' ' + model + ' ' + trim.name}
+                        {trim?.altName && trim?.altName !== 'undefined' ? `${make} ${trim.altName}`
+                            : `${make} ${model} ${trim.name}`}
                     </div>
+
+
                     <div className='mb-2'>
                         <InlineShareButtons
                             config={{
@@ -308,7 +334,7 @@ export default function ViewTrim() {
 
 
                         <Modal show={showModal} onHide={handleCloseModal} size="lg">
-                            <Modal.Body>
+                            <Modal.Body {...swipeHandlers}>
                                 <div className="d-flex justify-content-center">
                                     {trim && trim.photos && trim.photos.length > 0 && trim.photos[currentPhotoIndex] ? (
                                         <img
@@ -349,10 +375,21 @@ export default function ViewTrim() {
                             <li className="list-group-item text-start">
                                 Market: {trim.market?.name}
                             </li>
+                            {trim.productionCount > 0 && (
+                                <li className="list-group-item text-start">
 
-                            <li className="list-group-item text-start">
-                                Amount: {trim.amount}
-                            </li>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        Total produced: {trim.productionCount}
+
+                                        <span className={`badge ms-2 ${getRarityLabel(trim.productionCount).color}`}
+                                            style={{ fontSize: "0.9em", padding: "5px 10px", borderRadius: "8px" }}>
+                                            {getRarityLabel(trim.productionCount).label}
+                                        </span>
+
+                                    </div>
+
+                                </li>
+                            )}
 
                             <li className="list-group-item text-start">
                                 {trim.description}

@@ -69,10 +69,10 @@ const Navbar = () => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link text-white" to="/catalog">Catalog</Link>
+                            <Link className="nav-link text-white" to="/spots">Spots</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link text-white" to="/spots">Spots</Link>
+                            <Link className="nav-link text-white" to="/catalog">Catalog</Link>
                         </li>
                         {user?.roles.includes("ROLE_ADMIN") && (
                             <li className="nav-item">

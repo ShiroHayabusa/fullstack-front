@@ -15,7 +15,7 @@ export default function Admin() {
                     <ul className="list-group list-group-flush">
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Catalog</div>
                         <Link className="list-group-item text-start" to='/admin/countries'>Countries</Link>
-                        <Link className="list-group-item text-start" to='/admin/bodies'>Bodies</Link>
+                        <Link className="list-group-item text-start" to='/bodies'>Bodies</Link>
                         <Link className="list-group-item text-start" to='/admin/bodytypes'>Bodytypes</Link>
                         <Link className="list-group-item text-start" to='/admin/titles'>Titles</Link>
                         <Link className="list-group-item text-start" to='/admin/engines'>Engines</Link>
