@@ -124,7 +124,7 @@ export default function EditSpot() {
     const optionsGeneration = useMemo(() =>
         generations.map((generation) => ({
             value: generation.id,
-            label: generation.name,
+            label: generation.name + ' (' + generation?.years + ')',
         })), [generations]);
 
     const optionsFacelift = useMemo(() =>
@@ -142,7 +142,9 @@ export default function EditSpot() {
     const optionsTrim = useMemo(() =>
         trims.map((trim) => ({
             value: trim.id,
-            label: trim.name,
+            label: trim.market?.name
+                ? `${trim.name} (${trim.market.name})`
+                : trim.name,
         })), [trims]);
 
     useEffect(() => {

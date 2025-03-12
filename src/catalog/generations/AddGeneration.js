@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
 import { useAuth } from '../../context/AuthContext';
 
 export default function AddGeneration() {
@@ -11,12 +12,13 @@ export default function AddGeneration() {
         name: "",
         years: "",
         description: "",
-        body: ""
+        bodyIds: []
     });
     const [bodyList, setBodyList] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const { name, years, description } = generation;
     const { make, model } = useParams();
+    const [selectedBodies, setSelectedBodies] = useState([]);
     const { user } = useAuth();
 
     const onInputChange = (e) => {
@@ -39,6 +41,19 @@ export default function AddGeneration() {
             .catch((error) => console.log(error));
     };
 
+    const options = bodyList.map(body => ({
+        value: body.id,
+        label: body.name
+    }));
+
+    const handleSelectChange = (selectedOptions) => {
+        setSelectedBodies(selectedOptions);
+        setGeneration(prevState => ({
+            ...prevState,
+            bodyIds: selectedOptions ? selectedOptions.map(option => option.value) : []
+        }));
+    };
+
     useEffect(() => {
         fetchBodies()
     }, [])
@@ -50,8 +65,16 @@ export default function AddGeneration() {
         formData.append('name', generation.name);
         formData.append('years', generation.years);
         formData.append('description', generation.description);
-        formData.append('body', generation.body);
-        formData.append('photo', selectedFile);
+
+        if (generation.bodyIds && generation.bodyIds.length > 0) {
+            generation.bodyIds.forEach(bodyId => {
+                formData.append('bodyIds', bodyId);
+            });
+        }
+
+        if (selectedFile) {
+            formData.append('photo', selectedFile);
+        }
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/addGeneration`, formData, {
                 headers: {
@@ -118,16 +141,15 @@ export default function AddGeneration() {
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>
-                        <select onChange={onInputChange} name="body" className="form-select mt-3 mb-3">
-                            <option value={"default"}>
-                                Select body
-                            </option>
-                            {bodyList.map((body) => (
-                                <option key={body.id} value={body.id} >
-                                    {body.name}
-                                </option>
-                            ))}
-                        </select>
+                        <div className='mb-3'>
+                            <Select
+                                isMulti
+                                options={options}
+                                value={selectedBodies}
+                                onChange={handleSelectChange}
+                                placeholder="Select body"
+                            />
+                        </div>
                         <div className='mt-3 mb-3'>
                             <input
                                 type="file"

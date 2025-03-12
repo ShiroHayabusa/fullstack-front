@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
 import { useAuth } from '../../context/AuthContext';
 
 export default function EditGeneration() {
@@ -11,7 +12,7 @@ export default function EditGeneration() {
     const [generationEntity, setGenerationEntity] = useState({
         name: "",
         years: "",
-        body: "",
+        bodyIds: [],
         description: "",
         photo: ""
     });
@@ -20,6 +21,7 @@ export default function EditGeneration() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [selectedBodies, setSelectedBodies] = useState([]);
     const { user } = useAuth();
 
     useEffect(() => {
@@ -33,7 +35,7 @@ export default function EditGeneration() {
                 setGenerationEntity({
                     name: response.data.name,
                     years: response.data.years,
-                    body: response.data.body?.id || "",
+                    bodyIds: response.data.bodies ? response.data.bodies.map(b => b.id) : [],
                     description: response.data.description,
                     photo: response.data.photo
                 });
@@ -59,6 +61,28 @@ export default function EditGeneration() {
         fetchBodies();
     }, [generationId]);
 
+    const options = bodyList.map(body => ({
+        value: body.id,
+        label: body.name
+    }));
+
+    const handleChange = (selectedOptions) => {
+        setSelectedBodies(selectedOptions);
+        setGenerationEntity(prevState => ({
+            ...prevState,
+            bodyIds: selectedOptions ? selectedOptions.map(option => option.value) : []
+        }));
+    };
+
+    useEffect(() => {
+        if (bodyList.length > 0 && generationEntity.bodyIds.length > 0) {
+            const initialSelected = bodyList
+                .filter(body => generationEntity.bodyIds.includes(body.id))
+                .map(body => ({ value: body.id, label: body.name }));
+            setSelectedBodies(initialSelected);
+        }
+    }, [bodyList, generationEntity.bodyIds]);
+
     const onInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setGenerationEntity({
@@ -82,9 +106,13 @@ export default function EditGeneration() {
         const formData = new FormData();
         formData.append('name', generationEntity.name);
         formData.append('years', generationEntity.years);
-        if (generationEntity.body) {
-            formData.append('body', generationEntity.body);
+
+        if (generationEntity.bodyIds && generationEntity.bodyIds.length > 0) {
+            generationEntity.bodyIds.forEach(bodyId => {
+                formData.append('bodyIds', bodyId);
+            });
         }
+
         formData.append('description', generationEntity.description);
         if (selectedFile) {
             formData.append('photo', selectedFile);
@@ -147,21 +175,15 @@ export default function EditGeneration() {
                                 onChange={onInputChange}
                             />
                         </div>
-                        <select
-                            onChange={onInputChange}
-                            name="body"
-                            className="form-select mt-3 mb-3"
-                            value={generationEntity.body}
-                        >
-                            <option value={"default"}>
-                                Select body
-                            </option>
-                            {bodyList.map((body) => (
-                                <option key={body.id} value={body.id}>
-                                    {body.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            className='mb-3'
+                            isMulti
+                            options={options}
+                            value={selectedBodies}
+                            onChange={handleChange}
+                            placeholder="Select body"
+                        />
+
                         <div className='mb-3'>
                             <textarea
                                 type='text'

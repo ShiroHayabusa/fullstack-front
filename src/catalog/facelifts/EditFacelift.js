@@ -10,7 +10,6 @@ export default function EditFacelift() {
 
     const [faceliftEntity, setFaceliftEntity] = useState({
         name: "",
-        years: "",
         description: ""
     });
 
@@ -32,7 +31,6 @@ export default function EditFacelift() {
                 });
                 setFaceliftEntity({
                     name: response.data.name,
-                    years: response.data.years,
                     description: response.data.description
                 });
             } catch (error) {
@@ -71,7 +69,6 @@ export default function EditFacelift() {
 
         const formData = new FormData();
         formData.append('name', faceliftEntity.name);
-        formData.append('years', faceliftEntity.years);
         formData.append('description', faceliftEntity.description);
 
         try {
@@ -118,17 +115,6 @@ export default function EditFacelift() {
                                 placeholder='Enter facelift name'
                                 name='name'
                                 value={faceliftEntity.name}
-                                onChange={onInputChange}
-                            />
-                        </div>
-                        <div className='mb-3'>
-                            <label htmlFor='years' className='form-label'>Years</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Enter facelift years'
-                                name='years'
-                                value={faceliftEntity.years}
                                 onChange={onInputChange}
                             />
                         </div>

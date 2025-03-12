@@ -75,13 +75,13 @@ export default function ViewBodystyle() {
     const getRarityLabel = (productionCount) => {
         if (productionCount === 1) return { label: "Unique", color: "bg-danger text-white" };
         if (productionCount >= 2 && productionCount <= 10) return { label: "Ultra Exclusive", color: "bg-warning text-dark" };
-        if (productionCount >= 11 && productionCount <= 50) return { label: "Exclusive", color: "bg-primary text-white" };
-        if (productionCount >= 51 && productionCount <= 200) return { label: "Super Rare", color: "bg-success text-white" };
-        if (productionCount >= 201 && productionCount <= 500) return { label: "Rare", color: "bg-info text-dark" };
-        if (productionCount >= 501 && productionCount <= 1000) return { label: "Limited Edition", color: "bg-secondary text-white" };
-        if (productionCount >= 1001 && productionCount <= 5000) return { label: "Special Series", color: "bg-dark text-white" };
+        if (productionCount >= 11 && productionCount <= 50) return { label: "Super Exclusive", color: "bg-primary text-white" };
+        if (productionCount >= 51 && productionCount <= 200) return { label: "Exclusive", color: "bg-success text-white" };
+        if (productionCount >= 201 && productionCount <= 500) return { label: "Ultra Rare", color: "bg-info text-dark" };
+        if (productionCount >= 501 && productionCount <= 1000) return { label: "Super Rare", color: "bg-secondary text-white" };
+        if (productionCount >= 1001 && productionCount <= 5000) return { label: "Rare", color: "bg-dark text-white" };
         if (productionCount >= 5001 && productionCount <= 20000) return { label: "Semi-Mass Produced", color: "bg-light text-dark border" };
-        if (productionCount >= 20001 && productionCount <= 100000) return { label: "Mass Produced", color: "bg-light text-dark border" };
+        if (productionCount >= 20001 && productionCount <= 1000000) return { label: "Mass Produced", color: "bg-light text-dark border" };
         return { label: "Common", color: "bg-light text-dark border" }; // Default
     };
 
@@ -127,7 +127,7 @@ export default function ViewBodystyle() {
                                         <div className="row g-0">
                                             <div className="col-md-3 text-start">
                                                 <img
-                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${bodystyle?.generation?.name || 'defaultGeneration'}/${bodystyle?.facelift?.name || 'defaultBodystyle'}/${bodystyle?.bodytype?.name}/${trim?.name}/${mainPhoto?.name || 'defaultImage.jpg'}`}
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${trim.spotUser}/${trim.spotId}/${trim.photoName}`}
                                                     className="img-fluid"
                                                     alt=''
                                                     style={{ maxWidth: '100%', objectFit: 'cover' }}
@@ -147,7 +147,17 @@ export default function ViewBodystyle() {
                                                         </span>
 
                                                     </div>
-                                                    <p className="card-text">{trim.years}</p>
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <p className="card-text">{trim.years}</p>
+                                                        <span className="fw-light fs-5" style={{ fontSize: "0.9em", padding: "5px 10px", borderRadius: "8px" }}>
+                                                            {trim?.market?.name}
+                                                        </span>
+                                                    </div>
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <span>
+                                                            {trim?.body?.name}
+                                                        </span>
+                                                    </div>
                                                     <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
                                                 </div>
                                             </div>

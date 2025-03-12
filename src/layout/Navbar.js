@@ -44,16 +44,17 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">
+                <Link className="navbar-brand" to="/">
                     <img
                         src="https://newloripinbucket.s3.amazonaws.com/image/logo/logo2.svg"
                         alt="Logo"
                         width="30"
                         height="24"
                         style={{ filter: "invert(1)" }}
-                        className="d-inline-block align-text-top me-2" />
-                    <Link className="navbar-brand" to="/">Loripin</Link>
-                </a>
+                        className="d-inline-block align-text-top me-2"
+                    />
+                    Loripin
+                </Link>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -83,7 +84,6 @@ const Navbar = () => {
 
                     <div className="d-flex">
                         {user ? (
-
                             <ul className="navbar-nav">
                                 <li className="btn-group dropstart">
                                     <a
@@ -105,20 +105,27 @@ const Navbar = () => {
                                         {user.username}
                                     </a>
                                     <ul className="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                        <li><a className="dropdown-item" href="/user/profile">Profile</a></li>
-                                        <li><a
-                                            className="dropdown-item"
-                                            href={handleLogout}
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleLogout();
-                                            }}
-                                        >Sign out</a></li>
+                                        <li>
+                                            <a className="dropdown-item" href="/user/profile">
+                                                Profile
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                className="dropdown-item"
+                                                href="#"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleLogout();
+                                                }}
+                                            >
+                                                Sign out
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
-
                         ) : (
                             !isOnLoginPage && (
                                 <Link to="/login" className="btn btn-outline-light">
@@ -127,6 +134,7 @@ const Navbar = () => {
                             )
                         )}
                     </div>
+
                 </div>
             </div>
         </nav>

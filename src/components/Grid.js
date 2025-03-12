@@ -16,7 +16,7 @@ const ContributionGrid = ({ make, user, trims, spotsWithouPage, totalCells }) =>
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(30, ${cellSize}px)`,
+        gridTemplateColumns: `repeat(25, ${cellSize}px)`,
         gap: 2,
         padding: 0,
         margin: 0,
@@ -35,7 +35,7 @@ const ContributionGrid = ({ make, user, trims, spotsWithouPage, totalCells }) =>
 
         const tooltipText = currentTrim
           ? `${currentTrim.model?.name}\n${currentTrim.bodystyle.generation.name}\n${currentTrim.bodystyle.bodytype.name}\n${currentTrim.name}` // Здесь можно добавить другую информацию, например, model или year.
-          : 'Нет данных';
+          : 'No data';
 
         return (
           <button

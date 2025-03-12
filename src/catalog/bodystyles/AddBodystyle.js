@@ -108,8 +108,8 @@ export default function AddBodystyle() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        if (!bodystyle.facelift || !bodystyle.bodytype || !selectedFile) {
-            setError('Please provide facelift, bodystyle and upload an image.');
+        if (!bodystyle.facelift || !bodystyle.bodytype) {
+            setError('Please provide facelift and bodystyle');
             return;
         }
 

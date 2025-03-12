@@ -159,8 +159,34 @@ export default function ViewMake() {
                                 <p className="card-text text-start">{makeDetails?.description}</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+                    <div className='col-md-8'>
+                        <div className='py-4'>
+                            <div className="column-container">
+                                {sortedKeys.map((letter) => (
+                                    <div key={letter} className="column-group">
+                                        <h4>{letter}</h4>
+                                        <ul className="list-group">
+                                            {groupedList[letter].map((model) => (
+                                                <li className="list-group-item border-0" key={model.id}>
+                                                    <a href={`/catalog/${make}/${model.name}`} className="text-decoration-none">
+                                                        <p>
+                                                            {model.name}
+                                                        </p>
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <div className='col-md-4 mb-5'>
                         {user?.token ? (
-                            <div className="col-md-5 mb-3 text-start">
+                            <div className="mb-3 text-start">
                                 <h6>Spots progress:</h6>
                                 <div className="progress mb-2">
                                     <div
@@ -174,34 +200,15 @@ export default function ViewMake() {
                                         {progressPercent}%
                                     </div>
                                 </div>
-                                <Grid
-                                    make={make}
-                                    user={user}
-                                    trims={trims}
-                                    spotsWithouPage={spotsWithoutPage}
-                                    totalCells={totalCells} />
+
                             </div>
                         ) : null}
-                    </div>
-                </div>
-                <div className='py-4'>
-                    <div className="column-container">
-                        {sortedKeys.map((letter) => (
-                            <div key={letter} className="column-group">
-                                <h4>{letter}</h4>
-                                <ul className="list-group">
-                                    {groupedList[letter].map((model) => (
-                                        <li className="list-group-item border-0" key={model.id}>
-                                            <a href={`/catalog/${make}/${model.name}`} className="text-decoration-none">
-                                                <p>
-                                                    {model.name}
-                                                </p>
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+                        <Grid
+                            make={make}
+                            user={user}
+                            trims={trims}
+                            spotsWithouPage={spotsWithoutPage}
+                            totalCells={totalCells} />
                     </div>
                 </div>
 

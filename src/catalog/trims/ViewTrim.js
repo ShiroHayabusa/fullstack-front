@@ -15,6 +15,7 @@ export default function ViewTrim() {
     const [showMapModal, setShowMapModal] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [spots, setSpots] = useState([]);
+    const [spotPhotos, setSpotPhotos] = useState([]);
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -113,9 +114,20 @@ export default function ViewTrim() {
         }
     };
 
+    const fetchPhotos = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/trims/${trimId}/photos`);
+            setSpotPhotos(result.data);
+            console.log(result.data);
+        } catch (error) {
+            console.error("Failed to fetch photos", error);
+        }
+    };
+
     useEffect(() => {
         loadTrim();
         fetchSpots();
+        fetchPhotos();
     }, []);
 
     const loadTrim = async () => {
@@ -247,13 +259,13 @@ export default function ViewTrim() {
     const getRarityLabel = (productionCount) => {
         if (productionCount === 1) return { label: "Unique", color: "bg-danger text-white" };
         if (productionCount >= 2 && productionCount <= 10) return { label: "Ultra Exclusive", color: "bg-warning text-dark" };
-        if (productionCount >= 11 && productionCount <= 50) return { label: "Exclusive", color: "bg-primary text-white" };
-        if (productionCount >= 51 && productionCount <= 200) return { label: "Super Rare", color: "bg-success text-white" };
-        if (productionCount >= 201 && productionCount <= 500) return { label: "Rare", color: "bg-info text-dark" };
-        if (productionCount >= 501 && productionCount <= 1000) return { label: "Limited Edition", color: "bg-secondary text-white" };
-        if (productionCount >= 1001 && productionCount <= 5000) return { label: "Special Series", color: "bg-dark text-white" };
+        if (productionCount >= 11 && productionCount <= 50) return { label: "Super Exclusive", color: "bg-primary text-white" };
+        if (productionCount >= 51 && productionCount <= 200) return { label: "Exclusive", color: "bg-success text-white" };
+        if (productionCount >= 201 && productionCount <= 500) return { label: "Ultra Rare", color: "bg-info text-dark" };
+        if (productionCount >= 501 && productionCount <= 1000) return { label: "Super Rare", color: "bg-secondary text-white" };
+        if (productionCount >= 1001 && productionCount <= 5000) return { label: "Rare", color: "bg-dark text-white" };
         if (productionCount >= 5001 && productionCount <= 20000) return { label: "Semi-Mass Produced", color: "bg-light text-dark border" };
-        if (productionCount >= 20001 && productionCount <= 100000) return { label: "Mass Produced", color: "bg-light text-dark border" };
+        if (productionCount >= 20001 && productionCount <= 1000000) return { label: "Mass Produced", color: "bg-light text-dark border" };
         return { label: "Common", color: "bg-light text-dark border" }; // Default
     };
 
@@ -315,22 +327,18 @@ export default function ViewTrim() {
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
 
                     <div className="col">
-                        {trim.photos && trim.photos.length > 0 && (
-                            <div>
-                                {trim.photos.map((photo, index) => (
-                                    <figure class="figure">
-                                        <img
-                                            key={index}
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim.bodystyle.generation?.name}/${trim.bodystyle.facelift?.name}/${trim.bodystyle.bodytype?.name}/${trim.name}/${photo.name}`}
-                                            alt={photo.name}
-                                            className="figure-img img-fluid"
-                                            onClick={() => handleOpenModal(index)}
-                                        />
-                                        <figcaption class="figure-caption text-start">© {make}</figcaption>
-                                    </figure>
-                                ))}
-                            </div>
-                        )}
+
+                        <div>
+                            {spotPhotos.map((photo, index) => (
+                                <img
+                                    key={index}
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${photo.photoPath}`}
+                                    alt={photo.name}
+                                    className="img-fluid mb-2"
+                                    onClick={() => handleOpenModal(index)}
+                                />
+                            ))}
+                        </div>
 
 
                         <Modal show={showModal} onHide={handleCloseModal} size="lg">

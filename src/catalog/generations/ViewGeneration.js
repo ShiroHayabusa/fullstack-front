@@ -103,6 +103,15 @@ export default function ViewGeneration() {
                         <h5>{make} {model}</h5>
                         <h5>{generation.name}</h5>
                         <span>{generation?.years}</span>
+                        {generation.bodies && generation.bodies.length > 0 && (
+                            <div>
+                                {generation.bodies.map((body, index) => (
+                                    <span key={body.id}>
+                                        {body.name}{index < generation.bodies.length - 1 && ', '}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="col-md-9">
                         <p className="text-start">{generation?.description}</p>
@@ -125,9 +134,13 @@ export default function ViewGeneration() {
                                     <Link to={`/catalog/${make}/${model}/${generationId}/${bodystyle.id}`} className="text-decoration-none text-black">
                                         <div className="card">
                                             <img
-                                                src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${generation.name || 'defaultGeneration'}/${bodystyle.facelift.name}/${bodystyle.bodytype?.name || 'defaultBodystyle'}/${bodystyle?.photo?.name || 'defaultImage.jpg'}`}
-                                                alt={bodystyle.name || "Default Image"}
+                                                src={
+                                                    bodystyle?.photoName
+                                                        ? `https://newloripinbucket.s3.amazonaws.com/image/spots/${bodystyle.spotUser}/${bodystyle.spotId}/${bodystyle.photoName}`
+                                                        : 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'
+                                                }
                                                 className="card-img-top"
+                                                alt={bodystyle.name}
                                             />
                                             <div className="card-body">
                                                 <h5 className="card-title">

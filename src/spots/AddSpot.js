@@ -309,7 +309,7 @@ export default function AddSpot() {
 
     const optionsGeneration = generations.map((generation) => ({
         value: generation.id,
-        label: generation.name,
+        label: generation.name + ' (' + generation?.years + ')',
     }));
 
     useEffect(() => {
@@ -399,7 +399,9 @@ export default function AddSpot() {
 
     const optionsTrim = trims.map((trim) => ({
         value: trim.id,
-        label: trim.name,
+        label: trim.market?.name
+            ? `${trim.name} (${trim.market.name})`
+            : trim.name,
     }));
 
     const handleMakeChange = (selectedOption) => {

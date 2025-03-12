@@ -101,15 +101,27 @@ export default function ViewModel() {
                             <Link to={`/catalog/${make}/${model}/${generation.id}`} className="text-decoration-none text-black">
                                 <div className="card">
                                     <img
-                                        src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make || 'defaultMake'}/${model || 'defaultModel'}/${generation.name || 'defaultGeneration'}/${generation?.photo?.name || 'defaultImage.jpg'}`}
+                                        src={
+                                            generation?.photoName
+                                                ? `https://newloripinbucket.s3.amazonaws.com/image/spots/${generation.spotUser}/${generation.spotId}/${generation.photoName}`
+                                                : 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'
+                                        }
                                         className="card-img-top"
-                                        alt="..."></img>
+                                        alt={generation.name}
+                                    />
                                     <div className="card-body">
-                                        <h5 className="card-title">
-                                            {generation.name}
-                                        </h5>
+                                        <h5 className="card-title">{generation.name}</h5>
                                         <p className="card-text">{generation.years}</p>
                                     </div>
+                                    {generation.bodies && generation.bodies.length > 0 && (
+                                        <div className='card-footer'>
+                                            {generation.bodies.map((body, index) => (
+                                                <span key={body.id}>
+                                                    {body.name}{index < generation.bodies.length - 1 && ', '}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </Link>
                         </div>

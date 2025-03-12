@@ -12,6 +12,7 @@ export default function EditTrim() {
         name: "",
         altName: "",
         description: "",
+        market: null,
         engine: "",
         transmission: "",
         body: "",
@@ -43,11 +44,13 @@ export default function EditTrim() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
 
+    const [selectedMarket, setSelectedMarket] = useState(null);
     const [selectedDrivetrain, setSelectedDrivetrain] = useState(null);
     const [selectedEngine, setSelectedEngine] = useState(null);
     const [selectedTransmission, setSelectedTransmission] = useState(null);
     const [selectedBody, setSelectedBody] = useState(null);
     const [selectedTuner, setSelectedTuner] = useState(null);
+    const [markets, setMarkets] = useState([]);
 
     const [photos, setPhotos] = useState([]);
     const { user } = useAuth();
@@ -85,6 +88,9 @@ export default function EditTrim() {
                 range: response.data.range,
                 photos: response.data.photos
             });
+            setSelectedMarket(
+                response.data.market ? { value: response.data.market.id, label: response.data.market.name } : null
+            );
             setSelectedEngine(
                 response.data.engine ? { value: response.data.engine.id, label: response.data.engine.name } : null
             );
@@ -107,6 +113,7 @@ export default function EditTrim() {
 
     useEffect(() => {
         loadBodystyleEntity();
+        fetchMarkets();
         fetchEngines();
         fetchTransmissions();
         fetchBodies();
@@ -134,7 +141,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     setEngines(data)
-                } 
+                }
             })
             .catch((error) => console.log(error));
     };
@@ -150,7 +157,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     setTransmissions(data)
-                } 
+                }
             })
             .catch((error) => console.log(error));
     };
@@ -166,7 +173,7 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     setBodies(data)
-                } 
+                }
             })
             .catch((error) => console.log(error));
     };
@@ -182,11 +189,30 @@ export default function EditTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     setDrivetrains(data)
-                } 
+                }
             })
             .catch((error) => console.log(error));
     };
 
+    const fetchMarkets = () => {
+        axios
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/markets`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    setMarkets(response.data);
+                }
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const optionsMarket = markets.map((market) => ({
+        value: market.id,
+        label: market.name,
+    }));
     const optionsDrivetrain = drivetrains.map((drivetrain) => ({
         value: drivetrain.id,
         label: drivetrain.name,
@@ -207,6 +233,10 @@ export default function EditTrim() {
         value: tuner.id,
         label: tuner.name,
     }));
+
+    const handleMarketChange = (selectedOption) => {
+        setSelectedMarket(selectedOption);
+    };
 
     const handleDrivetrainChange = (selectedOption) => {
         setSelectedDrivetrain(selectedOption);
@@ -240,7 +270,7 @@ export default function EditTrim() {
                 if (response.status === 200) {
 
                     setTuners(data)
-                } 
+                }
             })
             .catch((error) => console.log(error));
     };
@@ -332,15 +362,31 @@ export default function EditTrim() {
     const onSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
+        
         formData.append('uniq', trim.uniq ? 'true' : 'false');
         formData.append('electric', trim.electric ? 'true' : 'false');
         formData.append('hybrid', trim.hybrid ? 'true' : 'false');
 
-        Object.keys(trim).forEach(key => {
-            if (key !== 'uniq' && key !== 'electric' && key !== 'hybrid') {
-                formData.append(key, trim[key]);
-            }
+        const fieldsToSend = [
+            'name',
+            'altName',
+            'description',
+            'years',
+            'productionCount',
+            'maxSpeed',
+            'acceleration',
+            'weight',
+            'battery',
+            'range'
+        ];
+    
+        fieldsToSend.forEach(key => {
+            formData.append(key, trim[key]);
         });
+
+        if (selectedMarket && typeof selectedMarket.value !== 'undefined') {
+            formData.append('marketId', selectedMarket.value);
+        }
 
         if (selectedEngine) {
             formData.append('engineId', selectedEngine.value);
@@ -483,6 +529,15 @@ export default function EditTrim() {
                             onChange={onInputChange}
                         />
 
+                        <Select
+                            className="text-start mt-3"
+                            options={optionsMarket}
+                            onChange={handleMarketChange}
+                            isSearchable
+                            isClearable
+                            placeholder="Select market"
+                            value={selectedMarket}
+                        />
 
                         <Select
                             className="text-start mt-3"

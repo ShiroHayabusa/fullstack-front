@@ -17,7 +17,7 @@ export default function AddTrim() {
         drivetrain: "",
         years: "",
         tuner: "",
-        amount: "",
+        productionCount: 0,
         maxSpeed: "",
         acceleration: "",
         uniq: false,
@@ -28,7 +28,7 @@ export default function AddTrim() {
         range: ""
     });
 
-    const { name, altName, description, engine, transmission, body, drivetrain, years, tuner, amount, maxSpeed, acceleration,
+    const { name, altName, description, engine, transmission, body, drivetrain, years, tuner, productionCount, maxSpeed, acceleration,
         uniq, weight, electric, hybrid, battery, range } = trim;
 
     const [bodystyleEntity, setBodystyleEntity] = useState({
@@ -45,6 +45,7 @@ export default function AddTrim() {
     const { user } = useAuth();
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
     const [previewUrls, setPreviewUrls] = useState([]);
+    const [marketList, setMarketList] = useState([]);
 
     const loadBodystyleEntity = async () => {
         const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
@@ -61,6 +62,7 @@ export default function AddTrim() {
         fetchBodyData();
         fetchDrivetrainData();
         fetchTunerData();
+        fetchMarketData();
     }, [make, model, generationId, bodystyleId]);
 
     const onChange = (e) => {
@@ -142,7 +144,22 @@ export default function AddTrim() {
                 const { data } = response;
                 if (response.status === 200) {
                     setTunerList(data)
-                } 
+                }
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const fetchMarketData = () => {
+        axios
+            .get(`${process.env.REACT_APP_API_URL}/api/admin/markets`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    setMarketList(response.data);
+                }
             })
             .catch((error) => console.log(error));
     };
@@ -234,6 +251,17 @@ export default function AddTrim() {
                             onChange={(e) => onChange(e)}
                         />
 
+                        <select onChange={onChange} name="market" className="form-select mt-3 mb-3">
+                            <option value="">
+                                Select market (optional)
+                            </option>
+                            {marketList.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+
                         <select onChange={onChange} name='engine' className="form-select mt-3 mb-3">
                             <option value={"default"}>
                                 Select engine
@@ -301,9 +329,9 @@ export default function AddTrim() {
                         <input
                             type={'text'}
                             className='form-control mt-3 mb-3'
-                            placeholder='Enter amount'
-                            name='amount'
-                            value={amount}
+                            placeholder='Enter production count'
+                            name='productionCount'
+                            value={productionCount}
                             onChange={(e) => onChange(e)}
                         />
 
