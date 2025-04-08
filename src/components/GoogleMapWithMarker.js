@@ -104,7 +104,7 @@ export default function GoogleMapWithMarker({
             <Marker
               key={spot.id}
               position={{ lat: spot.latitude, lng: spot.longitude }}
-              title={spot.title || `Спот ${spot.id}`}
+              title={spot.title || `Spot ${spot.id}`}
               onClick={() => {
                 // If the same spot is already selected, then when you click again we reset it
                 if (selectedSpot?.id === spot.id) {

@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
+import { formatDistanceToNow } from 'date-fns';
 import Masonry from 'react-masonry-css';
 import '../components/Masonry.css'
 
@@ -12,8 +12,6 @@ export default function Spots() {
     const [spotsPerPage] = useState(20);
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [likes, setLikes] = useState(0);
-    const [hasLiked, setHasLiked] = useState(false);
 
     const breakpointColumnsObj = {
         default: 4,
@@ -24,14 +22,12 @@ export default function Spots() {
 
     const loadSpots = async () => {
         try {
-            const headers = user?.token
-                ? { Authorization: `Bearer ${user.token}` }
-                : {};
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots`, {
-                headers,
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/mySpots`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
             });
             setSpots(result.data);
-            console.log("Spot data:", spots);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }
@@ -67,8 +63,12 @@ export default function Spots() {
     };
 
     useEffect(() => {
-        loadSpots();
-    }, []);
+        if (!user) {
+            navigate('/login');
+        } else {
+            loadSpots();
+        }
+    }, [user]);
 
     const indexOfLastSpot = currentPage * spotsPerPage;
     const indexOfFirstSpot = indexOfLastSpot - spotsPerPage;
@@ -84,31 +84,10 @@ export default function Spots() {
                         <li className="breadcrumb-item">
                             <Link to="/" className="text-decoration-none">Home</Link>
                         </li>
-                        <li className="breadcrumb-item active" aria-current="page">Spots</li>
+                        <li className="breadcrumb-item active" aria-current="page">My spots</li>
                     </ol>
                 </nav>
-                {user?.token ? (
-                    <ul className="nav mb-3" style={{ display: "flex", alignItems: "center" }}>
-                        <li className="nav-item me-3">
-                            <button
-                                className="btn btn-outline-primary"
-                                onClick={() => navigate(`/spots/addSpot`)}
-                            >
-                                Add Spot
-                            </button>
-                        </li>
-                        <li className="nav-item">
-                            <button
-                                className="btn btn-outline-secondary"
-                                onClick={() => navigate(`/spots/mySpots`)}
-                            >
-                                My Spots
-                            </button>
-                        </li>
-
-                    </ul>
-                ) : null}
-                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+                <div className="row row-cols-1 row-cols-md-4 g-4">
                     <Masonry
                         breakpointCols={breakpointColumnsObj}
                         className="my-masonry-grid"
@@ -120,7 +99,6 @@ export default function Spots() {
                                 : {};
 
                             return (
-
                                 <div className="col" key={spot.id}>
                                     <div className="card position-relative mb-3">
                                         <Link to={`/spots/${spot.id}`}>
@@ -130,7 +108,6 @@ export default function Spots() {
                                                 alt={spot?.photos[0]?.name || 'Default Image'}
                                             />
                                         </Link>
-
                                         <Link
                                             to={`/users/${spot.user?.id}`}
                                             className="position-absolute start-0 top-0 m-2 d-flex align-items-center text-decoration-none"
@@ -165,8 +142,13 @@ export default function Spots() {
                                                     <span className="me-3">
                                                         {spot.likeCount}
                                                     </span>
-                                                    <i className="bi bi-chat me-1"></i>
-                                                    <span>{spot.commentCount}</span>
+                                                    <Link
+                                                        to={`/spots/${spot.id}`}
+                                                        className='text-decoration-none text-dark'
+                                                    >
+                                                        <i className="bi bi-chat me-1"></i>
+                                                        <span>{spot.commentCount}</span>
+                                                    </Link>
                                                 </div>
                                                 <span className="text-muted small">
                                                     {spot?.createdAt
@@ -176,12 +158,12 @@ export default function Spots() {
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             )
                         })}
                     </Masonry>
                 </div>
+
                 <Pagination
                     spotsPerPage={spotsPerPage}
                     totalSpots={spots.length}
@@ -193,11 +175,13 @@ export default function Spots() {
     );
 }
 
+// Pagination component
 function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
     const pageNumbers = [];
     const totalPages = Math.ceil(totalSpots / spotsPerPage);
-    const maxVisiblePages = 5;
+    const maxVisiblePages = 5; // Maximum number of pages to display
 
+    // Define the range of pages to display
     const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -208,6 +192,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
     return (
         <nav className='mt-3'>
             <ul className="pagination justify-content-center" style={{ fontSize: '16px', fontWeight: '350', listStyleType: 'none', padding: 0 }}>
+
                 {currentPage > 1 && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -218,6 +203,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 )}
+
                 {currentPage > 1 && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -228,6 +214,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 )}
+
                 {pageNumbers.map((number) => (
                     <li key={number} className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -242,6 +229,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 ))}
+
                 {currentPage < totalPages && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span
@@ -252,6 +240,7 @@ function Pagination({ spotsPerPage, totalSpots, paginate, currentPage }) {
                         </span>
                     </li>
                 )}
+
                 {currentPage < totalPages && (
                     <li className="page-item" style={{ margin: '0 5px' }}>
                         <span

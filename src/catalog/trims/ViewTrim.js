@@ -9,6 +9,7 @@ import Masonry from 'react-masonry-css';
 import '../../components/Masonry.css'
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { useSwipeable } from 'react-swipeable';
+import '../../components/PhotoModal.css';
 
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false);
@@ -16,7 +17,7 @@ export default function ViewTrim() {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [spots, setSpots] = useState([]);
     const [spotPhotos, setSpotPhotos] = useState([]);
-    const navigate = useNavigate();
+    const [swipeOffset, setSwipeOffset] = useState(0);
     const { user } = useAuth();
 
     const [comments, setComments] = useState([]);
@@ -34,36 +35,64 @@ export default function ViewTrim() {
 
 
     const handleOpenModal = (index) => {
-        if (trim && trim.photos && trim.photos.length > 0) {
+        if (spotPhotos && spotPhotos.length > 0) {
             setCurrentPhotoIndex(index);
             setShowModal(true);
+            setSwipeOffset(0);
         }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setSwipeOffset(0);
     };
 
     const handleNextPhoto = () => {
         setCurrentPhotoIndex((prevIndex) =>
-            prevIndex === trim.photos.length - 1 ? 0 : prevIndex + 1
+            prevIndex === spotPhotos.length - 1 ? 0 : prevIndex + 1
         );
+        setSwipeOffset(0);
+
     };
 
     const handlePrevPhoto = () => {
         setCurrentPhotoIndex((prevIndex) =>
-            prevIndex === 0 ? trim.photos.length - 1 : prevIndex - 1
+            prevIndex === 0 ? spotPhotos.length - 1 : prevIndex - 1
         );
+        setSwipeOffset(0);
     };
 
     const swipeHandlers = useSwipeable({
-        onSwipedLeft: () => handleNextPhoto(),
-        onSwipedRight: () => handlePrevPhoto(),
+        onSwiping: (eventData) => {
+            setSwipeOffset(eventData.deltaX);
+        },
+        onSwipedLeft: (eventData) => {
+            if (Math.abs(eventData.deltaX) > 100) {
+                handleNextPhoto();
+            } else {
+                setSwipeOffset(0);
+            }
+        },
+        onSwipedRight: (eventData) => {
+            if (Math.abs(eventData.deltaX) > 100) {
+                handlePrevPhoto();
+            } else {
+                setSwipeOffset(0);
+            }
+        },
         delta: 10,
         preventDefaultTouchmoveEvent: true,
         trackTouch: true,
         trackMouse: true,
     });
+
+    const getNextPhotoIndex = () => {
+        return (currentPhotoIndex + 1) % spotPhotos.length;
+    };
+
+    const getPrevPhotoIndex = () => {
+        return (currentPhotoIndex - 1 + spotPhotos.length) % spotPhotos.length;
+    };
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -114,11 +143,11 @@ export default function ViewTrim() {
         }
     };
 
-    const fetchPhotos = async () => {
+    const fetchSpotPhotos = async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/trims/${trimId}/photos`);
             setSpotPhotos(result.data);
-            console.log(result.data);
+            console.log("spotPhotos:", spotPhotos);
         } catch (error) {
             console.error("Failed to fetch photos", error);
         }
@@ -127,7 +156,7 @@ export default function ViewTrim() {
     useEffect(() => {
         loadTrim();
         fetchSpots();
-        fetchPhotos();
+        fetchSpotPhotos();
     }, []);
 
     const loadTrim = async () => {
@@ -137,7 +166,6 @@ export default function ViewTrim() {
         setComments(result.data.comments);
     }
 
-    const photos = (trim && trim.photos) || [];
 
     const handleAddComment = async () => {
         if (!newComment.trim()) {
@@ -333,44 +361,53 @@ export default function ViewTrim() {
                                 <img
                                     key={index}
                                     src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${photo.photoPath}`}
-                                    alt={photo.name}
+                                    alt={`Photo ${index}`}
                                     className="img-fluid mb-2"
                                     onClick={() => handleOpenModal(index)}
+                                    style={{ cursor: "pointer" }}
                                 />
                             ))}
                         </div>
 
 
-                        <Modal show={showModal} onHide={handleCloseModal} size="lg">
+                        <Modal
+                            show={showModal}
+                            onHide={handleCloseModal}
+                            fullscreen={true}
+                            dialogClassName="borderless-modal"
+                        >
                             <Modal.Body {...swipeHandlers}>
-                                <div className="d-flex justify-content-center">
-                                    {trim && trim.photos && trim.photos.length > 0 && trim.photos[currentPhotoIndex] ? (
-                                        <img
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${model}/${trim?.bodystyle?.generation?.name}/${trim?.bodystyle?.facelift?.name}/${trim?.bodystyle?.bodytype?.name}/${trim?.name}/${trim.photos[currentPhotoIndex]?.name}`}
-                                            className="img-fluid"
-                                            alt="Car photo"
-                                        />
+                                <div className="photo-container" onClick={handleCloseModal}>
+                                    {trim && spotPhotos && spotPhotos.length > 0 ? (
+                                        <div
+                                            className="photo-wrapper"
+                                            style={{ transform: `translateX(${swipeOffset}px)` }}
+                                        >
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[currentPhotoIndex].photoPath}`}
+                                                className="photo-slide current"
+                                                alt="Current car photo"
+                                            />
+                                            {swipeOffset > 0 && (
+                                                <img
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[getPrevPhotoIndex()].photoPath}`}
+                                                    className="photo-slide previous"
+                                                    alt="Previous car photo"
+                                                />
+                                            )}
+                                            {swipeOffset < 0 && (
+                                                <img
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[getNextPhotoIndex()].photoPath}`}
+                                                    className="photo-slide next"
+                                                    alt="Next car photo"
+                                                />
+                                            )}
+                                        </div>
                                     ) : (
                                         <p>Фото не доступны</p>
                                     )}
                                 </div>
                             </Modal.Body>
-                            <Modal.Footer className="d-flex justify-content-between">
-                                <span>
-                                    Photo {trim && trim.photos ? currentPhotoIndex + 1 : 0} of {trim && trim.photos ? trim.photos.length : 0}
-                                </span>
-                                <div>
-                                    <Button variant="outline-secondary btn-sm" onClick={handlePrevPhoto} className="me-2">
-                                        ← Previous
-                                    </Button>
-                                    <Button variant="outline-secondary btn-sm" onClick={handleNextPhoto} className="me-2">
-                                        Next →
-                                    </Button>
-                                    <Button variant="outline-primary btn-sm" onClick={handleCloseModal}>
-                                        Close
-                                    </Button>
-                                </div>
-                            </Modal.Footer>
                         </Modal>
                     </div>
                     <div className="col">

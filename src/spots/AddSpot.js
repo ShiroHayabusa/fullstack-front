@@ -518,9 +518,6 @@ export default function AddSpot() {
                     <li className="breadcrumb-item">
                         <Link to="/" className="text-decoration-none">Home</Link>
                     </li>
-                    <li className="breadcrumb-item">
-                        <Link to="/spots" className="text-decoration-none">Spots</Link>
-                    </li>
                     <li className="breadcrumb-item active" aria-current="page">Add Spot</li>
                 </ol>
             </nav>
@@ -705,7 +702,11 @@ export default function AddSpot() {
                 </div>
                 {isLoading ? (
                     <button className="btn btn-outline-primary mt-3" type="button" disabled>
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                            style={{ marginRight: "8px" }}></span>
                         Loading...
                     </button>
                 ) : (
@@ -713,7 +714,7 @@ export default function AddSpot() {
                         Add spot
                     </button>
                 )}
-                <Link className="btn btn-outline-danger mx-2 mt-3" to="/spots">Cancel</Link>
+                <Link className="btn btn-outline-danger mx-2 mt-3" to="/">Cancel</Link>
             </form>
         </div>
 

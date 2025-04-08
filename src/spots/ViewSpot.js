@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Loader } from '@googlemaps/js-api-loader';
 import { Modal, Button } from 'react-bootstrap';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import GoogleMapWithMarker from '../components/GoogleMapWithMarker';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { useSwipeable } from 'react-swipeable';
+import '../components/PhotoModal.css';
 
 
 export default function ViewSpot() {
@@ -58,36 +58,64 @@ export default function ViewSpot() {
 
     const [showModal, setShowModal] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    const [swipeOffset, setSwipeOffset] = useState(0);
 
     const handleOpenModal = (index) => {
         setCurrentPhotoIndex(index);
         setShowModal(true);
+        setSwipeOffset(0);
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setSwipeOffset(0);
     };
 
     const handlePrevPhoto = () => {
         setCurrentPhotoIndex((prevIndex) =>
             prevIndex === 0 ? spot.photos.length - 1 : prevIndex - 1
         );
+        setSwipeOffset(0);
     };
 
     const handleNextPhoto = () => {
         setCurrentPhotoIndex((prevIndex) =>
             prevIndex === spot.photos.length - 1 ? 0 : prevIndex + 1
         );
+        setSwipeOffset(0);
     };
 
     const swipeHandlers = useSwipeable({
-        onSwipedLeft: () => handleNextPhoto(),
-        onSwipedRight: () => handlePrevPhoto(),
-         delta: 10, 
-         preventDefaultTouchmoveEvent: true,
-         trackTouch: true,
-         trackMouse: true, 
+        onSwiping: (eventData) => {
+            setSwipeOffset(eventData.deltaX);
+        },
+        onSwipedLeft: (eventData) => {
+            if (Math.abs(eventData.deltaX) > 100) {
+                handleNextPhoto();
+            } else {
+                setSwipeOffset(0);
+            }
+        },
+        onSwipedRight: (eventData) => {
+            if (Math.abs(eventData.deltaX) > 100) {
+                handlePrevPhoto();
+            } else {
+                setSwipeOffset(0);
+            }
+        },
+        delta: 10,
+        preventDefaultTouchmoveEvent: true,
+        trackTouch: true,
+        trackMouse: true,
     });
+
+    const getNextPhotoIndex = () => {
+        return (currentPhotoIndex + 1) % spot.photos.length;
+    };
+
+    const getPrevPhotoIndex = () => {
+        return (currentPhotoIndex - 1 + spot.photos.length) % spot.photos.length;
+    };
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -269,9 +297,6 @@ export default function ViewSpot() {
                             <li className="breadcrumb-item">
                                 <Link to="/" className="text-decoration-none">Home</Link>
                             </li>
-                            <li className="breadcrumb-item">
-                                <Link to="/spots/" className="text-decoration-none">Spots</Link>
-                            </li>
                             <li className="breadcrumb-item active" aria-current="page">Spot {spot.id}</li>
                         </ol>
                     </nav>
@@ -343,36 +368,40 @@ export default function ViewSpot() {
                     <Modal
                         show={showModal}
                         onHide={handleCloseModal}
-                        size="lg"
+                        fullscreen={true}
+                        dialogClassName="borderless-modal"
                     >
-
                         <Modal.Body {...swipeHandlers}>
-                            <div className="d-flex justify-content-center">
-                                <img
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[currentPhotoIndex]?.name}`}
-                                    className="img-fluid"
-                                    alt=""
-                                />
+                            <div className="photo-container" onClick={handleCloseModal}>
+                                {spot.photos && spot.photos.length > 0 ? (
+                                    <div className="photo-wrapper" style={{ transform: `translateX(${swipeOffset}px)` }}>
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[currentPhotoIndex].name}`}
+                                            className="photo-slide current"
+                                            alt="Current car photo"
+                                        />
+                                        {swipeOffset > 0 && (
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[getPrevPhotoIndex()].name}`}
+                                                className="photo-slide previous"
+                                                alt="Previous car photo"
+                                            />
+                                        )}
+                                        {swipeOffset < 0 && (
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[getNextPhotoIndex()].name}`}
+                                                className="photo-slide next"
+                                                alt="Next car photo"
+                                            />
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p>Not available</p>
+                                )}
                             </div>
                         </Modal.Body>
-                        <Modal.Footer className="d-flex justify-content-between">
-                            <span>
-                                Photo {currentPhotoIndex + 1} of {spot.photos.length}
-                            </span>
-                            <div>
-                                <Button variant="outline-secondary btn-sm" onClick={handlePrevPhoto} className="me-2">
-                                    ← Previous
-                                </Button>
-                                <Button variant="outline-secondary btn-sm" onClick={handleNextPhoto} className="me-2">
-                                    Next →
-                                </Button>
-                                <Button variant="outline-primary btn-sm" onClick={handleCloseModal}>
-                                    Close
-                                </Button>
-                            </div>
-                        </Modal.Footer>
-
                     </Modal>
+
                     <div className="col-md-5">
                         <h5 className="pb-1 mb-4 text-black border-bottom d-flex justify-content-between align-items-center">
                             <div className="d-flex align-items-center">

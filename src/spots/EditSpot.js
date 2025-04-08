@@ -11,6 +11,7 @@ export default function EditSpot() {
     const [spot, setSpot] = useState({ caption: "" });
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
 
     const [makes, setMakes] = useState([]);
@@ -300,6 +301,8 @@ export default function EditSpot() {
             return;
         }
 
+        setLoading(true);
+
         const formData = new FormData();
         formData.append("photo", file);
 
@@ -329,6 +332,7 @@ export default function EditSpot() {
             setError("Failed to upload photo. Please try again.");
         } finally {
             event.target.value = "";
+            setLoading(false);
         }
     };
 
@@ -478,7 +482,15 @@ export default function EditSpot() {
                                 type="file"
                                 onChange={handleFileChange}
                                 accept="image/*"
+                                disabled={loading}
                             />
+                            {loading && (
+                                <div className="mt-2">
+                                    <div className="spinner-border text-primary" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            )}
                             {error && <p className="text-danger">{error}</p>}
                         </div>
                     </div>

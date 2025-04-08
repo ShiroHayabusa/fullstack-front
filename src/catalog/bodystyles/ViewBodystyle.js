@@ -19,7 +19,6 @@ export default function ViewBodystyle() {
     const [spots, setSpots] = useState([]);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const navigate = useNavigate();
     const { user } = useAuth();
 
     const breakpointColumnsObj = {
@@ -85,6 +84,11 @@ export default function ViewBodystyle() {
         return { label: "Common", color: "bg-light text-dark border" }; // Default
     };
 
+    const hasUserSpot = (trim) => {
+        if (!user || !spots.length) return false;
+        return spots.some(spot => spot.trim?.id === trim.id && spot.user?.username === user.username);
+    };
+
     return (
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
@@ -117,13 +121,20 @@ export default function ViewBodystyle() {
                                 : {};
 
                             const rarity = getRarityLabel(trim.productionCount); // Get rarity label & color
+                            const isUserSpot = hasUserSpot(trim); // Check if user has spot
 
                             return (
                                 <Link
                                     to={`/catalog/${make}/${model}/${bodystyle.generation.id}/${bodystyleId}/${trim.id}`}
                                     className="text-decoration-none text-black"
                                     key={trim.id}>
-                                    <div className="card mb-3" key={index}>
+                                    <div
+                                        className="card mb-3"
+                                        style={{
+                                            border: isUserSpot ? "1px solid #14c609" : "1px solid #dee2e6",
+                                        }}
+                                        key={index}
+                                    >
                                         <div className="row g-0">
                                             <div className="col-md-3 text-start">
                                                 <img
@@ -154,9 +165,13 @@ export default function ViewBodystyle() {
                                                         </span>
                                                     </div>
                                                     <div className="d-flex justify-content-between align-items-center">
-                                                        <span>
-                                                            {trim?.body?.name}
-                                                        </span>
+                                                        <p>{trim?.body?.name}</p>
+                                                        {isUserSpot && (
+                                                            <span style={{ color: "#14c609" }}>
+                                                                <i className="bi bi-check-circle" style={{ marginRight: "5px", color: "#14c609" }}></i>
+                                                                Spotted
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <p className="card-text"><small className="text-body-secondary">{trim.hybrid}</small></p>
                                                 </div>

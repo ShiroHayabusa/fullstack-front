@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import { Dropdown, Button } from 'react-bootstrap';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -70,7 +70,7 @@ const Navbar = () => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link text-white" to="/spots">Spots</Link>
+                            <Link className="nav-link text-white" to="/spots">My spots</Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link text-white" to="/catalog">Catalog</Link>
@@ -84,48 +84,38 @@ const Navbar = () => {
 
                     <div className="d-flex">
                         {user ? (
-                            <ul className="navbar-nav">
-                                <li className="btn-group dropstart">
-                                    <a
-                                        className="nav-link dropdown-toggle-split d-flex align-items-center"
-                                        href="#"
-                                        id="navbarDarkDropdownMenuLink"
-                                        role="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
-                                        {currentUser?.avatarUrl && (
-                                            <img
-                                                src={`https://newloripinbucket.s3.amazonaws.com/${currentUser?.avatarUrl}`}
-                                                alt="Avatar"
-                                                className="rounded-circle me-2"
-                                                style={{ width: "30px", height: "30px", objectFit: "cover" }}
-                                            />
-                                        )}
-                                        {user.username}
-                                    </a>
-                                    <ul className="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                                        <li>
-                                            <a className="dropdown-item" href="/user/profile">
-                                                Profile
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                className="dropdown-item"
-                                                href="#"
-                                                style={{ cursor: 'pointer' }}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleLogout();
-                                                }}
-                                            >
-                                                Sign out
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
+                            <Dropdown align="end">
+                                <Dropdown.Toggle
+                                    variant="link"
+                                    id="userDropdown"
+                                    className="d-flex align-items-center"
+                                    aria-expanded="false"
+                                    style={{
+                                        border: 'none',
+                                        textDecoration: 'none',
+                                        color: 'white'
+                                    }}
+                                >
+                                    {currentUser?.avatarUrl && (
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/${currentUser?.avatarUrl}`}
+                                            alt="Avatar"
+                                            className="rounded-circle me-2"
+                                            style={{ width: "30px", height: "30px", objectFit: "cover" }}
+                                        />
+                                    )}
+                                    {user.username}
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu className="dropdown-menu-dark">
+                                    <Dropdown.Item as={Link} to="/user/profile">
+                                        Profile
+                                    </Dropdown.Item>
+                                    <Dropdown.Item as="button" onClick={handleLogout}>
+                                        Sign out
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
                         ) : (
                             !isOnLoginPage && (
                                 <Link to="/login" className="btn btn-outline-light">
