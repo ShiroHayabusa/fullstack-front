@@ -23,13 +23,19 @@ export default function Spots() {
     500: 1
   };
 
+  const token = user?.token;
+
   const loadSpots = async () => {
     try {
-      const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots?page=${page}&size=10`);
+      const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots?page=${page}&size=12`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setSpots((prevSpots) => {
-        const newSpots = result.data.content.filter(
+        const newSpots = (result.data?.content ?? []).filter(
           (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
-        );
+      );
         return [...prevSpots, ...newSpots];
       });
       setHasMore(result.data.totalPages > page + 1);
@@ -85,10 +91,13 @@ export default function Spots() {
   useEffect(() => {
     Object.values(tooltipRefs.current).forEach((element) => {
       if (element) {
-        new Tooltip(element, {
+        const tooltip = new Tooltip(element, {
           trigger: "hover click",
           placement: "bottom",
         });
+        setTimeout(() => {
+          tooltip.dispose();
+        }, 2000);
       }
     });
     return () => {
@@ -195,8 +204,13 @@ export default function Spots() {
                           <span className="me-3">
                             {spot.likeCount}
                           </span>
-                          <i className="bi bi-chat me-1"></i>
-                          <span>{spot.commentCount}</span>
+                          <Link
+                            to={`/spots/${spot.id}`}
+                            className='text-decoration-none text-dark'
+                          >
+                            <i className="bi bi-chat me-1"></i>
+                            <span>{spot.commentCount}</span>
+                          </Link>
                         </div>
                         <span className="text-muted small">
                           {spot?.createdAt

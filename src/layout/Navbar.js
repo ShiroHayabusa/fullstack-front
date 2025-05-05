@@ -69,9 +69,11 @@ const Navbar = () => {
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            <Link className="nav-link text-white" to="/spots">My spots</Link>
-                        </li>
+                        {user?.token ? (
+                            <li className="nav-item">
+                                <Link className="nav-link text-white" to="/spots">My spots</Link>
+                            </li>
+                        ) : null}
                         <li className="nav-item">
                             <Link className="nav-link text-white" to="/catalog">Catalog</Link>
                         </li>

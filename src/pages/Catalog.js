@@ -6,8 +6,10 @@ import '../components/ColumnContainer.css'
 
 export default function Catalog() {
 
-  const [makes, setMakes] = useState([])
-  const { user } = useAuth(); 
+  const [makes, setMakes] = useState([]);
+  const [filteredMakes, setFilteredMakes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
     loadMakes();
@@ -17,16 +19,20 @@ export default function Catalog() {
     try {
       const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog`)
       setMakes(result.data);
+      setFilteredMakes(result.data);
     } catch (error) {
       console.error('Error loading makes:', error);
     }
   };
 
   const deleteMake = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this make?");
+    if (!confirmDelete) return;
+
     try {
       await axios.delete(`${process.env.REACT_APP_API_URL}/api/deleteMake/${id}`, {
         headers: {
-          Authorization: `Bearer ${user.token}`, 
+          Authorization: `Bearer ${user.token}`,
         },
       });
       loadMakes();
@@ -35,7 +41,18 @@ export default function Catalog() {
     }
   };
 
-  const groupedList = makes.reduce((acc, obj) => {
+  const handleSearchChange = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    const filtered = makes.filter(make =>
+      make.name.toLowerCase().includes(query)
+    );
+
+    setFilteredMakes(filtered);
+  };
+
+  const groupedList = filteredMakes.reduce((acc, obj) => {
     const firstLetter = obj.name.charAt(0).toUpperCase();
     if (!acc[firstLetter]) {
       acc[firstLetter] = [];
@@ -56,13 +73,25 @@ export default function Catalog() {
         </ul>
       )}
       <div className='container'>
-        <nav aria-label="breadcrumb" className='mt-3'>
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-            <li className="breadcrumb-item active" aria-current="page">Catalog</li>
-          </ol>
-        </nav>
+        <div className="pb-1 mb-3 mt-1 text-black border-bottom d-flex justify-content-between align-items-center">
+          <nav aria-label="breadcrumb" className='mt-3'>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+              <li className="breadcrumb-item active" aria-current="page">Catalog</li>
+            </ol>
+          </nav>
+          <div>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search Makes"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </div>
         <h2>Catalog</h2>
+
         <div className='py-4'>
           <div className="column-container">
             {sortedKeys.map((letter) => (
@@ -72,9 +101,7 @@ export default function Catalog() {
                   {groupedList[letter].map((make) => (
                     <li className="list-group-item border-0" key={make.id}>
                       <a href={`/catalog/${make.name}`} className="text-decoration-none">
-                        <p >
-                          {make.name}
-                        </p>
+                        <p>{make.name} {make.spotsCount > 0 && ` (${make.spotsCount})`}</p>
                       </a>
                     </li>
                   ))}

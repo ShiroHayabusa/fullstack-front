@@ -19,6 +19,8 @@ export default function ViewMake() {
     const [trims, setTrims] = useState([]);
     const [spotsWithoutPage, setSpotsWithoutPage] = useState([]);
     const [totalCells, setTotalCells] = useState(null);
+    const [filteredModels, setFilteredModels] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const breakpointColumnsObj = {
         default: 5,
@@ -37,6 +39,7 @@ export default function ViewMake() {
     const loadModels = async () => {
         const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}`);
         setModels(result.data);
+        setFilteredModels(result.data);
     }
 
     const loadMakeDetails = async () => {
@@ -83,12 +86,11 @@ export default function ViewMake() {
 
     const progressPercent = totalCells > 0 ? Math.round((matchingCount / totalCells) * 100) : 0;
 
-
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/makeSpots?page=${page}&size=10`);
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/makeSpots?page=${page}&size=12`);
             setSpots((prevSpots) => {
-                const newSpots = result.data.content.filter(
+                const newSpots = (result.data?.content ?? []).filter(
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
                 );
                 return [...prevSpots, ...newSpots];
@@ -111,7 +113,18 @@ export default function ViewMake() {
         }
     }, [page]);
 
-    const groupedList = models.reduce((acc, obj) => {
+    const handleSearchChange = (event) => {
+        const query = event.target.value.toLowerCase();
+        setSearchQuery(query);
+
+        const filtered = models.filter(model =>
+            model.name.toLowerCase().includes(query)
+        );
+
+        setFilteredModels(filtered);
+    };
+
+    const groupedList = filteredModels.reduce((acc, obj) => {
         const firstLetter = obj.name.charAt(0).toUpperCase();
         if (!acc[firstLetter]) {
             acc[firstLetter] = [];
@@ -125,6 +138,8 @@ export default function ViewMake() {
     const makePhotoName = makeDetails && makeDetails.photo ? makeDetails.photo.name : 'placeholder.jpg';
     const photoURL = `https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${makePhotoName}`;
 
+
+
     return (
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
@@ -136,13 +151,25 @@ export default function ViewMake() {
                 </ul>
             )}
             <div className='container'>
-                <nav aria-label="breadcrumb" className='mt-3'>
-                    <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
-                        <li className="breadcrumb-item active" aria-current="page">{make}</li>
-                    </ol>
-                </nav>
+                <div className="pb-1 mb-3 mt-1 text-black border-bottom d-flex justify-content-between align-items-center">
+                    <nav aria-label="breadcrumb" className='mt-3'>
+                        <ol className="breadcrumb">
+                            <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
+                            <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
+                            <li className="breadcrumb-item active" aria-current="page">{make}</li>
+                        </ol>
+                    </nav>
+                    <div>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search Models"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                        />
+                    </div>
+                </div>
+
                 <div className="card border-0 border-bottom mb-3" >
                     <div className="row g-0">
                         <div className="col-md-2 mb-3">

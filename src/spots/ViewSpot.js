@@ -403,9 +403,11 @@ export default function ViewSpot() {
                     </Modal>
 
                     <div className="col-md-5">
-                        <h5 className="pb-1 mb-4 text-black border-bottom d-flex justify-content-between align-items-center">
+                        <p
+                            className='text-start fw-light mt-1'
+                            style={{ lineHeight: '0.2' }}>Spotted by</p>
+                        <h5 className="pb-1 text-black border-bottom d-flex justify-content-between align-items-center">
                             <div className="d-flex align-items-center">
-                                <span className="me-2">Spotted by</span>
                                 <Link
                                     to={`/users/${spot.user?.id}`}
                                     className="d-flex align-items-center text-decoration-none text-black"
@@ -559,31 +561,33 @@ export default function ViewSpot() {
                                                     </span>
 
                                                     <p className="mb-0">{comment.content}</p>
+                                                    {user?.token ? (
 
-                                                    <div className="d-flex justify-content-between align-items-center">
-                                                        <button
-                                                            className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
-                                                            style={{
-                                                                fontSize: '12px',
-                                                                alignSelf: 'start',
-                                                            }}
-                                                            onClick={() => handleReplyClick(comment.id)}
-                                                        >
-                                                            {replyingTo === comment.id ? 'Cancel' : 'Reply'}
-                                                        </button>
-                                                        {comment?.user?.username === user?.username && (
+                                                        <div className="d-flex justify-content-between align-items-center">
                                                             <button
-                                                                className="btn btn-sm btn-link text-muted p-0"
+                                                                className="btn btn-sm btn-link text-muted p-0 mt-1 text-decoration-none"
                                                                 style={{
                                                                     fontSize: '12px',
                                                                     alignSelf: 'start',
                                                                 }}
-                                                                onClick={() => handleDeleteComment(comment.id)}
+                                                                onClick={() => handleReplyClick(comment.id)}
                                                             >
-                                                                <i className="bi bi-trash"></i>
+                                                                {replyingTo === comment.id ? 'Cancel' : 'Reply'}
                                                             </button>
-                                                        )}
-                                                    </div>
+                                                            {comment?.user?.username === user?.username && (
+                                                                <button
+                                                                    className="btn btn-sm btn-link text-muted p-0"
+                                                                    style={{
+                                                                        fontSize: '12px',
+                                                                        alignSelf: 'start',
+                                                                    }}
+                                                                    onClick={() => handleDeleteComment(comment.id)}
+                                                                >
+                                                                    <i className="bi bi-trash"></i>
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    ) : null}
 
                                                     {replyingTo === comment.id && (
                                                         <div className="mt-2">
@@ -594,12 +598,14 @@ export default function ViewSpot() {
                                                                 onChange={(e) => setReplyContent(e.target.value)}
                                                                 placeholder="Write your reply..."
                                                             ></textarea>
+
                                                             <button
                                                                 className="btn btn-outline-secondary btn-sm mt-2"
                                                                 onClick={() => handleAddReply(comment.id)}
                                                             >
                                                                 Reply
                                                             </button>
+
                                                         </div>
                                                     )}
 
@@ -661,7 +667,7 @@ export default function ViewSpot() {
                                                                             </span>
                                                                             <p className="mb-0">{reply.content}</p>
                                                                             <div className="d-flex justify-content-between align-items-center">
-                                                                                {reply.user.username === user.username && (
+                                                                                {reply.user?.username === user?.username && (
                                                                                     <button
                                                                                         className="btn btn-sm btn-link text-muted p-0"
                                                                                         style={{

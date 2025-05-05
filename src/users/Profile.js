@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -41,7 +41,7 @@ const Profile = () => {
         spots: 0,
         comments: 0,
     });
-    
+
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -527,8 +527,21 @@ const Profile = () => {
 
                     <div className="col text-start">
                         <h3>Rating: {currentUser.rating} pts</h3>
-                        <h5>Leaderboard position: {currentUser.ranking}</h5>
-                        <h5>Statistics</h5>
+                        <h5>
+                            <Link to='/profile/leaderboard'
+                                className='text-decoration-none'
+                            >
+                                Leaderboard
+                            </Link> position: {currentUser.ranking}
+                        </h5>
+                        <h5>
+                            <Link
+                                to='/statistics'
+                                className='text-decoration-none'
+                            >
+                                Statistics
+                            </Link>
+                        </h5>
                         <p>Spots: {stats.spots}</p>
                         <p>Comments: {stats.comments}</p>
                         <p>Likes: {stats.likes}</p>
