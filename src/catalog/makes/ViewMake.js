@@ -88,7 +88,7 @@ export default function ViewMake() {
 
     const fetchSpots = async () => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/makeSpots?page=${page}&size=12`);
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/makeSpots?page=${page}&size=10`);
             setSpots((prevSpots) => {
                 const newSpots = (result.data?.content ?? []).filter(
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
@@ -200,7 +200,7 @@ export default function ViewMake() {
                                                 <li className="list-group-item border-0" key={model.id}>
                                                     <a href={`/catalog/${make}/${model.name}`} className="text-decoration-none">
                                                         <p>
-                                                            {model.name}
+                                                            {model.name} {model.spotsCount > 0 && ` (${model.spotsCount})`}
                                                         </p>
                                                     </a>
                                                 </li>
