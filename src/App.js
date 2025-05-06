@@ -93,9 +93,10 @@ import Fuels from './administration/fuels/Fuels';
 
 import AddSpot from './spots/AddSpot';
 import EditSpot from './spots/EditSpot';
-import Spots from './spots/Spots';
+import Spots from './spots/MySpotsOld';
 import ViewSpot from './spots/ViewSpot';
 import MySpots from './spots/MySpots';
+import Unidentified from './spots/Unidentified';
 
 import Autosport from './autosport/Autosport';
 import BucketAvailabilityChecker from './administration/BucketAvailabilityChecker';
@@ -112,6 +113,7 @@ import UserPage from './users/UserPage'
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Leaderboard from './users/Leaderboard';
 import Statistics from './pages/Statistics';
+import MySpotsOld from './spots/MySpotsOld';
 
 //carspotting, car spotting, car spots, car spot, car spotter, car spotters, car spotting app, car spotting website, car spotting platform, car spotting social network, car spotting social media, car spotting community, car spotting enthusiasts, car spotting fans, car spotting hobby, car spotting passion, car spotting experience, car spotting journey, car spotting adventure, car spotting fun, car spotting excitement, car spotting thrill, car spotting excitement, car spotting joy, car spotting happiness, car spotting love, car spotting like, car spotting share, car spotting comment, car spotting follow, car spotting subscribe, car spotting notification, car spotting feed, car spotting profile, car spotting account, car spotting settings, car spotting privacy, car spotting terms, car spotting conditions, car spotting policy, car spotting rules, car spotting guidelines, car spotting features, car spotting functionality, car spotting design, car spotting layout, car spotting structure, car spotting navigation, car spotting user experience, car spotting user interface, car spotting user journey, car spotting user flow, car spotting user actions, car spotting user interactions, car spotting user engagement, car spotting user retention, car spotting user satisfaction, car spotting user feedback, car spotting user reviews, car spotting user ratings, car spotting user testimonials, car spotting user stories, car spotting user scenarios, car spotting user personas, car spotting user roles, car spotting user permissions, car spotting user roles, car spotting user types, car spotting user categories, car spotting user segments, car spotting user demographics, car spotting user psychographics, car spotting user behavior, car spotting user preferences, car spotting user needs, car spotting user goals, car spotting user tasks, car spotting user challenges, car spotting user problems, car spotting user issues, car spotting user bugs, car spotting user errors, car spotting user mistakes, car spotting user failures, car spotting user successes, car spotting user achievements, car spotting user rewards, car spotting user benefits, car spotting user values, car spotting user principles, car spotting user ethics, car spotting user morals, car spotting user standards, car spotting user requirements, car spotting user expectations, car spotting user assumptions, car spotting user constraints, car spotting user limitations, car spotting user restrictions, car spotting user guidelines, car spotting user policies, car spotting user rules, car spotting user regulations, car spotting user laws, car spotting user rights, car spotting user obligations, car spotting user responsibilities, car spotting user account, car spotting user profile, car spotting user settings, car spotting user privacy, car
 
@@ -245,9 +247,10 @@ function App() {
 
             <Route exact path='/spots/addSpot' element={<AddSpot />} />
             <Route exact path='/spots/editSpot/:id' element={<EditSpot />} />
-            <Route exact path='/spots' element={<Spots />} />
+            <Route exact path='/myspots' element={<MySpots />} />
             <Route exact path='/spots/:id' element={<ViewSpot />} />
-            <Route exact path='/spots/mySpots' element={<MySpots />} />
+            <Route exact path='/spots/mySpots' element={<MySpotsOld />} />
+            <Route exact path='/unidentified' element={<Unidentified />} />
 
             <Route exact path='/autosport' element={<Autosport />} />
 

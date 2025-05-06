@@ -6,7 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import Masonry from 'react-masonry-css';
 import '../components/Masonry.css'
 
-export default function Spots() {
+export default function MySpotsOld() {
     const [spots, setSpots] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [spotsPerPage] = useState(20);
@@ -84,6 +84,9 @@ export default function Spots() {
                         <li className="breadcrumb-item">
                             <Link to="/" className="text-decoration-none">Home</Link>
                         </li>
+                        <li className="breadcrumb-item">
+                            <Link to="/spots" className="text-decoration-none">Spots</Link>
+                        </li>
                         <li className="breadcrumb-item active" aria-current="page">My spots</li>
                     </ol>
                 </nav>
@@ -142,13 +145,8 @@ export default function Spots() {
                                                     <span className="me-3">
                                                         {spot.likeCount}
                                                     </span>
-                                                    <Link
-                                                        to={`/spots/${spot.id}`}
-                                                        className='text-decoration-none text-dark'
-                                                    >
-                                                        <i className="bi bi-chat me-1"></i>
-                                                        <span>{spot.commentCount}</span>
-                                                    </Link>
+                                                    <i className="bi bi-chat me-1"></i>
+                                                    <span>{spot.commentCount}</span>
                                                 </div>
                                                 <span className="text-muted small">
                                                     {spot?.createdAt

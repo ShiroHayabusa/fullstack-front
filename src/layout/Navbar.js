@@ -71,9 +71,12 @@ const Navbar = () => {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         {user?.token ? (
                             <li className="nav-item">
-                                <Link className="nav-link text-white" to="/spots">My spots</Link>
+                                <Link className="nav-link text-white" to="/myspots">My spots</Link>
                             </li>
                         ) : null}
+                        <li className="nav-item">
+                            <Link className="nav-link text-white" to="/unidentified">Unidentified</Link>
+                        </li>
                         <li className="nav-item">
                             <Link className="nav-link text-white" to="/catalog">Catalog</Link>
                         </li>

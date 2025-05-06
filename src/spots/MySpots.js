@@ -1,15 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import Masonry from 'react-masonry-css';
 import '../components/Masonry.css'
+import { Tooltip } from "bootstrap";
 
-export default function Spots() {
+export default function MySpots() {
     const [spots, setSpots] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [spotsPerPage] = useState(20);
+    const tooltipRefs = useRef({});
     const { user } = useAuth();
     const navigate = useNavigate();
 
@@ -76,6 +78,27 @@ export default function Spots() {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    useEffect(() => {
+        Object.values(tooltipRefs.current).forEach((element) => {
+            if (element) {
+                const tooltip = new Tooltip(element, {
+                    trigger: "hover click",
+                    placement: "bottom",
+                });
+                setTimeout(() => {
+                    tooltip.dispose();
+                }, 2000);
+            }
+        });
+        return () => {
+            Object.values(tooltipRefs.current).forEach((element) => {
+                if (element && element._tooltip) {
+                    element._tooltip.dispose();
+                }
+            });
+        };
+    }, [spots]);
+
     return (
         <div>
             <div className="container">
@@ -83,9 +106,6 @@ export default function Spots() {
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item">
                             <Link to="/" className="text-decoration-none">Home</Link>
-                        </li>
-                        <li className="breadcrumb-item">
-                            <Link to="/spots" className="text-decoration-none">Spots</Link>
                         </li>
                         <li className="breadcrumb-item active" aria-current="page">My spots</li>
                     </ol>
@@ -133,6 +153,26 @@ export default function Spots() {
                                             )}
                                             <span className="text-white">{spot.user.username}</span>
                                         </Link>
+                                        {spot.trim && (
+                                            <div className="position-absolute end-0 top-0 m-2 d-flex align-items-center">
+                                                <i
+                                                    ref={(el) => (tooltipRefs.current[spot.id] = el)}
+                                                    className="bi bi-check-circle fs-5"
+                                                    style={{
+                                                        marginRight: "5px",
+                                                        marginTop: "5px",
+                                                        color: "#14c609",
+                                                        fontWeight: "bold",
+                                                        textShadow: "1px 1px 1px black",
+                                                        cursor: "pointer"
+                                                    }}
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="Identified"
+                                                    data-bs-trigger="hover click"
+                                                ></i>
+                                            </div>
+                                        )}
                                         <div className="card-footer">
                                             <div className="d-flex justify-content-between align-items-center">
                                                 <div className="d-flex align-items-center">
@@ -145,8 +185,13 @@ export default function Spots() {
                                                     <span className="me-3">
                                                         {spot.likeCount}
                                                     </span>
-                                                    <i className="bi bi-chat me-1"></i>
-                                                    <span>{spot.commentCount}</span>
+                                                    <Link
+                                                        to={`/spots/${spot.id}`}
+                                                        className='text-decoration-none text-dark'
+                                                    >
+                                                        <i className="bi bi-chat me-1"></i>
+                                                        <span>{spot.commentCount}</span>
+                                                    </Link>
                                                 </div>
                                                 <span className="text-muted small">
                                                     {spot?.createdAt
