@@ -2,26 +2,43 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext';
+import Masonry from 'react-masonry-css';
+import '../../components/Masonry.css'
 
 export default function ViewBody() {
+
+    const breakpointColumnsObj = {
+        default: 5,
+        1100: 4,
+        700: 3,
+        500: 2
+    };
 
     const [body, setBody] = useState({
         name: '',
         make: '',
         description: ''
     });
+    const [trims, setTrims] = useState([]);
 
     const { make, bodyId } = useParams();
     const { user } = useAuth();
 
     useEffect(() => {
-        loadBody()
+        loadBody();
+        loadTrims();
     }, []);
 
     const loadBody = async () => {
         const result = await axios.get(
             `${process.env.REACT_APP_API_URL}/api/bodies/${make}/${bodyId}`);
         setBody(result.data);
+    }
+
+    const loadTrims = async () => {
+        const result = await axios.get(
+            `${process.env.REACT_APP_API_URL}/api/bodies/${bodyId}/trims`);
+        setTrims(result.data);
     }
 
     return (
@@ -52,34 +69,30 @@ export default function ViewBody() {
                 </div>
 
                 <div className="row">
-                    <div className="col-lg-4 border">
-                        <div>
-                            Description
-                        </div>
-                    </div>
-                    <div className="col-lg-8">
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" href="#">Specs</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" aria-current="page" href="#">Photo</a>
+                    <div className="row row-cols-2 row-cols-md-5">
+                        <Masonry
+                            breakpointCols={breakpointColumnsObj}
+                            className="my-masonry-grid"
+                            columnClassName="my-masonry-grid_column"
+                        >
+                            {trims.map((trim) => (
 
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">Video</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link disabled">Spots</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="col-lg-4 border">
-
-                        <div className="mb-3">
-                            <label htmlFor="exampleFormControlTextarea1" className="form-label">Comments</label>
-                            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                        </div>
+                                <Link 
+                                className='text-decoration-none text-dark text-center mb-3'
+                                to={`/catalog/${trim.make.name}/${trim.model.name}/${trim.bodystyle.generation?.id}/${trim.bodystyle.id}/${trim.id}`} key={trim.id}>
+                                    <img
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${trim.spotUser}/${trim.spotId}/${trim.photoName}`}
+                                        className="img-fluid"
+                                        alt=''
+                                        onError={(e) => {
+                                            e.target.src = 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'; // Placeholder image
+                                        }}
+                                    />
+                                    <div className="fw-bold">{trim.years}</div>
+                                    <div>{trim.make.name} {trim.model.name} {trim.name}</div>
+                                </Link>
+                            ))}
+                        </Masonry>
                     </div>
                 </div>
             </div>

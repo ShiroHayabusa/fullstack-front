@@ -18,7 +18,7 @@ export default function Admin() {
                         <Link className="list-group-item text-start" to='/bodies'>Bodies</Link>
                         <Link className="list-group-item text-start" to='/admin/bodytypes'>Bodytypes</Link>
                         <Link className="list-group-item text-start" to='/admin/titles'>Titles</Link>
-                        <Link className="list-group-item text-start" to='/admin/engines'>Engines</Link>
+                        <Link className="list-group-item text-start" to='/engines'>Engines</Link>
                         <Link className="list-group-item text-start" to='/admin/engineTypes'>Engine types</Link>
                         <Link className="list-group-item text-start" to='/admin/transmissions'>Transmissions</Link>
                         <Link className="list-group-item text-start" to='/admin/transmissionTypes'>Transmission types</Link>
