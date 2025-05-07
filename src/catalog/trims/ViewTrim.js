@@ -353,23 +353,35 @@ export default function ViewTrim() {
                 </div>
 
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-
                     <div className="col">
-
                         <div>
-                            {spotPhotos.map((photo, index) => (
+                            {spotPhotos.length > 0 && (
                                 <img
-                                    key={index}
-                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${photo.photoPath}`}
-                                    alt={`Photo ${index}`}
-                                    className="img-fluid mb-2"
-                                    onClick={() => handleOpenModal(index)}
-                                    style={{ cursor: "pointer" }}
+                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[0].photoPath}`}
+                                    alt="Main"
+                                    className="img-fluid mb-3"
+                                    onClick={() => handleOpenModal(0)}
+                                    style={{ cursor: "pointer", width: "100%" }}
                                 />
-                            ))}
+                            )}
+                            <div style={{ columnCount: 3, columnGap: '0.5rem' }}>
+                                {spotPhotos.slice(1).map((photo, index) => (
+                                    <img
+                                        key={index + 1}
+                                        src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${photo.photoPath}`}
+                                        alt={`Photo ${index + 1}`}
+                                        onClick={() => handleOpenModal(index + 1)}
+                                        style={{
+                                            width: '100%',
+                                            height: 'auto',
+                                            marginBottom: '0.5rem',
+                                            cursor: 'pointer',
+                                            display: 'block',
+                                        }}
+                                    />
+                                ))}
+                            </div>
                         </div>
-
-
                         <Modal
                             show={showModal}
                             onHide={handleCloseModal}
@@ -413,13 +425,18 @@ export default function ViewTrim() {
                     <div className="col">
                         <ul className="list-group list-group-flush">
 
-                            <li className="list-group-item text-start">
-                                Years of production: {trim.years}
-                            </li>
+                            {trim.years && (
+                                <li className="list-group-item text-start">
+                                    Years of production: {trim.years}
+                                </li>
+                            )}
 
-                            <li className="list-group-item text-start">
-                                Market: {trim.market?.name}
-                            </li>
+                            {trim.market && (
+                                <li className="list-group-item text-start">
+                                    Market: {trim.market?.name}
+                                </li>
+                            )}
+
                             {trim.productionCount > 0 && (
                                 <li className="list-group-item text-start">
 
@@ -440,25 +457,33 @@ export default function ViewTrim() {
                                 {trim.description}
                             </li>
 
-                            <li className="list-group-item text-start">
-                                Engine: <Link to={`/engines/${make}/${trim.engine?.id}`} className="text-decoration-none">{trim.engine?.name}</Link>
-                                {trim.engine && (
-                                    <p>{trim.engine?.displacement} l, {trim.engine?.power} hp, {trim.engine?.torque} Nm</p>
-                                )}
-                            </li>
+                            {trim.engine && (
+                                <li className="list-group-item text-start">
+                                    Engine: <Link to={`/engines/${make}/${trim.engine?.id}`} className="text-decoration-none">{trim.engine?.name}</Link>
+                                    {trim.engine && (
+                                        <p>{trim.engine?.displacement} l, {trim.engine?.power} hp, {trim.engine?.torque} Nm</p>
+                                    )}
+                                </li>
+                            )}
 
-                            <li className="list-group-item text-start">
-                                Transmission: <Link to={`/transmissions/${make}/${trim.transmission?.id}`} className="text-decoration-none">{trim.transmission?.name}</Link>
-                                <p>{trim.transmission?.transmissionType?.name}</p>
-                            </li>
+                            {trim.transmission && (
+                                <li className="list-group-item text-start">
+                                    Transmission: <Link to={`/transmissions/${make}/${trim.transmission?.id}`} className="text-decoration-none">{trim.transmission?.name}</Link>
+                                    <p>{trim.transmission?.transmissionType?.name}</p>
+                                </li>
+                            )}
 
-                            <li className="list-group-item text-start">
-                                Body: <Link to={`/bodies/${make}/${trim.body?.id}`} className="text-decoration-none">{trim.body?.name}</Link>
-                            </li>
+                            {trim.body && (
+                                <li className="list-group-item text-start">
+                                    Body: <Link to={`/bodies/${make}/${trim.body?.id}`} className="text-decoration-none">{trim.body?.name}</Link>
+                                </li>
+                            )}
 
-                            <li className="list-group-item text-start">
-                                Drivetrain: {trim.drivetrain?.name}
-                            </li>
+                            {trim.drivetrain && (
+                                <li className="list-group-item text-start">
+                                    Drivetrain: {trim.drivetrain?.name}
+                                </li>
+                            )}
 
                         </ul>
 

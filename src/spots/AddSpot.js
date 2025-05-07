@@ -499,7 +499,7 @@ export default function AddSpot() {
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Spot added successfully");
-                navigate(`/spots`);
+                navigate(`/`);
             }
         } catch (error) {
             console.error("Error adding Spot:", error);

@@ -182,7 +182,17 @@ export default function ViewMake() {
                         </div>
                         <div className="col-md-5">
                             <div className="card-body">
-                                <h3 className="card-title text-start">{make}</h3>
+                                <h3 className="card-title text-start">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        {make}
+                                        <img
+                                            src={`https://newloripinbucket.s3.amazonaws.com/image/countries/${makeDetails?.country?.name}/${makeDetails?.country?.flag.name}`}
+                                            style={{ width: '40px', height: 'auto' }}
+                                            alt={`${makeDetails?.country?.name} flag`}
+                                            className='img-fluid'
+                                        />
+                                    </div>
+                                </h3>
                                 <p className="card-text text-start">{makeDetails?.description}</p>
                             </div>
                         </div>

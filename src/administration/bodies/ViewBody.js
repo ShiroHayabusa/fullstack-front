@@ -30,7 +30,7 @@ export default function ViewBody() {
             {user?.roles.includes("ROLE_ADMIN") && (
                 <ul className="nav">
                     <li className="nav-item">
-                        <Link className="nav-link active" aria-current="page" to={`/bodies/${make}/${bodyId}/editBody`}
+                        <Link className="nav-link active" aria-current="page" to={`/admin/bodies/${make}/${bodyId}/editBody`}
                         >Edit body</Link>
                     </li>
                 </ul>

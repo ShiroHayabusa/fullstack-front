@@ -9,6 +9,7 @@ export default function EditBody() {
     let navigate = useNavigate();
 
     const [body, setBody] = useState({
+        id: '',
         name: "",
         description: ""
     });
@@ -19,12 +20,13 @@ export default function EditBody() {
     useEffect(() => {
         const fetchBody = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/bodies/${make}/${bodyId}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}/${bodyId}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 });
                 setBody({
+                    id: response.data.id,
                     name: response.data.name,
                     description: response.data.description
                 });
@@ -61,7 +63,7 @@ export default function EditBody() {
             if (response.status === 200) {
                 setSuccess('Body updated successfully');
                 setError('');
-                navigate(`/admin/bodies/${make}/${bodyId}`);
+                navigate(`/bodies/${make}/${bodyId}`);
             }
         } catch (error) {
             setError('Error updating body: ' + error.message);
@@ -74,8 +76,10 @@ export default function EditBody() {
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className='text-decoration-none'>Home</a></li>
                     <li className="breadcrumb-item"><a href='/admin' className='text-decoration-none'>Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/admin/bodies' className='text-decoration-none'>Bodies</a></li>
-                    <li className="breadcrumb-item active" aria-current="page">Add body</li>
+                    <li className="breadcrumb-item"><a href='/bodies' className='text-decoration-none'>Bodies</a></li>
+                    <li className="breadcrumb-item"><a href={`/bodies/${make}`} className='text-decoration-none'>{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/bodies/${make}/${body.id}`} className='text-decoration-none'>{body.name}</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Edit body</li>
                 </ol>
             </nav>
             <div className='row'>
