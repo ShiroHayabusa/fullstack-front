@@ -80,7 +80,7 @@ export default function ViewBodystyle() {
         if (productionCount >= 501 && productionCount <= 1000) return { label: "Super Rare", color: "bg-secondary text-white" };
         if (productionCount >= 1001 && productionCount <= 5000) return { label: "Rare", color: "bg-dark text-white" };
         if (productionCount >= 5001 && productionCount <= 20000) return { label: "Semi-Mass Produced", color: "bg-light text-dark border" };
-        if (productionCount >= 20001 && productionCount <= 1000000) return { label: "Mass Produced", color: "bg-light text-dark border" };
+        if (productionCount >= 20001 && productionCount <= 100000) return { label: "Mass Produced", color: "bg-light text-dark border" };
         return { label: "Common", color: "bg-light text-dark border" }; // Default
     };
 

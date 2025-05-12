@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function VideoList({ videos }) {
+export default function VideoList({ videos, onDelete, user }) {
     return (
         <div className="row">
             {videos.map((video) => (
@@ -12,6 +12,20 @@ export default function VideoList({ videos }) {
                             allowFullScreen
                         />
                     </div>
+                    {user && video.username === user.username && onDelete && (
+                        <div className="text-end mt-1">
+                            <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() => {
+                                    if (window.confirm('Are you sure you want to delete this video?')) {
+                                        onDelete(video.id);
+                                    }
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

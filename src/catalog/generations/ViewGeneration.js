@@ -93,7 +93,7 @@ export default function ViewGeneration() {
                 const videoDTO = {
                     youtubeId: id,
                     generationId: generationId,
-                    isCommercial: isCommercial
+                    isCommercial: isCommercial,         
                 };
 
                 const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/addVideo`, videoDTO, {
@@ -120,6 +120,7 @@ export default function ViewGeneration() {
         try {
             const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/videos/generation/${generationId}`);
             setVideos(result.data);
+            console.log(user);
         } catch (error) {
             console.error('Failed to load videos:', error);
         }
@@ -132,26 +133,19 @@ export default function ViewGeneration() {
         return match ? match[1] : null;
     };
 
-
-    useEffect(() => {
-        const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
-        const handleTabChange = (e) => {
-            const targetId = e.target.getAttribute('data-bs-target');
-            if (targetId === '#comm-tab-pane') {
-                setActiveTab('commercials');
-            } else if (targetId === '#video-tab-pane') {
-                setActiveTab('videos');
-            } else if (targetId === '#spots-tab-pane') {
-                setActiveTab('spots');
-            }
-        };
-
-        tabElements.forEach(el => el.addEventListener('shown.bs.tab', handleTabChange));
-
-        return () => {
-            tabElements.forEach(el => el.removeEventListener('shown.bs.tab', handleTabChange));
-        };
-    }, []);
+    const handleDeleteVideo = async (videoId) => {
+        try {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/videos/${videoId}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            });
+            setVideos(prev => prev.filter(video => video.id !== videoId));
+        } catch (error) {
+            console.error('Failed to delete video:', error);
+            alert('Error deleting video');
+        }
+    };
 
     return (
         <div>
@@ -346,7 +340,11 @@ export default function ViewGeneration() {
                                 </button>
                             </div>
                         )}
-                        <VideoList videos={videos.filter(video => video.isCommercial)} />
+                        <VideoList
+                            videos={videos.filter(video => video.isCommercial)}
+                            onDelete={handleDeleteVideo}
+                            user={user}
+                        />
                     </div>
                     <div
                         class="tab-pane fade"
@@ -383,7 +381,10 @@ export default function ViewGeneration() {
                                 </button>
                             </div>
                         )}
-                        <VideoList videos={videos.filter(video => !video.isCommercial)} />
+                        <VideoList videos={videos.filter(video => !video.isCommercial)}
+                            onDelete={handleDeleteVideo}
+                            user={user}
+                        />
                     </div>
 
                 </div>

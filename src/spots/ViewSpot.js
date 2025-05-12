@@ -146,12 +146,12 @@ export default function ViewSpot() {
                     },
                 });
                 alert('Spot deleted successfully');
-                window.location.href = '/spots';
+                window.location.href = '/mySpots';
             } catch (error) {
                 console.error('Failed to delete spot:', error);
                 alert('An error occurred while deleting the spot.');
             }
-        }
+        }   
     };
 
     const handleAddComment = async () => {

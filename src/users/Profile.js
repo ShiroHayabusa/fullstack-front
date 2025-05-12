@@ -336,7 +336,7 @@ const Profile = () => {
                 {currentUser?.username}
             </div>
             <div>
-                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col mb-4">
                         {currentUser.avatarUrl ? (
                             <img
@@ -526,8 +526,14 @@ const Profile = () => {
                     </div>
 
                     <div className="col text-start">
-                        <h3>Rating: {currentUser.rating} pts</h3>
-                        <h5>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <h3>Rating: {currentUser.rating} pts</h3>
+                            <Link to="/users/rating"
+                                className='text-decoration-none'>
+                                Rating calculation
+                            </Link>
+                        </div>
+                        <h5 className='mt-3'>
                             <Link to='/profile/leaderboard'
                                 className='text-decoration-none'
                             >
