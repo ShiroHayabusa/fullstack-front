@@ -1,14 +1,13 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import '../../components/ColumnContainer.css'
+import '../../components/ColumnContainer.css';
 import Grid from '../../components/Grid';
 import Masonry from 'react-masonry-css';
-import '../../components/Masonry.css'
+import '../../components/Masonry.css';
 
 export default function ViewMake() {
-
     const [models, setModels] = useState([]);
     const [makeDetails, setMakeDetails] = useState(null);
     const { make } = useParams();
@@ -20,7 +19,8 @@ export default function ViewMake() {
     const [spotsWithoutPage, setSpotsWithoutPage] = useState([]);
     const [totalCells, setTotalCells] = useState(null);
     const [filteredModels, setFilteredModels] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
+    const [initialLoadDone, setInitialLoadDone] = useState(false);
 
     const breakpointColumnsObj = {
         default: 5,
@@ -30,61 +30,49 @@ export default function ViewMake() {
     };
 
     useEffect(() => {
-        loadModels();
-        loadMakeDetails();
-        fetchSpots();
-    }, []);
+        setSpots([]);
+        setPage(0);
+        setHasMore(true);
+        setInitialLoadDone(false);
+        loadMakeData();
+    }, [make]);
 
+    useEffect(() => {
+        if (initialLoadDone) {
+            fetchSpots();
+        }
+    }, [page, initialLoadDone]);
 
-    const loadModels = async () => {
-        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}`);
-        setModels(result.data);
-        setFilteredModels(result.data);
-    }
-
-    const loadMakeDetails = async () => {
+    const loadMakeData = async () => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/editMake/${make}`);
-            setMakeDetails(result.data);
+            const [modelsRes, makeDetailsRes] = await Promise.all([
+                axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}`),
+                axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/editMake/${make}`)
+            ]);
+            setModels(modelsRes.data);
+            setFilteredModels(modelsRes.data);
+            setMakeDetails(makeDetailsRes.data);
+
+            if (user?.token) {
+                const [trimsRes, spotsRes] = await Promise.all([
+                    axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/trims`, {
+                        headers: { Authorization: `Bearer ${user.token}` },
+                    }),
+                    axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${make}/user`, {
+                        headers: { Authorization: `Bearer ${user.token}` },
+                    })
+                ]);
+                setTrims(trimsRes.data);
+                setTotalCells(trimsRes.data.length);
+                setSpotsWithoutPage(spotsRes.data);
+            }
+
+            setInitialLoadDone(true);
+
         } catch (error) {
-            console.error('Error loading make details:', error);
+            console.error('Ошибка загрузки данных марки:', error);
         }
     };
-
-    const fetchTrims = async () => {
-        try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/trims`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
-            setTrims(result.data);
-            setTotalCells(result.data.length);
-        } catch (error) {
-            console.error("Error fetching trims", error);
-        }
-    };
-
-    const fetchSpotsWithoutPage = async () => {
-        try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${make}/user`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
-            setSpotsWithoutPage(result.data);
-        } catch (error) {
-            console.error("Error fetching spots", error);
-        }
-    };
-
-    const matchingCount = trims.filter(trim =>
-        spotsWithoutPage.some(spot =>
-            spot.trim && spot.trim.id === trim.id
-        )
-    ).length;
-
-    const progressPercent = totalCells > 0 ? Math.round((matchingCount / totalCells) * 100) : 0;
 
     const fetchSpots = async () => {
         try {
@@ -97,21 +85,13 @@ export default function ViewMake() {
             });
             setHasMore(result.data.totalPages > page + 1);
         } catch (error) {
-            console.error("Failed to fetch spots", error);
+            console.error("Ошибка загрузки спотов:", error);
         }
     };
 
     const loadMoreSpots = () => {
         setPage((prevPage) => prevPage + 1);
     };
-
-    useEffect(() => {
-        fetchTrims();
-        fetchSpotsWithoutPage();
-        if (page > 0) {
-            fetchSpots();
-        }
-    }, [page]);
 
     const handleSearchChange = (event) => {
         const query = event.target.value.toLowerCase();
@@ -135,19 +115,23 @@ export default function ViewMake() {
 
     const sortedKeys = Object.keys(groupedList).sort();
 
+    const matchingCount = trims.filter(trim =>
+        spotsWithoutPage.some(spot =>
+            spot.trim && spot.trim.id === trim.id
+        )
+    ).length;
+
+    const progressPercent = totalCells > 0 ? Math.round((matchingCount / totalCells) * 100) : 0;
+
     const makePhotoName = makeDetails && makeDetails.photo ? makeDetails.photo.name : 'placeholder.jpg';
     const photoURL = `https://newloripinbucket.s3.amazonaws.com/image/catalog/${make}/${makePhotoName}`;
-
-
 
     return (
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
                 <ul className="nav">
-                    <Link className="nav-link active" aria-current="page" to={`/catalog/${make}/addModel`}
-                    >Add Model</Link>
-                    <Link className="nav-link active" aria-current="page" to={`/catalog/editMake/${make}`}
-                    >Edit make</Link>
+                    <Link className="nav-link active" to={`/catalog/${make}/addModel`}>Add Model</Link>
+                    <Link className="nav-link active" to={`/catalog/editMake/${make}`}>Edit make</Link>
                 </ul>
             )}
             <div className='container'>
@@ -170,7 +154,7 @@ export default function ViewMake() {
                     </div>
                 </div>
 
-                <div className="card border-0 border-bottom mb-3" >
+                <div className="card border-0 border-bottom mb-3">
                     <div className="row g-0">
                         <div className="col-md-2 mb-3">
                             <img
@@ -185,12 +169,14 @@ export default function ViewMake() {
                                 <h3 className="card-title text-start">
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         {make}
-                                        <img
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/countries/${makeDetails?.country?.name}/${makeDetails?.country?.flag.name}`}
-                                            style={{ width: '40px', height: 'auto' }}
-                                            alt={`${makeDetails?.country?.name} flag`}
-                                            className='img-fluid'
-                                        />
+                                        {makeDetails?.country?.flag?.name && (
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/countries/${makeDetails?.country?.name}/${makeDetails?.country?.flag?.name}`}
+                                                style={{ width: '40px', height: 'auto' }}
+                                                alt={`${makeDetails?.country?.name} flag`}
+                                                className='img-fluid'
+                                            />
+                                        )}
                                     </div>
                                 </h3>
                                 <p className="card-text text-start">{makeDetails?.description}</p>
@@ -198,6 +184,7 @@ export default function ViewMake() {
                         </div>
                     </div>
                 </div>
+
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className='col-md-8'>
                         <div className='py-4'>
@@ -222,7 +209,7 @@ export default function ViewMake() {
                         </div>
                     </div>
                     <div className='col-md-4 mb-5'>
-                        {user?.token ? (
+                        {user?.token && (
                             <div className="mb-3 text-start">
                                 <h6>Spots progress:</h6>
                                 <div className="progress mb-2">
@@ -237,15 +224,15 @@ export default function ViewMake() {
                                         {progressPercent}%
                                     </div>
                                 </div>
-
                             </div>
-                        ) : null}
+                        )}
                         <Grid
                             make={make}
                             user={user}
                             trims={trims}
                             spotsWithouPage={spotsWithoutPage}
-                            totalCells={totalCells} />
+                            totalCells={totalCells}
+                        />
                     </div>
                 </div>
 
@@ -262,7 +249,7 @@ export default function ViewMake() {
                             <Link to={`/spots/${spot.id}`} key={spot.id}>
                                 <img
                                     src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos?.find(photo => photo.isMain)?.name}`}
-                                    alt={spot.photos?.find(photo => photo.isMain).name}
+                                    alt={spot.photos?.find(photo => photo.isMain)?.name}
                                     className="img-fluid mb-2"
                                 />
                             </Link>
@@ -283,8 +270,7 @@ export default function ViewMake() {
                         </span>
                     </div>
                 )}
-
             </div>
         </div>
-    )
+    );
 }

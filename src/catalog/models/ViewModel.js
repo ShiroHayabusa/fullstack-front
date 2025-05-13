@@ -1,12 +1,11 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Masonry from 'react-masonry-css';
-import '../../components/Masonry.css'
+import '../../components/Masonry.css';
 
 export default function ViewModel() {
-
     const [generations, setGenerations] = useState([]);
     const [modelDetails, setModelDetails] = useState(null);
     const { make, model } = useParams();
@@ -19,7 +18,26 @@ export default function ViewModel() {
         default: 5,
         1100: 4,
         700: 3,
-        500: 2
+        500: 2,
+    };
+
+    useEffect(() => {
+        setSpots([]);
+        setPage(0);
+        setHasMore(true);
+
+        loadGenerations();
+        loadModelDetails();
+        fetchSpots(0);
+    }, [make, model]);
+
+    const loadGenerations = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setGenerations(result.data);
+        } catch (error) {
+            console.error("Error loading generations:", error);
+        }
     };
 
     const loadModelDetails = async () => {
@@ -31,52 +49,46 @@ export default function ViewModel() {
         }
     };
 
-    useEffect(() => {
-        loadGenerations();
-        fetchSpots();
-        loadModelDetails();
-    }, []);
-
-    const loadGenerations = async () => {
-        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/` + make + '/' + model);
-        setGenerations(result.data);
-    }
-
-    const fetchSpots = async () => {
+    const fetchSpots = async (pageToFetch = 0) => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/modelSpots?page=${page}&size=10`);
+            const result = await axios.get(
+                `${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/modelSpots?page=${pageToFetch}&size=10`
+            );
+            const newSpots = result.data.content;
+
             setSpots((prevSpots) => {
-                const newSpots = result.data.content.filter(
+                if (pageToFetch === 0) return newSpots;
+                const filtered = newSpots.filter(
                     (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
                 );
-                return [...prevSpots, ...newSpots];
+                return [...prevSpots, ...filtered];
             });
-            setHasMore(result.data.totalPages > page + 1);
+
+            setHasMore(result.data.totalPages > pageToFetch + 1);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }
     };
 
     const loadMoreSpots = () => {
-        setPage((prevPage) => prevPage + 1);
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchSpots(nextPage);
     };
-
-    useEffect(() => {
-        if (page > 0) {
-            fetchSpots();
-        }
-    }, [page]);
 
     return (
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
                 <ul className="nav">
-                    <Link className="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/addGeneration`}
-                    >Add Generation</Link>
-                    <Link className="nav-link active" aria-current="page" to={`/catalog/${make}/${model}/editModel`}
-                    >Edit model</Link>
+                    <Link className="nav-link active" to={`/catalog/${make}/${model}/addGeneration`}>
+                        Add Generation
+                    </Link>
+                    <Link className="nav-link active" to={`/catalog/${make}/${model}/editModel`}>
+                        Edit model
+                    </Link>
                 </ul>
             )}
+
             <div className='container'>
                 <nav aria-label="breadcrumb" className='mt-3'>
                     <ol className="breadcrumb">
@@ -86,6 +98,7 @@ export default function ViewModel() {
                         <li className="breadcrumb-item active" aria-current="page">{model}</li>
                     </ol>
                 </nav>
+
                 <div className="row row-cols-1 row-cols-md-3 mb-3 border-bottom border-muted">
                     <div className="col-md-3 mb-3 text-start">
                         <h5>{make} {model}</h5>
@@ -95,6 +108,7 @@ export default function ViewModel() {
                         <p className="text-start">{modelDetails?.description}</p>
                     </div>
                 </div>
+
                 <div className="row row-cols-1 row-cols-md-3 g-3">
                     {generations.map((generation) => (
                         <div className="col" key={generation.id}>
@@ -113,7 +127,7 @@ export default function ViewModel() {
                                         <h5 className="card-title">{generation.name}</h5>
                                         <p className="card-text">{generation.years}</p>
                                     </div>
-                                    {generation.bodies && generation.bodies.length > 0 && (
+                                    {generation.bodies?.length > 0 && (
                                         <div className='card-footer'>
                                             {generation.bodies.map((body, index) => (
                                                 <span key={body.id}>
@@ -125,13 +139,13 @@ export default function ViewModel() {
                                 </div>
                             </Link>
                         </div>
-
-                    ))
-                    }
+                    ))}
                 </div>
+
                 <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-muted text-start">
                     Spots with {make} {model}
                 </div>
+
                 <div className="row row-cols-2 row-cols-md-5">
                     <Masonry
                         breakpointCols={breakpointColumnsObj}
@@ -142,22 +156,19 @@ export default function ViewModel() {
                             <Link to={`/spots/${spot.id}`} key={spot.id}>
                                 <img
                                     src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos?.find(photo => photo.isMain)?.name}`}
-                                    alt={spot.photos?.find(photo => photo.isMain).name}
+                                    alt={spot.photos?.find(photo => photo.isMain)?.name}
                                     className="img-fluid mb-2"
                                 />
                             </Link>
                         ))}
                     </Masonry>
                 </div>
+
                 {hasMore && (
                     <div className="text-center mt-3">
                         <span
                             onClick={loadMoreSpots}
-                            style={{
-                                cursor: 'pointer',
-                                color: 'blue',
-                                fontSize: '16px',
-                            }}
+                            style={{ cursor: 'pointer', color: 'blue', fontSize: '16px' }}
                         >
                             Load More
                         </span>
@@ -165,5 +176,5 @@ export default function ViewModel() {
                 )}
             </div>
         </div>
-    )
+    );
 }

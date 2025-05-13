@@ -151,7 +151,7 @@ export default function ViewSpot() {
                 console.error('Failed to delete spot:', error);
                 alert('An error occurred while deleting the spot.');
             }
-        }   
+        }
     };
 
     const handleAddComment = async () => {
@@ -287,6 +287,34 @@ export default function ViewSpot() {
             alert("Failed to delete reply. Please try again.");
         }
     };
+
+    const renderCaptionWithTags = (caption) => {
+        const tagRegex = /#(\w+)/g;
+        const parts = [];
+        let lastIndex = 0;
+        let match;
+
+        while ((match = tagRegex.exec(caption)) !== null) {
+            if (match.index > lastIndex) {
+                parts.push(caption.substring(lastIndex, match.index));
+            }
+            const tag = match[1];
+            parts.push(
+                <a key={match.index} href={`/tags/${tag}/spots`} className="text-blue-500 text-decoration-none">
+                    #{tag}
+                </a>
+            );
+
+            lastIndex = tagRegex.lastIndex;
+        }
+
+        if (lastIndex < caption.length) {
+            parts.push(caption.substring(lastIndex));
+        }
+
+        return parts;
+    };
+
 
     return (
         <div>
@@ -444,7 +472,7 @@ export default function ViewSpot() {
                             </span>
                         </h5>
 
-                        <p className='text-start'>{spot.caption}</p>
+                        <p className="text-start">{renderCaptionWithTags(spot.caption)}</p>
                         <div className="text-start">
                             <table className="table table-borderless">
                                 <tbody>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ import EXIF from 'exif-js';
 export default function AddSpot() {
 
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [spot, setSpot] = useState({
         city: '',
@@ -17,6 +18,13 @@ export default function AddSpot() {
         longitude: null,
         caption: ""
     });
+
+    const [suggestions, setSuggestions] = useState([]);
+    const [suggestionIndex, setSuggestionIndex] = useState(-1);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [query, setQuery] = useState('');
+    const textareaRef = useRef(null);
+
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
@@ -45,17 +53,94 @@ export default function AddSpot() {
 
     const [locationInfo, setLocationInfo] = useState({ city: '', country: '' });
     const [isLoading, setIsLoading] = useState(false);
-
-    const { caption } = spot;
-
-    const { user } = useAuth();
-
-    const [selectedCountry, setSelectedCountry] = useState(null);
-    const [cityOptions, setCityOptions] = useState([]);
     const [isExifProcessing, setIsExifProcessing] = useState(false);
+    const [cityOptions, setCityOptions] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState(null);
 
-    const onChange = (e) => {
-        setSpot({ ...spot, [e.target.name]: e.target.value });
+    const handleCaptionChange = (e) => {
+        const newValue = e.target.value;
+        setSpot({ ...spot, caption: newValue });
+
+        const lastHashIndex = newValue.lastIndexOf('#');
+        if (lastHashIndex !== -1) {
+            const queryText = newValue.slice(lastHashIndex + 1);
+            if (!queryText.includes(' ')) {
+                setQuery(queryText);
+                fetchSuggestions(queryText);
+                setShowSuggestions(true);
+            } else {
+                setShowSuggestions(false);
+                setSuggestions([]);
+                setQuery('');
+            }
+        } else {
+            setShowSuggestions(false);
+            setSuggestions([]);
+            setQuery('');
+        }
+    };
+
+    const fetchSuggestions = (query) => {
+        if (!query) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+        fetch(`${process.env.REACT_APP_API_URL}/api/tags/search?prefix=${encodeURIComponent(query)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`Network error: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                console.log('API response:', data);
+                const formattedSuggestions = data.map(tag => ({
+                    name: tag,
+                    id: tag,
+                }));
+                setSuggestions(formattedSuggestions);
+                setShowSuggestions(formattedSuggestions.length > 0);
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                setSuggestions([]);
+                setShowSuggestions(false);
+            });
+    };
+
+    const selectSuggestion = (suggestion) => {
+        const lastHashIndex = spot.caption.lastIndexOf('#');
+        const newCaption = spot.caption.slice(0, lastHashIndex) + `#${suggestion.name} `;
+        setSpot({ ...spot, caption: newCaption });
+        setShowSuggestions(false);
+        setSuggestions([]);
+        setQuery('');
+        setSuggestionIndex(-1);
+        textareaRef.current.focus();
+    };
+
+    const handleKeyDown = (e) => {
+        if (!showSuggestions || suggestions.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setSuggestionIndex(prev => (prev + 1) % suggestions.length);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setSuggestionIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+        } else if (e.key === 'Enter' && suggestionIndex >= 0) {
+            e.preventDefault();
+            selectSuggestion(suggestions[suggestionIndex]);
+        } else if (e.key === 'Escape') {
+            setShowSuggestions(false);
+            setSuggestions([]);
+            setQuery('');
+            setSuggestionIndex(-1);
+        }
     };
 
     const handleFileChange = async (event) => {
@@ -89,8 +174,6 @@ export default function AddSpot() {
             setIsExifProcessing(false);
         }
     };
-
-
 
     const getExifData = (file) => {
         return new Promise((resolve, reject) => {
@@ -445,7 +528,13 @@ export default function AddSpot() {
 
     const handleCitySelection = (selectedOption) => {
         if (selectedOption) {
-            handleCitySelect(selectedOption.description, selectedOption.placeId);
+            handleCitySelect({
+                description: selectedOption.description,
+                placeId: selectedOption.placeId,
+                city: selectedOption.label.split(', ')[0],
+                country: selectedOption.label.split(', ').slice(1).join(', '),
+                value: selectedOption.placeId,
+            });
         }
     };
 
@@ -462,7 +551,7 @@ export default function AddSpot() {
         }
 
         const formData = new FormData();
-        formData.append("caption", caption);
+        formData.append("caption", spot.caption);
         formData.append("mainPhotoIndex", mainPhotoIndex);
         formData.append("city", city);
         formData.append("country", country);
@@ -600,16 +689,37 @@ export default function AddSpot() {
                     </div>
                     <div className="col">
                         <div className="form mb-3 text-start">
-                            <label htmlFor="floatingTextarea2" className="form-label text-start">Caption:</label>
-                            <textarea
-                                className="form-control"
-                                id="floatingTextarea2"
-                                style={{ height: '310px' }}
-                                name="caption"
-                                value={caption}
-                                onChange={onChange}
-                            >
-                            </textarea>
+                            <label htmlFor="floatingTextarea2" className="form-label text-start">
+                                Caption:
+                            </label>
+                            <div style={{ position: 'relative' }}>
+                                <textarea
+                                    className="form-control"
+                                    id="captionInput"
+                                    name="caption"
+                                    style={{ height: '310px' }}
+                                    value={spot.caption}
+                                    onChange={handleCaptionChange}
+                                    onKeyDown={handleKeyDown}
+                                    ref={textareaRef}
+                                    placeholder="Write a caption with #tag (optional)"
+                                />
+                                {showSuggestions && suggestions.length > 0 && (
+                                    <div className="suggestions-container mt-3">
+                                        {suggestions.map((suggestion, index) => (
+                                            <div
+                                                key={suggestion.id}
+                                                className={`suggestion-item ${index === suggestionIndex ? 'suggestion-item--highlighted' : ''}`}
+                                                onClick={() => selectSuggestion(suggestion)}
+                                                onMouseEnter={() => setSuggestionIndex(index)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <span class="badge rounded-pill bg-light text-dark border">{suggestion.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                     <div className="col">

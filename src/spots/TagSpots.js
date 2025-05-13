@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { formatDistanceToNow } from 'date-fns';
@@ -7,9 +7,10 @@ import Masonry from 'react-masonry-css';
 import '../components/Masonry.css'
 import { Tooltip } from "bootstrap";
 
-export default function MySpots() {
+export default function TagSpots() {
     const [spots, setSpots] = useState([]);
     const { user } = useAuth();
+    const { tag } = useParams();
     const navigate = useNavigate();
     const tooltipRefs = useRef({});
     const [page, setPage] = useState(0);
@@ -23,24 +24,30 @@ export default function MySpots() {
         500: 1
     };
 
-    const loadSpots = async (pageToLoad) => {
-        try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/spots/mySpots?page=${pageToLoad}&size=12`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            });
-            setSpots((prevSpots) => {
-                const newSpots = (result.data?.content ?? []).filter(
-                    (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
-                );
-                return [...prevSpots, ...newSpots];
-            });
-            setHasMore(result.data.totalPages > pageToLoad + 1);
-        } catch (error) {
-            console.error("Failed to fetch spots", error);
-        }
-    };
+    const token = user?.token;
+
+    useEffect(() => {
+        const loadSpots = async () => {
+            try {
+                const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/tags/${tag}/spots?page=${page}&size=12`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setSpots((prevSpots) => {
+                    const newSpots = (result.data?.content ?? []).filter(
+                        (newSpot) => !prevSpots.some((spot) => spot.id === newSpot.id)
+                    );
+                    return [...prevSpots, ...newSpots];
+                });
+                setHasMore(result.data.totalPages > page + 1);
+            } catch (error) {
+                console.error("Failed to fetch spots", error);
+            }
+        };
+
+        loadSpots();
+    }, [tag, page]);
 
     const toggleLike = async (spotId) => {
         try {
@@ -75,9 +82,12 @@ export default function MySpots() {
         setPage((prevPage) => prevPage + 1);
     };
 
+
     useEffect(() => {
-        loadSpots(page);
-    }, [page]);
+        setSpots([]);
+        setPage(0);
+    }, [tag]);
+
 
     useEffect(() => {
         Object.values(tooltipRefs.current).forEach((element) => {
@@ -108,7 +118,10 @@ export default function MySpots() {
                         <li className="breadcrumb-item">
                             <Link to="/" className="text-decoration-none">Home</Link>
                         </li>
-                        <li className="breadcrumb-item active" aria-current="page">My spots</li>
+                        <li className="breadcrumb-item">
+                            <Link to="/tags" className="text-decoration-none">Tags</Link>
+                        </li>
+                        <li className="breadcrumb-item active" aria-current="page">{tag}</li>
                     </ol>
                 </nav>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AddSpot.css';
 import Select from "react-select";
@@ -13,6 +13,11 @@ export default function EditSpot() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const [suggestions, setSuggestions] = useState([]);
+    const [suggestionIndex, setSuggestionIndex] = useState(-1);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [query, setQuery] = useState('');
+    const textareaRef = useRef(null);
 
     const [makes, setMakes] = useState([]);
     const [models, setModels] = useState([]);
@@ -30,6 +35,72 @@ export default function EditSpot() {
     const [selectedTrim, setSelectedTrim] = useState(null);
 
     const { user } = useAuth();
+
+    const handleCaptionChange = (e) => {
+        const newValue = e.target.value;
+        setSpot({ ...spot, caption: newValue });
+
+        const lastHashIndex = newValue.lastIndexOf('#');
+        if (lastHashIndex !== -1) {
+            const queryText = newValue.slice(lastHashIndex + 1);
+            if (!queryText.includes(' ')) {
+                setQuery(queryText);
+                fetchSuggestions(queryText);
+                setShowSuggestions(true);
+            } else {
+                setShowSuggestions(false);
+                setSuggestions([]);
+                setQuery('');
+            }
+        } else {
+            setShowSuggestions(false);
+            setSuggestions([]);
+            setQuery('');
+        }
+    };
+
+    const fetchSuggestions = (query) => {
+        if (!query) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+        fetch(`${process.env.REACT_APP_API_URL}/api/tags/search?prefix=${encodeURIComponent(query)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`Network error: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                console.log('API response:', data);
+                const formattedSuggestions = data.map(tag => ({
+                    name: tag,
+                    id: tag,
+                }));
+                setSuggestions(formattedSuggestions);
+                setShowSuggestions(formattedSuggestions.length > 0);
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                setSuggestions([]);
+                setShowSuggestions(false);
+            });
+    };
+
+    const selectSuggestion = (suggestion) => {
+        const lastHashIndex = spot.caption.lastIndexOf('#');
+        const newCaption = spot.caption.slice(0, lastHashIndex) + `#${suggestion.name} `;
+        setSpot({ ...spot, caption: newCaption });
+        setShowSuggestions(false);
+        setSuggestions([]);
+        setQuery('');
+        setSuggestionIndex(-1);
+        textareaRef.current.focus();
+    };
 
     const resetDependentFields = (level) => {
         switch (level) {
@@ -424,9 +495,6 @@ export default function EditSpot() {
                         <Link to="/" className="text-decoration-none">Home</Link>
                     </li>
                     <li className="breadcrumb-item">
-                        <Link to="/spots" className="text-decoration-none">Spots</Link>
-                    </li>
-                    <li className="breadcrumb-item">
                         <Link to={`/spots/${id}`} className="text-decoration-none">Spot {id}</Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">Edit spot</li>
@@ -496,16 +564,32 @@ export default function EditSpot() {
                     </div>
 
                     <div className="col">
-                        <div className="form-floating mb-3">
+                        <div style={{ position: 'relative' }}>
                             <textarea
                                 className="form-control"
-                                id="floatingTextarea2"
-                                style={{ height: '391px' }}
+                                id="captionInput"
                                 name="caption"
+                                style={{ height: '310px' }}
                                 value={spot.caption}
-                                onChange={onInputChange}>
-                            </textarea>
-                            <label htmlFor="floatingTextarea2">Caption</label>
+                                onChange={handleCaptionChange}
+                                ref={textareaRef}
+                                placeholder="Write a caption with #tag (optional)"
+                            />
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div className="suggestions-container mt-3" style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {suggestions.map((suggestion, index) => (
+                                        <div
+                                            key={suggestion.id}
+                                            className={`suggestion-item ${index === suggestionIndex ? 'suggestion-item--highlighted' : ''}`}
+                                            onClick={() => selectSuggestion(suggestion)}
+                                            onMouseEnter={() => setSuggestionIndex(index)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <span className="badge rounded-pill bg-light text-dark border">{suggestion.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 

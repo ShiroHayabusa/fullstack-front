@@ -97,6 +97,8 @@ import Spots from './spots/MySpotsOld';
 import ViewSpot from './spots/ViewSpot';
 import MySpots from './spots/MySpots';
 import Unidentified from './spots/Unidentified';
+import TagSpots from './spots/TagSpots';
+import Tags from './spots/Tags';
 
 import Autosport from './autosport/Autosport';
 import BucketAvailabilityChecker from './administration/BucketAvailabilityChecker';
@@ -253,6 +255,8 @@ function App() {
             <Route exact path='/spots/:id' element={<ViewSpot />} />
             <Route exact path='/spots/mySpots' element={<MySpotsOld />} />
             <Route exact path='/unidentified' element={<Unidentified />} />
+            <Route exact path='/tags/:tag/spots' element={<TagSpots />} />
+            <Route exact path='/tags' element={<Tags />} />
 
             <Route exact path='/autosport' element={<Autosport />} />
 
