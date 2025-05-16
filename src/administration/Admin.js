@@ -25,6 +25,7 @@ export default function Admin() {
                         <Link className="list-group-item text-start" to='/admin/drivetrains'>Drivetrains</Link>
                         <Link className="list-group-item text-start" to='/admin/markets'>Markets</Link>
                         <Link className="list-group-item text-start" to='/admin/fuels'>Fuels</Link>
+                        <Link className="list-group-item text-start" to='/admin/awards'>Awards</Link>
                         <div className="h4 pb-2 text-secondary text-start border-bottom border-secondary">Autosport</div>
                         <Link className="list-group-item text-start" to='/admin/races'>Races</Link>
                         <Link className="list-group-item text-start" to='/admin/series'>Series</Link>

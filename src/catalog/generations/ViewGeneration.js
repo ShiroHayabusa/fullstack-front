@@ -12,6 +12,7 @@ export default function ViewGeneration() {
     const [generation, setGeneration] = useState({
         name: ''
     });
+    const [years, setYears] = useState([]);
 
     const { make, model, generationId } = useParams();
 
@@ -54,7 +55,8 @@ export default function ViewGeneration() {
 
     const loadGeneration = async () => {
         const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}`);
-        setGeneration(result.data);
+        setGeneration(result.data.generation);
+        setYears(result.data.awards);
     };
 
     const fetchSpots = async () => {
@@ -93,7 +95,7 @@ export default function ViewGeneration() {
                 const videoDTO = {
                     youtubeId: id,
                     generationId: generationId,
-                    isCommercial: isCommercial,         
+                    isCommercial: isCommercial,
                 };
 
                 const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/addVideo`, videoDTO, {
@@ -167,7 +169,7 @@ export default function ViewGeneration() {
                     </ol>
                 </nav>
                 <div className="row row-cols-1 row-cols-md-3 mb-3">
-                    <div className="col-md-3 mb-3 text-start">
+                    <div className="col-md-4 mb-3 text-start">
                         <h5>{make} {model}</h5>
                         <h5>{generation.name}</h5>
                         <span>{generation?.years}</span>
@@ -180,6 +182,26 @@ export default function ViewGeneration() {
                                 ))}
                             </div>
                         )}
+                        {years && years.length > 0 && (
+                            <div className="mt-2 d-flex flex-wrap">
+                                {years.map((year, index) => (
+                                    <div key={year.id} className="text-center me-3 mb-3">
+                                        <Link to={`/admin/awards/${year.award.id}`} className="text-decoration-none text-dark">
+                                            <div className="d-flex flex-column align-items-center">
+                                                <img
+                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/awards/${year.award.logo.name}`}
+                                                    style={{ width: 'auto', height: '75px' }}
+                                                    alt={`${year.award.name} logo`}
+                                                    className='img-fluid'
+                                                />
+                                                <div className="mt-1">{year.year}</div>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                     </div>
                     <div className="col-md-9">
                         <p className="text-start">{generation?.description}</p>

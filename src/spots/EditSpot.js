@@ -566,7 +566,7 @@ export default function EditSpot() {
                     <div className="col">
                         <div style={{ position: 'relative' }}>
                             <textarea
-                                className="form-control"
+                                className="form-control mb-3"
                                 id="captionInput"
                                 name="caption"
                                 style={{ height: '310px' }}

@@ -91,6 +91,13 @@ import AddFuel from './administration/fuels/AddFuel';
 import EditFuel from './administration/fuels/EditFuel';
 import Fuels from './administration/fuels/Fuels';
 
+import AddAward from './administration/awards/AddAward';
+import EditAward from './administration/awards/EditAward';
+import Awards from './administration/awards/Awards';
+import Years from './administration/awards/Years';
+import AddYear from './administration/awards/AddYear';
+import EditYear from './administration/awards/EditYear';
+
 import AddSpot from './spots/AddSpot';
 import EditSpot from './spots/EditSpot';
 import Spots from './spots/MySpotsOld';
@@ -261,7 +268,7 @@ function App() {
             <Route exact path='/autosport' element={<Autosport />} />
 
             <Route exact path="/unauthorized" element={<Unauthorized />} />
-            
+
             <Route exact path="/profile/leaderboard" element={<Leaderboard />} />
             <Route exact path="/statistics" element={<Statistics />} />
 
@@ -322,6 +329,13 @@ function App() {
               <Route exact path='fuels/addFuel' element={<AddFuel />} />
               <Route exact path='fuels/editFuel/:id' element={<EditFuel />} />
               <Route exact path='fuels' element={<Fuels />} />
+
+              <Route exact path='awards/addAward' element={<AddAward />} />
+              <Route exact path='awards/editAward/:id' element={<EditAward />} />
+              <Route exact path='awards/:award/addYear' element={<AddYear />} />
+              <Route exact path='awards/:award/:year/editYear' element={<EditYear />} />
+              <Route exact path='awards' element={<Awards />} />
+              <Route exact path='awards/:award' element={<Years />} />
             </Route>
           </Routes>
           <Footer />

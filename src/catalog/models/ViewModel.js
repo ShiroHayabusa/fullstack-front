@@ -110,36 +110,45 @@ export default function ViewModel() {
                 </div>
 
                 <div className="row row-cols-1 row-cols-md-3 g-3">
-                    {generations.map((generation) => (
-                        <div className="col" key={generation.id}>
-                            <Link to={`/catalog/${make}/${model}/${generation.id}`} className="text-decoration-none text-black">
-                                <div className="card">
-                                    <img
-                                        src={
-                                            generation?.photoName
-                                                ? `https://newloripinbucket.s3.amazonaws.com/image/spots/${generation.spotUser}/${generation.spotId}/${generation.photoName}`
-                                                : 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'
-                                        }
-                                        className="card-img-top"
-                                        alt={generation.name}
-                                    />
-                                    <div className="card-body">
-                                        <h5 className="card-title">{generation.name}</h5>
-                                        <p className="card-text">{generation.years}</p>
-                                    </div>
-                                    {generation.bodies?.length > 0 && (
-                                        <div className='card-footer'>
-                                            {generation.bodies.map((body, index) => (
-                                                <span key={body.id}>
-                                                    {body.name}{index < generation.bodies.length - 1 && ', '}
-                                                </span>
-                                            ))}
+                    {generations
+                        .slice()
+                        .sort((a, b) => {
+                            const getGenerationNumber = (name) => {
+                                const match = name.match(/^(\d+)/); // ищем число в начале строки
+                                return match ? parseInt(match[1]) : 0;
+                            };
+                            return getGenerationNumber(a.name) - getGenerationNumber(b.name);
+                        })
+                        .map((generation) => (
+                            <div className="col" key={generation.id}>
+                                <Link to={`/catalog/${make}/${model}/${generation.id}`} className="text-decoration-none text-black">
+                                    <div className="card">
+                                        <img
+                                            src={
+                                                generation?.photoName
+                                                    ? `https://newloripinbucket.s3.amazonaws.com/image/spots/${generation.spotUser}/${generation.spotId}/${generation.photoName}`
+                                                    : 'https://newloripinbucket.s3.amazonaws.com/image/placeholder_400x400.png'
+                                            }
+                                            className="card-img-top"
+                                            alt={generation.name}
+                                        />
+                                        <div className="card-body">
+                                            <h5 className="card-title">{generation.name}</h5>
+                                            <p className="card-text">{generation.years}</p>
                                         </div>
-                                    )}
-                                </div>
-                            </Link>
-                        </div>
-                    ))}
+                                        {generation.bodies?.length > 0 && (
+                                            <div className='card-footer'>
+                                                {generation.bodies.map((body, index) => (
+                                                    <span key={body.id}>
+                                                        {body.name}{index < generation.bodies.length - 1 && ', '}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
                 </div>
 
                 <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-muted text-start">
