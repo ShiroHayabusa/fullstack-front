@@ -125,6 +125,8 @@ import Statistics from './pages/Statistics';
 import MySpotsOld from './spots/MySpotsOld';
 import Rating from './users/Rating';
 
+import Achievements from './users/Achievements';
+
 //carspotting, car spotting, car spots, car spot, car spotter, car spotters, car spotting app, car spotting website, car spotting platform, car spotting social network, car spotting social media, car spotting community, car spotting enthusiasts, car spotting fans, car spotting hobby, car spotting passion, car spotting experience, car spotting journey, car spotting adventure, car spotting fun, car spotting excitement, car spotting thrill, car spotting excitement, car spotting joy, car spotting happiness, car spotting love, car spotting like, car spotting share, car spotting comment, car spotting follow, car spotting subscribe, car spotting notification, car spotting feed, car spotting profile, car spotting account, car spotting settings, car spotting privacy, car spotting terms, car spotting conditions, car spotting policy, car spotting rules, car spotting guidelines, car spotting features, car spotting functionality, car spotting design, car spotting layout, car spotting structure, car spotting navigation, car spotting user experience, car spotting user interface, car spotting user journey, car spotting user flow, car spotting user actions, car spotting user interactions, car spotting user engagement, car spotting user retention, car spotting user satisfaction, car spotting user feedback, car spotting user reviews, car spotting user ratings, car spotting user testimonials, car spotting user stories, car spotting user scenarios, car spotting user personas, car spotting user roles, car spotting user permissions, car spotting user roles, car spotting user types, car spotting user categories, car spotting user segments, car spotting user demographics, car spotting user psychographics, car spotting user behavior, car spotting user preferences, car spotting user needs, car spotting user goals, car spotting user tasks, car spotting user challenges, car spotting user problems, car spotting user issues, car spotting user bugs, car spotting user errors, car spotting user mistakes, car spotting user failures, car spotting user successes, car spotting user achievements, car spotting user rewards, car spotting user benefits, car spotting user values, car spotting user principles, car spotting user ethics, car spotting user morals, car spotting user standards, car spotting user requirements, car spotting user expectations, car spotting user assumptions, car spotting user constraints, car spotting user limitations, car spotting user restrictions, car spotting user guidelines, car spotting user policies, car spotting user rules, car spotting user regulations, car spotting user laws, car spotting user rights, car spotting user obligations, car spotting user responsibilities, car spotting user account, car spotting user profile, car spotting user settings, car spotting user privacy, car
 
 const routerOptions = {
@@ -271,6 +273,9 @@ function App() {
 
             <Route exact path="/profile/leaderboard" element={<Leaderboard />} />
             <Route exact path="/statistics" element={<Statistics />} />
+            <Route exact path="/profile/achievements/:type/:id" element={<Achievements />} />
+
+            {/* Protected Routes */}
 
             <Route
               path="/admin/*"

@@ -42,6 +42,8 @@ const Profile = () => {
         comments: 0,
     });
 
+    const [achievements, setAchievements] = useState([]);
+
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -74,6 +76,38 @@ const Profile = () => {
             setLoading(false);
         }
     };
+
+    const loadAchievements = async () => {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/profile/${currentUser.id}/achievements`);
+        console.log("Achievements:", result.data);
+        setAchievements(result.data);
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            loadAchievements();
+        }
+    }, [currentUser?.id]);
+
+    const milestoneAchievements = achievements.filter(a =>
+        a.achievement?.code?.startsWith("SPOT_")
+    );
+
+    const firstPlaceAchievements = achievements.filter(a =>
+        a.achievement?.code?.startsWith("FIRST_IN_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_IN_COUNTRY")
+    );
+
+    const firstInCityCount = achievements.filter(a =>
+        a.achievement?.code?.startsWith("FIRST_IN_CITY")
+    ).length;
+
+    const firstInCountryCount = achievements.filter(a =>
+        a.achievement?.code?.startsWith("FIRST_IN_COUNTRY")
+    ).length;
+
+    const cityIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_city.png";
+    const countryIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_country.png";
 
     useEffect(() => {
         const fetchData = async () => {
@@ -135,7 +169,6 @@ const Profile = () => {
                 }
             );
             if (response.status === 200) {
-                // Обновляем currentUser и сбрасываем флаг
                 setCurrentUser((prev) => ({ ...prev, bio }));
                 setBioDirty(false);
                 setBioMessage("Bio saved successfully.");
@@ -372,6 +405,59 @@ const Profile = () => {
                                 {avatarMessage && <div className="alert alert-success mt-3" role="alert">{avatarMessage}</div>}
                             </div>
                         </div>
+                        <h5 className='mt-4 text-start'>Achievements</h5>
+                        {milestoneAchievements.length > 0 && (
+                            <div className="mt-2 d-flex flex-wrap">
+                                {milestoneAchievements.map((achievement) => (
+                                    <div key={achievement.id} className="text-center me-3 mb-3">
+                                        <div className="d-flex flex-column align-items-center">
+                                            <img
+                                                src={`https://newloripinbucket.s3.amazonaws.com/image/${achievement.achievement?.iconUrl}`}
+                                                style={{ width: 'auto', height: '75px' }}
+                                                alt={`${achievement.achievement?.name} logo`}
+                                                className='img-fluid'
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {(firstInCityCount > 0 || firstInCountryCount > 0) && (
+                            <div className="d-flex flex-wrap border-top pt-3">
+                                {firstInCountryCount > 0 && (
+                                    <div className="text-center me-3 mb-3">
+                                        <Link to={`/profile/achievements/country/${currentUser.id}`} className="text-decoration-none text-dark">
+                                            <div className="d-flex flex-column align-items-center">
+                                                <img
+                                                    src={countryIconUrl}
+                                                    style={{ width: 'auto', height: '75px' }}
+                                                    alt="First in Country"
+                                                    className='img-fluid'
+                                                />
+                                                <div className="text-muted fw-bold fs-5">{firstInCountryCount}</div>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )}
+                                {firstInCityCount > 0 && (
+                                    <div className="text-center me-3 mb-3">
+                                        <Link to={`/profile/achievements/city/${currentUser.id}`} className="text-decoration-none text-dark">
+                                            <div className="d-flex flex-column align-items-center">
+                                                <img
+                                                    src={cityIconUrl}
+                                                    style={{ width: 'auto', height: '75px' }}
+                                                    alt="First in City"
+                                                    className='img-fluid'
+                                                />
+                                                <div className="text-muted fw-bold fs-5">{firstInCityCount}</div>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                     </div>
 
                     <div className="col text-start">

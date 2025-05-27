@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import { useAuth } from '../context/AuthContext';
 import './AddSpot.css';
+import { AchievementModal } from './../components/AchievementModal';
 import EXIF from 'exif-js';
 
 export default function AddSpot() {
@@ -56,6 +57,8 @@ export default function AddSpot() {
     const [isExifProcessing, setIsExifProcessing] = useState(false);
     const [cityOptions, setCityOptions] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState(null);
+
+    const [achievement, setAchievement] = useState(null);
 
     const handleCaptionChange = (e) => {
         const newValue = e.target.value;
@@ -588,6 +591,9 @@ export default function AddSpot() {
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Spot added successfully");
+                if (response.data.newAchievement) {
+                    setAchievement(response.data.newAchievement);
+                }
                 navigate(`/`);
             }
         } catch (error) {
@@ -823,7 +829,12 @@ export default function AddSpot() {
                     <button className="btn btn-outline-primary mt-3" type="submit">
                         Add spot
                     </button>
+
                 )}
+                <AchievementModal
+                    achievement={achievement}
+                    onClose={() => setAchievement(null)}
+                />
                 <Link className="btn btn-outline-danger mx-2 mt-3" to="/">Cancel</Link>
             </form>
         </div>
