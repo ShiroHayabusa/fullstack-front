@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -27,6 +28,20 @@ const UserList = () => {
         navigate(`/admin/users/${userId}`);
     };
 
+    const handleRecalculate = async () => {
+        const confirmed = window.confirm('Are you sure you want to recalculate all user ratings?');
+
+        if (!confirmed) return;
+
+        try {
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/recalculateRatings`);
+            alert('Ratings recalculated successfully!');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to recalculate ratings.');
+        }
+    };
+
     return (
         <div className="container">
             <nav aria-label="breadcrumb" className="mt-3">
@@ -37,12 +52,22 @@ const UserList = () => {
                 </ol>
             </nav>
             <h1>User List</h1>
+            <div className="text-end">
+                <a
+                    onClick={handleRecalculate}
+                    className="text-blue-600 hover:underline cursor-pointer inline-block text-decoration-none"
+                    role="button"
+                >
+                    Recalculate rating
+                </a>
+            </div>
             <table className="table table-striped">
                 <thead>
                     <tr>
                         <th className="text-start">ID</th>
                         <th className="text-start">Username</th>
                         <th className="text-start">Email</th>
+                        <th className="text-start">Rating</th>
                         <th className="text-start">Roles</th>
                         <th>Actions</th>
                     </tr>
@@ -53,6 +78,7 @@ const UserList = () => {
                             <td className="text-start">{user.id}</td>
                             <td className="text-start">{user.username}</td>
                             <td className="text-start">{user.email}</td>
+                            <td className="text-start">{user.rating}</td>
                             <td className="text-start">{user.roles.join(", ")}</td>
                             <td>
                                 <button

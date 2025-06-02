@@ -26,7 +26,7 @@ const Achievements = () => {
                     setAchievements(response.data);
                 }
             } catch (error) {
-                console.error('Ошибка при загрузке first achievements:', error);
+                console.error('Error loading first achievements:', error);
             }
         };
 

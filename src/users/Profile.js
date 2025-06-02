@@ -2,7 +2,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, set } from 'date-fns';
+import Select from "react-select";
+
 
 const Profile = () => {
     const [currentUser, setCurrentUser] = useState(null);
@@ -44,6 +46,16 @@ const Profile = () => {
 
     const [achievements, setAchievements] = useState([]);
 
+    const [city, setCity] = useState('');
+    const [region, setRegion] = useState('');
+    const [country, setCountry] = useState('');
+    const [cityOptions, setCityOptions] = useState([]);
+    const [selectedCity, setSelectedCity] = useState("");
+    const [cityInputValue, setCityInputValue] = useState('');
+    const [cityDirty, setCityDirty] = useState(false);
+    const [cityMessage, setCityMessage] = useState("");
+    const [cityError, setCityError] = useState("");
+
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -64,7 +76,26 @@ const Profile = () => {
             setCurrentUser(response.data);
             setEmail(response.data.email || "");
             setBio(response.data.bio || "");
-            console.log("currentUser:", response.data)
+            setCity(response.data.city || "");
+            setRegion(response.data.region || "");
+            setCountry(response.data.country || "");
+            if (response.data.city && response.data.country) {
+                const savedCityOption = {
+                    value: null,
+                    city: response.data.city,
+                    region: response.data?.region,
+                    country: response.data.country,
+                    label: response.data.region
+                        ? `${response.data.city}, ${response.data.region}, ${response.data.country}`
+                        : `${response.data.city}, ${response.data.country}`,
+                };
+                setSelectedCity(savedCityOption);
+                setCityInputValue(savedCityOption.label);
+            }
+            else {
+                setSelectedCity(null);
+            }
+
         } catch (err) {
             console.error('Error loading data:', err);
             if (err.response && err.response.status === 401) {
@@ -79,7 +110,6 @@ const Profile = () => {
 
     const loadAchievements = async () => {
         const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/profile/${currentUser.id}/achievements`);
-        console.log("Achievements:", result.data);
         setAchievements(result.data);
     };
 
@@ -175,7 +205,7 @@ const Profile = () => {
                 setBioError("");
             }
         } catch (err) {
-            console.error("Ошибка сохранения bio:", err);
+            console.error("Failed to save Bio:", err);
             setBioError("Failed to save Bio.");
         }
     };
@@ -217,7 +247,7 @@ const Profile = () => {
             );
 
             if (response.status === 200 || response.status === 201) {
-                const updatedAvatarUrl = `${response.data.avatarUrl}`;
+                const updatedAvatarUrl = `${response.data?.avatarUrl}`;
                 const updatedUser = response.data;
                 setCurrentUser((prev) => ({
                     ...prev,
@@ -357,6 +387,118 @@ const Profile = () => {
         return <div>Loading...</div>;
     }
 
+    const handleCityInput = async (inputValue) => {
+        if (!inputValue || inputValue.length <= 2) {
+            setCityOptions([]);
+            return;
+        }
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_URL}/api/places/autocomplete`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+                params: {
+                    input: inputValue,
+                    types: "(cities)",
+                },
+            });
+            if (response.data && response.data.predictions) {
+                const suggestions = response.data.predictions.map(prediction => {
+                    const secondaryText = prediction.structured_formatting.secondary_text || "";
+                    const parts = secondaryText.split(',').map(p => p.trim());
+
+                    const city = prediction.structured_formatting.main_text;
+                    let region = "";
+                    let country = "";
+                    console.log("parts:", parts[parts.length - 2]);
+                    if (parts.length >= 2) {
+                        region = parts[parts.length - 2];
+                        console.log("region:", region);
+                        country = parts[parts.length - 1];
+                    } else if (parts.length === 2) {
+                        country = parts[1];
+                    } else if (parts.length === 1) {
+                        country = parts[0];
+                    }
+
+                    return {
+                        value: prediction.place_id,
+                        label: prediction.description,
+                        city: city,
+                        region: region,
+                        country: country,
+                    };
+                });
+                console.log("Suggestions:", suggestions);
+                setCityOptions(suggestions);
+            } else {
+                console.error("Empty result from backend:", response.data);
+                setCityOptions([]);
+            }
+        } catch (error) {
+            console.error("Error loading cities:", error);
+        }
+
+    };
+
+    const handleCitySelect = (selectedOption) => {
+        if (selectedOption) {
+            setSelectedCity(selectedOption);
+            setCityInputValue(selectedOption.label);
+            setCity(selectedOption.city);
+            setRegion(selectedOption.region);
+            setCountry(selectedOption.country);
+            setCityDirty(true);
+            setCityError("");
+        } else {
+            setSelectedCity(null);
+            setCityInputValue('');
+            setCity('');
+            setRegion('');
+            setCountry('');
+            setCityDirty(true);
+        }
+    };
+
+    const handleCitySave = async (e) => {
+        if (e) e.preventDefault();
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_URL}/api/users/updateCity`,
+                {
+                    city: city || null,
+                    region: region || null,
+                    country: country || null,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            if (response.status === 200) {
+                setCityDirty(false);
+                setCityMessage(
+                    city ? "City saved successfully." : "City removed successfully."
+                );
+                setCityError("");
+
+                if (!city) {
+                    setSelectedCity(null);
+                    setCityInputValue('');
+                }
+            }
+        } catch (err) {
+            console.error("Failed to save city:", err);
+            setCityError("Failed to save city.");
+        }
+        console.log("City saved:", city, region, country);
+    };
+
+
+
     return (
         <div className='container'>
             <nav aria-label="breadcrumb" className='mt-3'>
@@ -371,9 +513,9 @@ const Profile = () => {
             <div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col mb-4">
-                        {currentUser.avatarUrl ? (
+                        {currentUser?.avatarUrl ? (
                             <img
-                                src={`https://newloripinbucket.s3.amazonaws.com/${currentUser.avatarUrl}`}
+                                src={`https://newloripinbucket.s3.amazonaws.com/${currentUser?.avatarUrl}`}
                                 alt="Avatar"
                                 className="img-fluid rounded-circle shadow"
                                 style={{ width: '150px', height: '150px', objectFit: 'cover' }}
@@ -466,6 +608,7 @@ const Profile = () => {
                             <strong>Email: </strong>{currentUser?.email}{" "}
 
                         </p>
+
                         <div className="form-floating mb-3">
                             <textarea
                                 className="form-control"
@@ -492,6 +635,39 @@ const Profile = () => {
                                 {bioError}
                             </div>
                         )}
+                        <strong>City: </strong>
+                        <form className='mb-3'
+                            onSubmit={handleCitySave}>
+                            <Select
+                                options={cityOptions}
+                                value={selectedCity} // покажет выбранный город или сохранённый
+                                onInputChange={(value) => {
+                                    setCityInputValue(value);
+                                    handleCityInput(value);
+                                }}
+                                onChange={(selectedOption) => {
+                                    handleCitySelect(selectedOption);
+                                }}
+                                isSearchable
+                                placeholder="Enter city..."
+                                isClearable
+                            />
+
+                            {cityDirty && (
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary mt-2"
+                                >
+                                    Save
+                                </button>
+                            )}
+                            {cityError && (
+                                <div className="alert alert-danger mt-3" role="alert">
+                                    {cityError}
+                                </div>
+                            )}
+                        </form>
+
                         <p>
                             <button
                                 className="btn btn-sm btn-link text-primary p-0 mt-3 text-decoration-none"

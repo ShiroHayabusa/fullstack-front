@@ -133,6 +133,11 @@ const UserPage = () => {
             <div>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                     <div className="col text-start">
+                        <p>
+                            {[currentUser.city, currentUser.region, currentUser.country]
+                                .filter(Boolean)
+                                .join(', ')}
+                        </p>
                         <h3>Rating: {currentUser.rating}</h3>
                         <h5>Leaderboard position: {currentUser.ranking}</h5>
                         <p>User account was created <strong>{currentUser?.createdAt ? `${formatDistanceToNow(new Date(currentUser.createdAt), { addSuffix: true })}` : 'Unknown'}</strong></p>

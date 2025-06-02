@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import { useAuth } from '../context/AuthContext';
 import './AddSpot.css';
-import { AchievementModal } from './../components/AchievementModal';
+import AchievementModal from './../components/AchievementModal';
 import EXIF from 'exif-js';
 
 export default function AddSpot() {
@@ -529,18 +529,6 @@ export default function AddSpot() {
         setSelectedTrim(selectedOption);
     };
 
-    const handleCitySelection = (selectedOption) => {
-        if (selectedOption) {
-            handleCitySelect({
-                description: selectedOption.description,
-                placeId: selectedOption.placeId,
-                city: selectedOption.label.split(', ')[0],
-                country: selectedOption.label.split(', ').slice(1).join(', '),
-                value: selectedOption.placeId,
-            });
-        }
-    };
-
     const onSubmit = async (e) => {
         e.preventDefault();
 
@@ -591,10 +579,12 @@ export default function AddSpot() {
 
             if (response.status === 200 || response.status === 201) {
                 console.log("Spot added successfully");
-                if (response.data.newAchievement) {
-                    setAchievement(response.data.newAchievement);
+                const newAchievements = response.data.newAchievements;
+                if (newAchievements && newAchievements.length > 0) {
+                    setAchievement(newAchievements);
+                } else {
+                    navigate(`/`);
                 }
-                navigate(`/`);
             }
         } catch (error) {
             console.error("Error adding Spot:", error);
@@ -788,33 +778,6 @@ export default function AddSpot() {
                             value={selectedTrim}
                         />
                     </div>
-
-                    <div className="col mt-3">
-                        {selectedCountry && (
-                            <div className="col mt-3">
-                                <label><strong>City</strong></label>
-                                <Select
-                                    options={cityOptions.map(city => ({
-                                        value: city.placeId,
-                                        label: city.description,
-                                        description: city.description,
-                                        placeId: city.placeId,
-                                    }))}
-                                    onInputChange={handleCityInput}
-                                    onChange={handleCitySelection}
-                                    isSearchable
-                                    placeholder="Select city"
-                                    value={selectedCity ? {
-                                        value: selectedCity.placeId,
-                                        label: selectedCity.description,
-                                        description: selectedCity.description,
-                                        placeId: selectedCity.placeId,
-                                    } : null}
-                                    isClearable
-                                />
-                            </div>
-                        )}
-                    </div>
                 </div>
                 {isLoading ? (
                     <button className="btn btn-outline-primary mt-3" type="button" disabled>
@@ -833,7 +796,10 @@ export default function AddSpot() {
                 )}
                 <AchievementModal
                     achievement={achievement}
-                    onClose={() => setAchievement(null)}
+                    onClose={() => {
+                        setAchievement(null);
+                        navigate("/");
+                    }}
                 />
                 <Link className="btn btn-outline-danger mx-2 mt-3" to="/">Cancel</Link>
             </form>
