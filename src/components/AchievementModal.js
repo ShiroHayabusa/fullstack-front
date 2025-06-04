@@ -18,7 +18,7 @@ const AchievementModal = ({ achievement, onClose }) => {
     return (
         <Modal show={show} onHide={handleClose} centered>
             <Modal.Header closeButton>
-                <Modal.Title>🎉 Congratulations!</Modal.Title>
+                <Modal.Title>🎉 New achievements!</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {achievement.map((a, index) => (

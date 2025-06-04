@@ -57,6 +57,7 @@ export default function AddSpot() {
     const [isExifProcessing, setIsExifProcessing] = useState(false);
     const [cityOptions, setCityOptions] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState(null);
+    const [isManualLocation, setIsManualLocation] = useState(false);
 
     const [achievement, setAchievement] = useState(null);
 
@@ -164,6 +165,7 @@ export default function AddSpot() {
             setCity(location.city);
             setCountry(location.country);
             setError(null);
+            setIsManualLocation(false);
         } catch (error) {
             console.error("Error processing file:", error.message);
             setError(error.message);
@@ -173,6 +175,7 @@ export default function AddSpot() {
             setLatitude(null);
             setLongitude(null);
             setLocationInfo({ city: '', country: '' });
+            setIsManualLocation(true);
         } finally {
             setIsExifProcessing(false);
         }
@@ -266,29 +269,46 @@ export default function AddSpot() {
         }
     };
 
-    const handleCitySelect = (selectedOption) => {
+    const handleCitySelect = async (selectedOption) => {
+        console.log('Selected option:', selectedOption);
+        setError(null); // Сбрасываем ошибку
         if (selectedOption) {
-            setSelectedCity(selectedOption);
-            setCityInputValue(selectedOption.label);
+            // Устанавливаем флаг ручного выбора
+            setIsManualLocation(true);
+            // Немедленно обновляем locationInfo для отображения города и страны
             setLocationInfo({
                 city: selectedOption.city,
                 country: selectedOption.country,
             });
+            setSelectedCity(selectedOption);
+            setCityInputValue(selectedOption.label);
 
-            getCityCoordinates(selectedOption.value).then(({ lat, lng }) => {
+            try {
+                const { lat, lng } = await getCityCoordinates(selectedOption.value);
+                // Синхронизируем все состояния после получения координат
                 setCity(selectedOption.city);
                 setCountry(selectedOption.country);
-                setLongitude(lng);
                 setLatitude(lat);
-            })
+                setLongitude(lng);
+                setLocationInfo({
+                    city: selectedOption.city,
+                    country: selectedOption.country,
+                });
+                console.log('Updated locationInfo:', { city: selectedOption.city, country: selectedOption.country, lat, lng });
+            } catch (err) {
+                console.error('Error fetching coordinates:', err);
+                setError('Failed to fetch city coordinates');
+            }
         } else {
+            setIsManualLocation(false);
             setSelectedCity(null);
             setCityInputValue('');
             setLocationInfo({ city: '', country: '' });
             setCity('');
             setCountry('');
-            setLongitude(null);
             setLatitude(null);
+            setLongitude(null);
+            console.log('Cleared locationInfo');
         }
     };
 
@@ -644,36 +664,33 @@ export default function AddSpot() {
                         <div className='text-start mt-3'>
                             {selectedFiles.length > 0 && !isExifProcessing && (
                                 <>
-                                    {latitude && longitude ? (
+                                    <p><strong>Country:</strong> {locationInfo.country || 'Not found'}</p>
+                                    <p><strong>City:</strong> {locationInfo.city || 'Not found'}</p>
+                                    {latitude && longitude && (
                                         <>
-                                            <p><strong>Country:</strong> {locationInfo.country || 'Not found'}</p>
-                                            <p><strong>City:</strong> {locationInfo.city || 'Not found'}</p>
                                             <p><strong>Latitude:</strong> {latitude || 'Not found'}</p>
                                             <p><strong>Longitude:</strong> {longitude || 'Not found'}</p>
                                         </>
-                                    ) : (
-                                        <>
-                                            {error && (
-                                                <div className="alert alert-danger mt-3" role="alert">
-                                                    {error}
-                                                </div>
-                                            )}
-
-                                            <Select
-                                                options={cityOptions}
-                                                inputValue={cityInputValue}
-                                                onInputChange={(value) => {
-                                                    setCityInputValue(value);
-                                                    handleCityInput(value);
-                                                }}
-                                                onChange={(selectedOption) => {
-                                                    handleCitySelect(selectedOption);
-                                                }}
-                                                isSearchable
-                                                placeholder="Enter city name..."
-                                                isClearable
-                                            />
-                                        </>
+                                    )}
+                                    {error && (
+                                        <div className="alert alert-danger mt-3" role="alert">
+                                            {error}
+                                        </div>
+                                    )}
+                                    {(!latitude || !longitude || isManualLocation) && (
+                                        <Select
+                                            options={cityOptions}
+                                            inputValue={cityInputValue}
+                                            onInputChange={(value) => {
+                                                console.log('Input changed:', value);
+                                                setCityInputValue(value);
+                                                handleCityInput(value);
+                                            }}
+                                            onChange={handleCitySelect}
+                                            isSearchable
+                                            placeholder="Enter city name..."
+                                            isClearable
+                                        />
                                     )}
                                 </>
                             )}

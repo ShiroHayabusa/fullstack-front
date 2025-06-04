@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AddSpot.css';
 import Select from "react-select";
 import { useAuth } from '../context/AuthContext';
+import AchievementModal from './../components/AchievementModal';
 
 export default function EditSpot() {
     const navigate = useNavigate();
@@ -35,6 +36,8 @@ export default function EditSpot() {
     const [selectedTrim, setSelectedTrim] = useState(null);
 
     const { user } = useAuth();
+
+    const [achievement, setAchievement] = useState(null);
 
     const handleCaptionChange = (e) => {
         const newValue = e.target.value;
@@ -473,9 +476,12 @@ export default function EditSpot() {
                     });
             if (response.status === 200 || response.status === 201) {
                 console.log('Spot updated successfully');
-                navigate(`/spots/${id}`);
-            } else {
-                throw new Error(`Unexpected response status: ${response.status}`);
+                const newAchievements = response.data.newAchievements;
+                if (newAchievements && newAchievements.length > 0) {
+                    setAchievement(newAchievements);
+                } else {
+                    navigate(`/spots/${id}`);
+                }
             }
         } catch (error) {
             console.error('Error updating spot:', error);
@@ -656,6 +662,13 @@ export default function EditSpot() {
                 </div>
                 <div className="d-flex justify-content-center mt-3">
                     <button type='submit' className="btn btn-outline-primary">Save</button>
+                    <AchievementModal
+                        achievement={achievement}
+                        onClose={() => {
+                            setAchievement(null);
+                            navigate("/");
+                        }}
+                    />
                     <Link className="btn btn-outline-danger mx-2" to={`/spots/${id}`}>Cancel</Link>
                 </div>
             </form>

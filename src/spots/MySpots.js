@@ -103,6 +103,18 @@ export default function MySpots() {
     return (
         <div>
             <div className="container">
+                {user?.token ? (
+                    <ul className="nav" style={{ display: "flex", alignItems: "center" }}>
+                        <li className="nav-item">
+                            <button
+                                className="btn btn-outline-primary mt-3"
+                                onClick={() => navigate(`/spots/addSpot`)}
+                            >
+                                Add Spot
+                            </button>
+                        </li>
+                    </ul>
+                ) : null}
                 <nav aria-label="breadcrumb" className='mt-3'>
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item">

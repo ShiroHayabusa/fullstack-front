@@ -129,11 +129,19 @@ const Profile = () => {
     );
 
     const firstInCityCount = achievements.filter(a =>
-        a.achievement?.code?.startsWith("FIRST_IN_CITY")
+        a.achievement?.code?.startsWith("FIRST_SPOT_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_MAKE_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_MODEL_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_GENERATION_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_TRIM_CITY")
     ).length;
 
     const firstInCountryCount = achievements.filter(a =>
-        a.achievement?.code?.startsWith("FIRST_IN_COUNTRY")
+        a.achievement?.code?.startsWith("FIRST_SPOT_COUNTRY") ||
+        a.achievement?.code?.startsWith("FIRST_MAKE_COUNTRY") ||
+        a.achievement?.code?.startsWith("FIRST_MODEL_COUNTRY") ||
+        a.achievement?.code?.startsWith("FIRST_GENERATION_COUNTRY") ||
+        a.achievement?.code?.startsWith("FIRST_TRIM_COUNTRY")
     ).length;
 
     const cityIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_city.png";
@@ -640,7 +648,7 @@ const Profile = () => {
                             onSubmit={handleCitySave}>
                             <Select
                                 options={cityOptions}
-                                value={selectedCity} // покажет выбранный город или сохранённый
+                                value={selectedCity}
                                 onInputChange={(value) => {
                                     setCityInputValue(value);
                                     handleCityInput(value);
