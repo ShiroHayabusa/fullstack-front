@@ -14,6 +14,7 @@ export default function AddSpot() {
 
     const [spot, setSpot] = useState({
         city: '',
+        region: '',
         country: '',
         latitude: null,
         longitude: null,
@@ -36,6 +37,7 @@ export default function AddSpot() {
     const [longitude, setLongitude] = useState(null);
     const [cityInputValue, setCityInputValue] = useState('');
     const [city, setCity] = useState('');
+    const [region, setRegion] = useState('');
     const [country, setCountry] = useState('');
 
     const [makes, setMakes] = useState([]);
@@ -52,7 +54,7 @@ export default function AddSpot() {
     const [selectedBodystyle, setSelectedBodystyle] = useState(null);
     const [selectedTrim, setSelectedTrim] = useState(null);
 
-    const [locationInfo, setLocationInfo] = useState({ city: '', country: '' });
+    const [locationInfo, setLocationInfo] = useState({ city: '', region: '', country: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [isExifProcessing, setIsExifProcessing] = useState(false);
     const [cityOptions, setCityOptions] = useState([]);
@@ -163,6 +165,7 @@ export default function AddSpot() {
             const location = await fetchLocationInfo(lat, lng);
             setLocationInfo(location);
             setCity(location.city);
+            setRegion(location.region || '');
             setCountry(location.country);
             setError(null);
             setIsManualLocation(false);
@@ -174,7 +177,7 @@ export default function AddSpot() {
             setCityOptions([]);
             setLatitude(null);
             setLongitude(null);
-            setLocationInfo({ city: '', country: '' });
+            setLocationInfo({ city: '', region: '', country: '' });
             setIsManualLocation(true);
         } finally {
             setIsExifProcessing(false);
@@ -218,7 +221,11 @@ export default function AddSpot() {
             });
 
             if (response.data) {
-                return { city: response.data.city, country: response.data.country };
+                return {
+                    city: response.data.city,
+                    region: response.data.region,
+                    country: response.data.country
+                };
             } else {
                 throw new Error('Could not retrieve location info from coordinates.');
             }
@@ -251,14 +258,21 @@ export default function AddSpot() {
             });
             if (response.data && response.data.predictions) {
                 const suggestions = response.data.predictions.map(prediction => {
-                    const parts = prediction.structured_formatting.secondary_text.split(', ');
+                    const terms = prediction.terms || [];
+
+                    const city = terms[0]?.value;
+                    const region = terms.length > 2 ? terms[terms.length - 2]?.value : '';
+                    const country = terms[terms.length - 1]?.value;
+
                     return {
                         value: prediction.place_id,
                         label: prediction.description,
-                        city: prediction.structured_formatting.main_text,
-                        country: parts[parts.length - 1],
+                        city,
+                        region,
+                        country,
                     };
                 });
+
                 setCityOptions(suggestions);
             } else {
                 console.error("Empty result from backend:", response.data);
@@ -271,13 +285,12 @@ export default function AddSpot() {
 
     const handleCitySelect = async (selectedOption) => {
         console.log('Selected option:', selectedOption);
-        setError(null); // Сбрасываем ошибку
+        setError(null);
         if (selectedOption) {
-            // Устанавливаем флаг ручного выбора
             setIsManualLocation(true);
-            // Немедленно обновляем locationInfo для отображения города и страны
             setLocationInfo({
                 city: selectedOption.city,
+                region: selectedOption.region,
                 country: selectedOption.country,
             });
             setSelectedCity(selectedOption);
@@ -285,16 +298,23 @@ export default function AddSpot() {
 
             try {
                 const { lat, lng } = await getCityCoordinates(selectedOption.value);
-                // Синхронизируем все состояния после получения координат
                 setCity(selectedOption.city);
+                setRegion(selectedOption.region || '');
                 setCountry(selectedOption.country);
                 setLatitude(lat);
                 setLongitude(lng);
                 setLocationInfo({
                     city: selectedOption.city,
+                    region: selectedOption.region,
                     country: selectedOption.country,
                 });
-                console.log('Updated locationInfo:', { city: selectedOption.city, country: selectedOption.country, lat, lng });
+                console.log('Updated locationInfo:', {
+                    city: selectedOption.city,
+                    region: selectedOption.region,
+                    country: selectedOption.country,
+                    lat,
+                    lng
+                });
             } catch (err) {
                 console.error('Error fetching coordinates:', err);
                 setError('Failed to fetch city coordinates');
@@ -303,8 +323,9 @@ export default function AddSpot() {
             setIsManualLocation(false);
             setSelectedCity(null);
             setCityInputValue('');
-            setLocationInfo({ city: '', country: '' });
+            setLocationInfo({ city: '', region: '', country: '' });
             setCity('');
+            setRegion('');
             setCountry('');
             setLatitude(null);
             setLongitude(null);
@@ -565,6 +586,8 @@ export default function AddSpot() {
         formData.append("caption", spot.caption);
         formData.append("mainPhotoIndex", mainPhotoIndex);
         formData.append("city", city);
+        formData.append("region", region);
+        console.log('region:', region);
         formData.append("country", country);
         formData.append("latitude", latitude);
         formData.append("longitude", longitude);
@@ -665,13 +688,8 @@ export default function AddSpot() {
                             {selectedFiles.length > 0 && !isExifProcessing && (
                                 <>
                                     <p><strong>Country:</strong> {locationInfo.country || 'Not found'}</p>
+                                    <p><strong>Region:</strong> {locationInfo.region || 'Not found'}</p>
                                     <p><strong>City:</strong> {locationInfo.city || 'Not found'}</p>
-                                    {latitude && longitude && (
-                                        <>
-                                            <p><strong>Latitude:</strong> {latitude || 'Not found'}</p>
-                                            <p><strong>Longitude:</strong> {longitude || 'Not found'}</p>
-                                        </>
-                                    )}
                                     {error && (
                                         <div className="alert alert-danger mt-3" role="alert">
                                             {error}

@@ -128,12 +128,12 @@ const Profile = () => {
         a.achievement?.code?.startsWith("FIRST_IN_COUNTRY")
     );
 
-    const firstInCityCount = achievements.filter(a =>
-        a.achievement?.code?.startsWith("FIRST_SPOT_CITY") ||
-        a.achievement?.code?.startsWith("FIRST_MAKE_CITY") ||
-        a.achievement?.code?.startsWith("FIRST_MODEL_CITY") ||
-        a.achievement?.code?.startsWith("FIRST_GENERATION_CITY") ||
-        a.achievement?.code?.startsWith("FIRST_TRIM_CITY")
+    const firstInWorldCount = achievements.filter(a =>
+        a.achievement?.code?.startsWith("FIRST_SPOT_WORLD") ||
+        a.achievement?.code?.startsWith("FIRST_MAKE_WORLD") ||
+        a.achievement?.code?.startsWith("FIRST_MODEL_WORLD") ||
+        a.achievement?.code?.startsWith("FIRST_GENERATION_WORLD") ||
+        a.achievement?.code?.startsWith("FIRST_TRIM_WORLD")
     ).length;
 
     const firstInCountryCount = achievements.filter(a =>
@@ -144,8 +144,27 @@ const Profile = () => {
         a.achievement?.code?.startsWith("FIRST_TRIM_COUNTRY")
     ).length;
 
-    const cityIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_city.png";
+    const firstInRegionCount = achievements.filter(a =>
+        a.achievement?.code?.startsWith("FIRST_SPOT_REGION") ||
+        a.achievement?.code?.startsWith("FIRST_MAKE_REGION") ||
+        a.achievement?.code?.startsWith("FIRST_MODEL_REGION") ||
+        a.achievement?.code?.startsWith("FIRST_GENERATION_REGION") ||
+        a.achievement?.code?.startsWith("FIRST_TRIM_REGION")
+    ).length;
+
+    const firstInCityCount = achievements.filter(a =>
+        a.achievement?.code?.startsWith("FIRST_SPOT_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_MAKE_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_MODEL_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_GENERATION_CITY") ||
+        a.achievement?.code?.startsWith("FIRST_TRIM_CITY")
+    ).length;
+
+    const worldIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_world.png";
     const countryIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_country.png";
+    const regionIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_region.png";
+    const cityIconUrl = "https://newloripinbucket.s3.amazonaws.com/image/icons/first_in_city.png";
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -573,8 +592,23 @@ const Profile = () => {
                             </div>
                         )}
 
-                        {(firstInCityCount > 0 || firstInCountryCount > 0) && (
+                        {(firstInWorldCount > 0 || firstInCountryCount > 0 || firstInRegionCount > 0 || firstInCityCount > 0) && (
                             <div className="d-flex flex-wrap border-top pt-3">
+                                {firstInWorldCount > 0 && (
+                                    <div className="text-center me-3 mb-3">
+                                        <Link to={`/profile/achievements/world/${currentUser.id}`} className="text-decoration-none text-dark">
+                                            <div className="d-flex flex-column align-items-center">
+                                                <img
+                                                    src={worldIconUrl}
+                                                    style={{ width: 'auto', height: '75px' }}
+                                                    alt="First in World"
+                                                    className='img-fluid'
+                                                />
+                                                <div className="text-muted fw-bold fs-5">{firstInWorldCount}</div>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )}
                                 {firstInCountryCount > 0 && (
                                     <div className="text-center me-3 mb-3">
                                         <Link to={`/profile/achievements/country/${currentUser.id}`} className="text-decoration-none text-dark">
@@ -586,6 +620,21 @@ const Profile = () => {
                                                     className='img-fluid'
                                                 />
                                                 <div className="text-muted fw-bold fs-5">{firstInCountryCount}</div>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )}
+                                {firstInRegionCount > 0 && (
+                                    <div className="text-center me-3 mb-3">
+                                        <Link to={`/profile/achievements/region/${currentUser.id}`} className="text-decoration-none text-dark">
+                                            <div className="d-flex flex-column align-items-center">
+                                                <img
+                                                    src={regionIconUrl}
+                                                    style={{ width: 'auto', height: '75px' }}
+                                                    alt="First in Region"
+                                                    className='img-fluid'
+                                                />
+                                                <div className="text-muted fw-bold fs-5">{firstInRegionCount}</div>
                                             </div>
                                         </Link>
                                     </div>
@@ -632,7 +681,7 @@ const Profile = () => {
                         {bioDirty && (
                             <button
                                 type="button"
-                                className="btn btn-primary"
+                                className="btn btn-primary mb-2"
                                 onClick={handleBioSave}
                             >
                                 Save
@@ -643,7 +692,9 @@ const Profile = () => {
                                 {bioError}
                             </div>
                         )}
-                        <strong>City: </strong>
+                        <div>
+                            <strong>City: </strong>
+                        </div>
                         <form className='mb-3'
                             onSubmit={handleCitySave}>
                             <Select
