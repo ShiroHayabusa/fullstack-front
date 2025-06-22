@@ -94,6 +94,11 @@ const Navbar = () => {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         {user?.token ? (
                             <li className="nav-item">
+                                <Link className="nav-link text-secondary" to="/feed">Feed</Link>
+                            </li>
+                        ) : null}
+                        {user?.token ? (
+                            <li className="nav-item">
                                 <Link className="nav-link text-secondary" to="/myspots">My spots</Link>
                             </li>
                         ) : null}
@@ -133,7 +138,7 @@ const Navbar = () => {
                                     }),
                                     singleValue: (base) => ({
                                         ...base,
-                                        textAlign: "left", 
+                                        textAlign: "left",
                                     }),
                                     option: (base) => ({
                                         ...base,

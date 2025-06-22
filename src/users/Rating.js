@@ -12,6 +12,13 @@ export default function Rating() {
                     </ol>
                 </nav>
                 <div className="col-md-5 text-start mb-3">
+                    <p>
+                        The rating is calculated as follows: when a spot is added, 5 points are awarded. If a make is 
+                        specified, an additional 5 points are given, and the same applies to model, generation, and trim. 
+                        This means that if all details are provided, a spot can earn up to 25 points. Additionally, 
+                        trims are evaluated based on their rarity and may earn extra points accordingly. 
+                        A table with rarity scores is provided below.
+                    </p>
                     <h5 className="h5 pb-1 mb-3 text-black border-bottom border-black text-start">Rating calculation</h5>
                     <table class="table table-sm">
                         <thead>
@@ -75,7 +82,7 @@ export default function Rating() {
                         </tbody>
                     </table>
 
-                    <p>Comment - 1 pts</p>
+                    <p>Also, 1 point is awarded for each comment.</p>
                 </div>
             </div>
         </div>

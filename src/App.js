@@ -126,7 +126,7 @@ import Rating from './users/Rating';
 
 import Achievements from './users/Achievements';
 
-
+import Feed from './users/Feed';
 
 const routerOptions = {
   future: {
@@ -137,7 +137,6 @@ const routerOptions = {
 function App() {
 
   const enableAnalytics = () => {
-    console.log("Analytics enabled.");
     window.gtag("consent", "update", {
       analytics_storage: "granted",
     });
@@ -273,6 +272,8 @@ function App() {
             <Route exact path="/profile/leaderboard" element={<Leaderboard />} />
             <Route exact path="/statistics" element={<Statistics />} />
             <Route exact path="/profile/achievements/:type/:id" element={<Achievements />} />
+
+            <Route exact path="/feed" element={<Feed />} />
 
             {/* Protected Routes */}
 

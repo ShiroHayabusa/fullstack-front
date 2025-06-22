@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import Masonry from 'react-masonry-css';
 import '../components/Masonry.css'
+import FollowButton from '../components/FollowButton';
 
 const UserPage = () => {
     const [currentUser, setCurrentUser] = useState(null);
@@ -35,8 +36,8 @@ const UserPage = () => {
     const fetchUser = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
-            console.log("Fetched User Data:", response.data); // Debugging log
             setCurrentUser(response.data);
+
         } catch (err) {
             console.error('Error loading user:', err);
         } finally {
@@ -59,7 +60,6 @@ const UserPage = () => {
                 return [...prevSpots, ...newSpots];
             });
             setHasMore(result.data.totalPages > page + 1);
-            console.log("spots", spots);
         } catch (error) {
             console.error("Failed to fetch spots", error);
         }
@@ -86,6 +86,7 @@ const UserPage = () => {
                 }
             );
             setStats(response.data);
+
         } catch (error) {
             console.error("Failed to fetch user stats:", error);
         }
@@ -127,6 +128,11 @@ const UserPage = () => {
                         </div>
                     )}
                     <span>{currentUser?.username}</span>
+                    {user.username !== currentUser.username && (
+                        <FollowButton targetUserId={userId} />
+                    )}
+
+
                 </div>
             </div>
 

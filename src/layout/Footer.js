@@ -23,7 +23,7 @@ export default function Footer() {
                         ><i className="bi bi-facebook" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
-                        <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button" style={{ border: "none" }}
+                        <a className="btn btn-outline-light btn-floating m-1" href="https://x.com/LoripinInc" role="button" style={{ border: "none" }}
                         ><i className="bi bi-twitter-x" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
