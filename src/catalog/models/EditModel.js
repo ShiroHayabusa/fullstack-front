@@ -21,7 +21,7 @@ export default function EditModel() {
     useEffect(() => {
         const fetchModelEntity = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/editModel`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -70,7 +70,7 @@ export default function EditModel() {
             if (response.status === 200) {
                 setSuccess('Make updated successfully');
                 setError('');
-                navigate(`/catalog/${make}/${modelEntity.name}`);
+                navigate(`/catalog/${make}/${model}`);
             }
         } catch (error) {
             setError('Error updating make: ' + (error.response?.data?.message || error.message));
@@ -80,11 +80,11 @@ export default function EditModel() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
+                <ol className="breadcrumb mt-2">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
-                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{modelEntity.name}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit model</li>
                 </ol>
             </nav>

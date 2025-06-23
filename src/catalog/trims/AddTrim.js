@@ -46,6 +46,16 @@ export default function AddTrim() {
     const [mainPhotoIndex, setMainPhotoIndex] = useState(0);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [marketList, setMarketList] = useState([]);
+    const [modelDetails, setModelDetails] = useState(null);
+
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
 
     const loadBodystyleEntity = async () => {
         const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
@@ -63,6 +73,7 @@ export default function AddTrim() {
         fetchDrivetrainData();
         fetchTunerData();
         fetchMarketData();
+        loadModelDetails();
     }, [make, model, generationId, bodystyleId]);
 
     const onChange = (e) => {
@@ -209,11 +220,11 @@ export default function AddTrim() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
+                <ol className="breadcrumb mt-2">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</Link></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
                     <li className="breadcrumb-item active" aria-current="page">Add trim</li>

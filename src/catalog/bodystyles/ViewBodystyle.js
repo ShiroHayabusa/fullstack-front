@@ -20,6 +20,7 @@ export default function ViewBodystyle() {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const { user } = useAuth();
+    const [modelDetails, setModelDetails] = useState(null);
 
     const breakpointColumnsObj = {
         default: 5,
@@ -32,7 +33,18 @@ export default function ViewBodystyle() {
         loadTrims();
         fetchSpots();
         loadBodystyle();
+        loadModelDetails();
     }, [user]);
+
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
+
 
     const loadTrims = async () => {
         const result = await axios.get(
@@ -105,13 +117,13 @@ export default function ViewBodystyle() {
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                         <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                        <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                        <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${bodystyle.generation.id}`} className="text-decoration-none">{bodystyle.generation.name}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{bodystyle.bodytype?.name}</li>
                     </ol>
                 </nav>
                 <div className="h5 pb-1 mb-3 text-black border-bottom border-muted text-start">
-                    {make} {model} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
+                    {make} {modelDetails?.name} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
                 </div>
                 <div className="row row-cols-1 row-cols-sm-2">
                     <div className='col-md-8'>
@@ -189,7 +201,7 @@ export default function ViewBodystyle() {
 
                 </div>
                 <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-muted text-start">
-                    Spots with {make} {model} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
+                    Spots with {make} {modelDetails?.name} {bodystyle.generation.name} {bodystyle.facelift.name} {bodystyle.bodytype?.name}
                 </div>
                 <div className="row row-cols-2 row-cols-md-5">
                     <Masonry

@@ -64,7 +64,7 @@ export default function ViewEngine() {
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb mt-3">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/engines" className="text-decoration-none">Bodies</a></li>
+                        <li className="breadcrumb-item"><a href="/engines" className="text-decoration-none">Engines</a></li>
                         <li className="breadcrumb-item"><a href={`/engines/${make}/`} className="text-decoration-none">{make}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{engine.name}</li>
                     </ol>
@@ -84,7 +84,7 @@ export default function ViewEngine() {
 
                                 <Link
                                     className='text-decoration-none text-dark text-center mb-3'
-                                    to={`/catalog/${trim.make.name}/${trim.model.name}/${trim.bodystyle.generation?.id}/${trim.bodystyle.id}/${trim.id}`} key={trim.id}>
+                                    to={`/catalog/${trim.make.name}/${trim.model.id}/${trim.bodystyle.generation?.id}/${trim.bodystyle.id}/${trim.id}`} key={trim.id}>
                                     <img
                                         src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${trim.spotUser}/${trim.spotId}/${trim.photoName}`}
                                         className="img-fluid"

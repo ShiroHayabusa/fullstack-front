@@ -77,9 +77,9 @@ export default function ViewBody() {
                         >
                             {trims.map((trim) => (
 
-                                <Link 
-                                className='text-decoration-none text-dark text-center mb-3'
-                                to={`/catalog/${trim.make.name}/${trim.model.name}/${trim.bodystyle.generation?.id}/${trim.bodystyle.id}/${trim.id}`} key={trim.id}>
+                                <Link
+                                    className='text-decoration-none text-dark text-center mb-3'
+                                    to={`/catalog/${trim.make.name}/${trim.model.id}/${trim.bodystyle.generation?.id}/${trim.bodystyle.id}/${trim.id}`} key={trim.id}>
                                     <img
                                         src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${trim.spotUser}/${trim.spotId}/${trim.photoName}`}
                                         className="img-fluid"

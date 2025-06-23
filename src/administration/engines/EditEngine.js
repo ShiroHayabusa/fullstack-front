@@ -27,7 +27,7 @@ export default function EditEngine() {
     useEffect(() => {
         const fetchEngine = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/engines/${make}/${engineId}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/engines/${make}/${engineId}`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
@@ -119,7 +119,7 @@ export default function EditEngine() {
         }
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/engines/${make}/${engineId}`, formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/engines/${make}/${engineId}`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -127,7 +127,7 @@ export default function EditEngine() {
             if (response.status === 200) {
                 setSuccess('Engine updated successfully');
                 setError('');
-                navigate(`/admin/engines/${make}/${engineId}`);
+                navigate(`/engines/${make}/${engineId}`);
             }
         } catch (error) {
             setError('Error updating engine: ' + error.message);
@@ -140,9 +140,9 @@ export default function EditEngine() {
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/admin/engines' className="text-decoration-none">Engines</a></li>
-                    <li className="breadcrumb-item"><a href={`/admin/engines/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li className="breadcrumb-item"><a href={`/admin/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
+                    <li className="breadcrumb-item"><a href='/engines' className="text-decoration-none">Engines</a></li>
+                    <li className="breadcrumb-item"><a href={`/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href={`/engines/${make}/${engineId}`} className="text-decoration-none">{engine.name}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit engine</li>
                 </ol>
             </nav>

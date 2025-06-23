@@ -26,12 +26,22 @@ export default function ViewGeneration() {
     const [inputVisible, setInputVisible] = useState(false);
     const [videos, setVideos] = useState([]);
     const [activeTab, setActiveTab] = useState("spots");
+    const [modelDetails, setModelDetails] = useState(null);
 
     const breakpointColumnsObj = {
         default: 5,
         1100: 4,
         700: 3,
         500: 2
+    };
+
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
     };
 
     useEffect(() => {
@@ -41,6 +51,7 @@ export default function ViewGeneration() {
         };
         loadData();
         fetchSpots();
+        loadModelDetails();
     }, []);
 
     const loadFacelifts = async () => {
@@ -164,13 +175,13 @@ export default function ViewGeneration() {
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                         <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                        <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                        <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{generation.name}</li>
                     </ol>
                 </nav>
                 <div className="row row-cols-1 row-cols-md-3 mb-3">
                     <div className="col-md-4 mb-3 text-start">
-                        <h5>{make} {model}</h5>
+                        <h5>{make} {modelDetails?.name}</h5>
                         <h5>{generation.name}</h5>
                         <span>{generation?.years}</span>
                         {generation.bodies && generation.bodies.length > 0 && (

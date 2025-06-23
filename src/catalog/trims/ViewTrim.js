@@ -10,6 +10,7 @@ import '../../components/Masonry.css'
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { useSwipeable } from 'react-swipeable';
 import '../../components/PhotoModal.css';
+import SwipeablePhotoModal from '../../components/SwipeablePhotoModal';
 
 export default function ViewTrim() {
     const [showModal, setShowModal] = useState(false);
@@ -25,6 +26,7 @@ export default function ViewTrim() {
     const [replyingTo, setReplyingTo] = useState(null);
     const [replyContent, setReplyContent] = useState('');
     const [expandedReplies, setExpandedReplies] = useState({});
+    const [modelDetails, setModelDetails] = useState(null);
 
     const breakpointColumnsObj = {
         default: 2,
@@ -33,6 +35,14 @@ export default function ViewTrim() {
         500: 2
     };
 
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
 
     const handleOpenModal = (index) => {
         if (spotPhotos && spotPhotos.length > 0) {
@@ -60,38 +70,6 @@ export default function ViewTrim() {
             prevIndex === 0 ? spotPhotos.length - 1 : prevIndex - 1
         );
         setSwipeOffset(0);
-    };
-
-    const swipeHandlers = useSwipeable({
-        onSwiping: (eventData) => {
-            setSwipeOffset(eventData.deltaX);
-        },
-        onSwipedLeft: (eventData) => {
-            if (Math.abs(eventData.deltaX) > 100) {
-                handleNextPhoto();
-            } else {
-                setSwipeOffset(0);
-            }
-        },
-        onSwipedRight: (eventData) => {
-            if (Math.abs(eventData.deltaX) > 100) {
-                handlePrevPhoto();
-            } else {
-                setSwipeOffset(0);
-            }
-        },
-        delta: 10,
-        preventDefaultTouchmoveEvent: true,
-        trackTouch: true,
-        trackMouse: true,
-    });
-
-    const getNextPhotoIndex = () => {
-        return (currentPhotoIndex + 1) % spotPhotos.length;
-    };
-
-    const getPrevPhotoIndex = () => {
-        return (currentPhotoIndex - 1 + spotPhotos.length) % spotPhotos.length;
     };
 
     useEffect(() => {
@@ -157,6 +135,7 @@ export default function ViewTrim() {
         loadTrim();
         fetchSpots();
         fetchSpotPhotos();
+        loadModelDetails();
     }, []);
 
     const loadTrim = async () => {
@@ -316,7 +295,7 @@ export default function ViewTrim() {
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                         <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                        <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                        <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{trim.bodystyle.generation?.name}</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{trim.bodystyle.bodytype?.name}</a></li>
                         <li className="breadcrumb-item active" aria-current="page">{trim.name}</li>
@@ -325,7 +304,7 @@ export default function ViewTrim() {
                 <div className="d-flex justify-content-between align-items-center border-bottom border-muted mb-3">
                     <div className="h5 text-black text-start">
                         {trim?.altName && trim?.altName !== 'undefined' ? `${make} ${trim.altName}`
-                            : `${make} ${model} ${trim.name}`}
+                            : `${make} ${modelDetails?.name} ${trim.name}`}
                     </div>
 
 
@@ -382,45 +361,11 @@ export default function ViewTrim() {
                                 ))}
                             </div>
                         </div>
-                        <Modal
+                        <SwipeablePhotoModal
                             show={showModal}
-                            onHide={handleCloseModal}
-                            fullscreen={true}
-                            dialogClassName="borderless-modal"
-                        >
-                            <Modal.Body {...swipeHandlers}>
-                                <div className="photo-container" onClick={handleCloseModal}>
-                                    {trim && spotPhotos && spotPhotos.length > 0 ? (
-                                        <div
-                                            className="photo-wrapper"
-                                            style={{ transform: `translateX(${swipeOffset}px)` }}
-                                        >
-                                            <img
-                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[currentPhotoIndex].photoPath}`}
-                                                className="photo-slide current"
-                                                alt="Current car photo"
-                                            />
-                                            {swipeOffset > 0 && (
-                                                <img
-                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[getPrevPhotoIndex()].photoPath}`}
-                                                    className="photo-slide previous"
-                                                    alt="Previous car photo"
-                                                />
-                                            )}
-                                            {swipeOffset < 0 && (
-                                                <img
-                                                    src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spotPhotos[getNextPhotoIndex()].photoPath}`}
-                                                    className="photo-slide next"
-                                                    alt="Next car photo"
-                                                />
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <p>Фото не доступны</p>
-                                    )}
-                                </div>
-                            </Modal.Body>
-                        </Modal>
+                            onClose={handleCloseModal}
+                            photos={spotPhotos}
+                        />
                     </div>
                     <div className="col">
                         <ul className="list-group list-group-flush">
@@ -459,12 +404,24 @@ export default function ViewTrim() {
 
                             {trim.engine && (
                                 <li className="list-group-item text-start">
-                                    Engine: <Link to={`/engines/${make}/${trim.engine?.id}`} className="text-decoration-none">{trim.engine?.name}</Link>
-                                    {trim.engine && (
-                                        <p>{trim.engine?.displacement} l, {trim.engine?.power} hp, {trim.engine?.torque} Nm</p>
-                                    )}
+                                    Engine: <Link to={`/engines/${make}/${trim.engine.id}`} className="text-decoration-none">
+                                        {trim.engine.name}
+                                    </Link>
+                                    {(() => {
+                                        const parts = [];
+
+                                        if (trim.engine.engineType?.name) parts.push(trim.engine.engineType.name);
+                                        if (trim.engine.displacement) parts.push(`${trim.engine.displacement}L`);
+                                        if (trim.engine.power) parts.push(`${trim.engine.power} hp`);
+                                        if (trim.engine.torque) parts.push(`${trim.engine.torque} Nm`);
+
+                                        if (parts.length === 0) return null;
+
+                                        return <p>{parts.join(', ')}</p>;
+                                    })()}
                                 </li>
                             )}
+
 
                             {trim.transmission && (
                                 <li className="list-group-item text-start">

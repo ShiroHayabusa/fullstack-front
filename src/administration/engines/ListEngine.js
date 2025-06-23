@@ -35,7 +35,7 @@ export default function ListEngine() {
         <div>
             {user?.roles.includes("ROLE_ADMIN") && (
                 <ul className="nav">
-                    <Link className="nav-link active" aria-current="page" to={`/engines/${make}/addEngine`}
+                    <Link className="nav-link active" aria-current="page" to={`/admin/engines/${make}/addEngine`}
                     >Add Engine</Link>
                 </ul>
             )}

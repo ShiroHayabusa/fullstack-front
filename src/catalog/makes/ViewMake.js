@@ -15,7 +15,7 @@ export default function ViewMake() {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const { user } = useAuth();
-    const [trims, setTrims] = useState([]);
+    const [generations, setGenerations] = useState([]);
     const [spotsWithoutPage, setSpotsWithoutPage] = useState([]);
     const [totalCells, setTotalCells] = useState(null);
     const [filteredModels, setFilteredModels] = useState([]);
@@ -54,23 +54,23 @@ export default function ViewMake() {
             setMakeDetails(makeDetailsRes.data);
 
             if (user?.token) {
-                const [trimsRes, spotsRes] = await Promise.all([
-                    axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/trims`, {
+                const [generationsRes, spotsRes] = await Promise.all([
+                    axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/generations`, {
                         headers: { Authorization: `Bearer ${user.token}` },
                     }),
                     axios.get(`${process.env.REACT_APP_API_URL}/api/spots/${make}/user`, {
                         headers: { Authorization: `Bearer ${user.token}` },
                     })
                 ]);
-                setTrims(trimsRes.data);
-                setTotalCells(trimsRes.data.length);
+                setGenerations(generationsRes.data);
+                setTotalCells(generationsRes.data.length);
                 setSpotsWithoutPage(spotsRes.data);
             }
 
             setInitialLoadDone(true);
 
         } catch (error) {
-            console.error('Ошибка загрузки данных марки:', error);
+            console.error('Failed to load make details:', error);
         }
     };
 
@@ -85,7 +85,7 @@ export default function ViewMake() {
             });
             setHasMore(result.data.totalPages > page + 1);
         } catch (error) {
-            console.error("Ошибка загрузки спотов:", error);
+            console.error("Failed to load spots:", error);
         }
     };
 
@@ -115,9 +115,9 @@ export default function ViewMake() {
 
     const sortedKeys = Object.keys(groupedList).sort();
 
-    const matchingCount = trims.filter(trim =>
+    const matchingCount = generations.filter(generation =>
         spotsWithoutPage.some(spot =>
-            spot.trim && spot.trim.id === trim.id
+            spot.generation && spot.generation.id === generation.id
         )
     ).length;
 
@@ -195,7 +195,7 @@ export default function ViewMake() {
                                         <ul className="list-group">
                                             {groupedList[letter].map((model) => (
                                                 <li className="list-group-item border-0" key={model.id}>
-                                                    <a href={`/catalog/${make}/${model.name}`} className="text-decoration-none">
+                                                    <a href={`/catalog/${make}/${model.id}`} className="text-decoration-none">
                                                         <p>
                                                             {model.name} {model.spotsCount > 0 && ` (${model.spotsCount})`}
                                                         </p>
@@ -209,6 +209,7 @@ export default function ViewMake() {
                         </div>
                     </div>
                     <div className='col-md-4 mb-5'>
+   
                         {user?.token && (
                             <div className="mb-3 text-start">
                                 <h6>Spots progress:</h6>
@@ -226,10 +227,11 @@ export default function ViewMake() {
                                 </div>
                             </div>
                         )}
+
                         <Grid
                             make={make}
                             user={user}
-                            trims={trims}
+                            generations={generations}
                             spotsWithouPage={spotsWithoutPage}
                             totalCells={totalCells}
                         />

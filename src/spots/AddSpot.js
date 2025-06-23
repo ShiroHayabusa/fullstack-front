@@ -405,7 +405,7 @@ export default function AddSpot() {
     }, [selectedMake, user]);
 
     const optionsModel = models.map((model) => ({
-        value: model.name,
+        value: model.id,
         label: model.name,
     }));
 
@@ -417,7 +417,7 @@ export default function AddSpot() {
                 const fetchGenerations = async () => {
                     try {
                         const response =
-                            await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}`, {
+                            await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/generations`, {
                                 headers: {
                                     Authorization: `Bearer ${user.token}`,
                                 },

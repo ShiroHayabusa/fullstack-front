@@ -30,18 +30,29 @@ export default function AddBodystyle() {
     const [generationEntity, setGenerationEntity] = useState({
         name: ''
     });
+    const [modelDetails, setModelDetails] = useState(null);
 
     const { user } = useAuth();
+
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
 
     useEffect(() => {
         fetchBodytypeData();
         fetchFaceliftData();
         fetchMarketData();
         loadGenerationEntity();
+        loadModelDetails();
     }, [])
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}/editGeneration`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -160,11 +171,11 @@ export default function AddBodystyle() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
+                <ol class="breadcrumb mt-2">
                     <li class="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li class="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                     <li class="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</Link></li>
                     <li class="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generation}`} className="text-decoration-none">{generationEntity.name}</Link></li>
                     <li class="breadcrumb-item active" aria-current="page">Add bodystyle</li>
                 </ol>

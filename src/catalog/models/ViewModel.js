@@ -33,7 +33,7 @@ export default function ViewModel() {
 
     const loadGenerations = async () => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/generations`);
             setGenerations(result.data);
         } catch (error) {
             console.error("Error loading generations:", error);
@@ -42,7 +42,7 @@ export default function ViewModel() {
 
     const loadModelDetails = async () => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/editModel`);
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
             setModelDetails(result.data);
         } catch (error) {
             console.error('Error loading model details:', error);
@@ -95,13 +95,13 @@ export default function ViewModel() {
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                         <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                         <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                        <li className="breadcrumb-item active" aria-current="page">{model}</li>
+                        <li className="breadcrumb-item active" aria-current="page">{modelDetails?.name}</li>
                     </ol>
                 </nav>
 
                 <div className="row row-cols-1 row-cols-md-3 mb-3 border-bottom border-muted">
                     <div className="col-md-3 mb-3 text-start">
-                        <h5>{make} {model}</h5>
+                        <h5>{make} {modelDetails?.name}</h5>
                         <span>{modelDetails?.years}</span>
                     </div>
                     <div className="col-md-9">
@@ -114,7 +114,7 @@ export default function ViewModel() {
                         .slice()
                         .sort((a, b) => {
                             const getGenerationNumber = (name) => {
-                                const match = name.match(/^(\d+)/); // ищем число в начале строки
+                                const match = name.match(/^(\d+)/);
                                 return match ? parseInt(match[1]) : 0;
                             };
                             return getGenerationNumber(a.name) - getGenerationNumber(b.name);
@@ -152,7 +152,7 @@ export default function ViewModel() {
                 </div>
 
                 <div className="h5 pb-1 mb-3 mt-5 text-black border-bottom border-muted text-start">
-                    Spots with {make} {model}
+                    Spots with {make} {modelDetails?.name}
                 </div>
 
                 <div className="row row-cols-2 row-cols-md-5">

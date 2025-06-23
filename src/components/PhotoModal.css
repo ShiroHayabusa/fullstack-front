@@ -33,8 +33,11 @@
 .photo-container {
     position: relative;
     overflow: hidden;
+    justify-content: center;
+    align-items: center;
     width: 100vw;
     height: 100vh;
+    touch-action: none;
 }
 
 .photo-wrapper {
@@ -43,14 +46,17 @@
     width: 100%;
     height: 100%;
     transition: transform 0.3s ease-in-out;
+    touch-action: pan-y;
 }
 
 .photo-slide {
     flex: 0 0 100%;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     object-fit: contain;
     background: black;
+    user-select: none;
+    pointer-events: none;
 }
 
 .photo-slide.current {
@@ -70,4 +76,33 @@
     top: 0;
     left: 100%;
     z-index: 0;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: white;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+    padding: 0 10px;
+    z-index: 1000;
+    line-height: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.nav-arrow:hover {
+    opacity: 1;
+}
+
+.nav-left {
+    left: 10px;
+}
+
+.nav-right {
+    right: 10px;
 }

@@ -14,15 +14,14 @@ export default function AddFacelift() {
 
     const { name, description } = facelift;
     const { make, model, generation } = useParams();
+    const [modelDetails, setModelDetails] = useState(null);
 
-    const [generationEntity, setGenerationEntity] = useState({
-        name: ''
-    });
+    const [generationEntity, setGenerationEntity] = useState(null);
 
     const { user } = useAuth();
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generation}/editGeneration`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -30,8 +29,18 @@ export default function AddFacelift() {
         setGenerationEntity(result.data);
     }
 
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
+
     useEffect(() => {
         loadGenerationEntity();
+        loadModelDetails();
     }, [])
 
     const onInputChange = (e) => {
@@ -56,12 +65,12 @@ export default function AddFacelift() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
+                <ol className="breadcrumb mt-2">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
-                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generation}`} className="text-decoration-none">{generationEntity.name}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generation}`} className="text-decoration-none">{generationEntity?.name}</Link></li>
                     <li className="breadcrumb-item active" aria-current="page">Add facelift</li>
                 </ol>
             </nav>

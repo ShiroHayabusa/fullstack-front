@@ -54,6 +54,7 @@ export default function EditTrim() {
 
     const [photos, setPhotos] = useState([]);
     const { user } = useAuth();
+    const [modelDetails, setModelDetails] = useState(null);
 
     const loadBodystyleEntity = async () => {
         const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/${bodystyleId}/getOne`, {
@@ -111,6 +112,16 @@ export default function EditTrim() {
         }
     };
 
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
+
+
     useEffect(() => {
         loadBodystyleEntity();
         fetchMarkets();
@@ -120,6 +131,7 @@ export default function EditTrim() {
         fetchDrivetrains();
         fetchTuners();
         fetchTrim();
+        loadModelDetails();
     }, []);
 
     const onInputChange = (e) => {
@@ -362,7 +374,7 @@ export default function EditTrim() {
     const onSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        
+
         formData.append('uniq', trim.uniq ? 'true' : 'false');
         formData.append('electric', trim.electric ? 'true' : 'false');
         formData.append('hybrid', trim.hybrid ? 'true' : 'false');
@@ -379,7 +391,7 @@ export default function EditTrim() {
             'battery',
             'range'
         ];
-    
+
         fieldsToSend.forEach(key => {
             formData.append(key, trim[key]);
         });
@@ -436,7 +448,7 @@ export default function EditTrim() {
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</Link></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{bodystyleEntity.generation.name}</Link></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}`} className="text-decoration-none">{bodystyleEntity.bodytype?.name}</Link></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}/${generationId}/${bodystyleId}/${trimId}`} className="text-decoration-none">{trim.name}</Link></li>

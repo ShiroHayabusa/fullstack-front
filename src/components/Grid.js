@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const ContributionGrid = ({ make, user, trims, spotsWithouPage, totalCells }) => {
+const ContributionGrid = ({ make, generations, spotsWithouPage, totalCells }) => {
   const cellSize = 15; 
   const navigate = useNavigate(); 
 
@@ -24,17 +22,17 @@ const ContributionGrid = ({ make, user, trims, spotsWithouPage, totalCells }) =>
     >
       {cellsArray.map((_, index) => {
 
-        const currentTrim = trims[index];
+        const currentGeneration = generations[index];
 
         const isMarked =
-          currentTrim &&
+          currentGeneration &&
           spotsWithouPage &&
-          spotsWithouPage.some(spot => spot.trim?.id === currentTrim.id);
+          spotsWithouPage.some(spot => spot.generation?.id === currentGeneration.id);
 
         const backgroundColor = isMarked ? '#14c609' : 'transparent';
 
-        const tooltipText = currentTrim
-          ? `${currentTrim.model?.name}\n${currentTrim.bodystyle.generation.name}\n${currentTrim.bodystyle.bodytype.name}\n${currentTrim.name}` // Здесь можно добавить другую информацию, например, model или year.
+        const tooltipText = currentGeneration
+          ? `${currentGeneration.model?.name}\n${currentGeneration.name}` 
           : 'No data';
 
         return (
@@ -42,8 +40,8 @@ const ContributionGrid = ({ make, user, trims, spotsWithouPage, totalCells }) =>
             key={index}
 
             onClick={() => {
-              if (currentTrim && currentTrim.id) {
-                navigate(`/catalog/${make}/${currentTrim.model?.name}/${currentTrim.bodystyle.generation.id}/${currentTrim.bodystyle.id}/${currentTrim.id}`);
+              if (currentGeneration && currentGeneration.id) {
+                navigate(`/catalog/${make}/${currentGeneration.model?.name}/${currentGeneration.id}`);
               }
             }}
             style={{

@@ -8,6 +8,7 @@ import GoogleMapWithMarker from '../components/GoogleMapWithMarker';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { useSwipeable } from 'react-swipeable';
 import '../components/PhotoModal.css';
+import SwipeablePhotoModal from '../components/SwipeablePhotoModal';
 
 
 export default function ViewSpot() {
@@ -26,8 +27,6 @@ export default function ViewSpot() {
 
     const [likes, setLikes] = useState(0);
     const [hasLiked, setHasLiked] = useState(false);
-
-
 
     const loadSpot = async () => {
         try {
@@ -60,16 +59,8 @@ export default function ViewSpot() {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [swipeOffset, setSwipeOffset] = useState(0);
 
-    const handleOpenModal = (index) => {
-        setCurrentPhotoIndex(index);
-        setShowModal(true);
-        setSwipeOffset(0);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSwipeOffset(0);
-    };
+    const handleOpenModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
 
     const handlePrevPhoto = () => {
         setCurrentPhotoIndex((prevIndex) =>
@@ -348,7 +339,7 @@ export default function ViewSpot() {
                             }} />
                     </div>
                 </div>
-                {user?.username === spot.user?.username && (
+                {(user?.username === spot.user?.username || user?.roles?.includes('ROLE_ADMIN')) && (
                     <ul className="nav mt-3 mb-3" style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
                         <li className="nav-item">
                             <button
@@ -393,42 +384,13 @@ export default function ViewSpot() {
                         )}
                     </div>
 
-                    <Modal
+                    <SwipeablePhotoModal
                         show={showModal}
-                        onHide={handleCloseModal}
-                        fullscreen={true}
-                        dialogClassName="borderless-modal"
-                    >
-                        <Modal.Body {...swipeHandlers}>
-                            <div className="photo-container" onClick={handleCloseModal}>
-                                {spot.photos && spot.photos.length > 0 ? (
-                                    <div className="photo-wrapper" style={{ transform: `translateX(${swipeOffset}px)` }}>
-                                        <img
-                                            src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[currentPhotoIndex].name}`}
-                                            className="photo-slide current"
-                                            alt="Current car photo"
-                                        />
-                                        {swipeOffset > 0 && (
-                                            <img
-                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[getPrevPhotoIndex()].name}`}
-                                                className="photo-slide previous"
-                                                alt="Previous car photo"
-                                            />
-                                        )}
-                                        {swipeOffset < 0 && (
-                                            <img
-                                                src={`https://newloripinbucket.s3.amazonaws.com/image/spots/${spot.user?.username}/${spot.id}/${spot.photos[getNextPhotoIndex()].name}`}
-                                                className="photo-slide next"
-                                                alt="Next car photo"
-                                            />
-                                        )}
-                                    </div>
-                                ) : (
-                                    <p>Not available</p>
-                                )}
-                            </div>
-                        </Modal.Body>
-                    </Modal>
+                        onClose={handleCloseModal}
+                        photos={spot.photos}
+                        user={spot.user}
+                        spotId={spot.id}
+                    />
 
                     <div className="col-md-5">
                         <p
@@ -487,7 +449,7 @@ export default function ViewSpot() {
                                     <tr>
                                         <th scope="row">Model:</th>
                                         <td>
-                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.name}`} className="text-decoration-none">
+                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.id}`} className="text-decoration-none">
                                                 {spot.model?.name}
                                             </Link>
                                         </td>
@@ -495,7 +457,7 @@ export default function ViewSpot() {
                                     <tr>
                                         <th scope="row">Generation:</th>
                                         <td>
-                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.name}/${spot.generation?.id}`} className="text-decoration-none">
+                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.id}/${spot.generation?.id}`} className="text-decoration-none">
                                                 {spot.generation?.name}
                                             </Link>
                                         </td>
@@ -503,7 +465,7 @@ export default function ViewSpot() {
                                     <tr>
                                         <th scope="row">Facelift:</th>
                                         <td>
-                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.name}/${spot.generation?.id}`} className="text-decoration-none">
+                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.id}/${spot.generation?.id}`} className="text-decoration-none">
                                                 {spot.facelift?.name}
                                             </Link>
                                         </td>
@@ -511,7 +473,7 @@ export default function ViewSpot() {
                                     <tr>
                                         <th scope="row">Bodystyle:</th>
                                         <td>
-                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.name}/${spot.generation?.id}/${spot.bodystyle?.id}`} className="text-decoration-none">
+                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.id}/${spot.generation?.id}/${spot.bodystyle?.id}`} className="text-decoration-none">
                                                 {spot.bodystyle?.bodytype?.name}
                                             </Link>
                                         </td>
@@ -519,7 +481,7 @@ export default function ViewSpot() {
                                     <tr>
                                         <th scope="row">Trim:</th>
                                         <td>
-                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.name}/${spot.generation?.id}/${spot.bodystyle?.id}/${spot.trim?.id}`} className="text-decoration-none">
+                                            <Link to={`/catalog/${spot.make?.name}/${spot.model?.id}/${spot.generation?.id}/${spot.bodystyle?.id}/${spot.trim?.id}`} className="text-decoration-none">
                                                 {spot.trim?.name}
                                             </Link>
                                         </td>
@@ -719,10 +681,6 @@ export default function ViewSpot() {
                                         </li>
                                     ))}
                                 </ul>
-
-
-
-
                             </div>
                         </div>
                     </div>

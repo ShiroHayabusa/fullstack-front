@@ -39,6 +39,7 @@
     "react-select": "^5.9.0",
     "react-swipeable": "^7.0.2",
     "react-toastify": "^11.0.2",
+    "react-zoom-pan-pinch": "^3.7.0",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
     "sharethis-reactjs": "^1.6.0",

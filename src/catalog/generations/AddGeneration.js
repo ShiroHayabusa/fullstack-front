@@ -16,6 +16,7 @@ export default function AddGeneration() {
     });
     const [bodyList, setBodyList] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [modelDetails, setModelDetails] = useState(null);
     const { name, years, description } = generation;
     const { make, model } = useParams();
     const [selectedBodies, setSelectedBodies] = useState([]);
@@ -23,6 +24,15 @@ export default function AddGeneration() {
 
     const onInputChange = (e) => {
         setGeneration({ ...generation, [e.target.name]: e.target.value });
+    };
+
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
     };
 
     const fetchBodies = () => {
@@ -55,7 +65,8 @@ export default function AddGeneration() {
     };
 
     useEffect(() => {
-        fetchBodies()
+        fetchBodies();
+        loadModelDetails();
     }, [])
 
     const onSubmit = async (e) => {
@@ -76,7 +87,7 @@ export default function AddGeneration() {
             formData.append('photo', selectedFile);
         }
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/addGeneration`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${modelDetails.id}/addGeneration`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -102,7 +113,7 @@ export default function AddGeneration() {
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href="/catalog" className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><Link to={`/catalog/${make}`} className="text-decoration-none">{make}</Link></li>
-                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</Link></li>
+                    <li className="breadcrumb-item"><Link to={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</Link></li>
                     <li className="breadcrumb-item active" aria-current="page">Add generation</li>
                 </ol>
             </nav>

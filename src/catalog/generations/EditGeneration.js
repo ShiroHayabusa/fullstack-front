@@ -23,6 +23,7 @@ export default function EditGeneration() {
     const [success, setSuccess] = useState('');
     const [selectedBodies, setSelectedBodies] = useState([]);
     const { user } = useAuth();
+    const [modelDetails, setModelDetails] = useState(null);
 
     useEffect(() => {
         const fetchGenerationEntity = async () => {
@@ -44,6 +45,15 @@ export default function EditGeneration() {
             }
         };
 
+        const loadModelDetails = async () => {
+            try {
+                const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+                setModelDetails(result.data);
+            } catch (error) {
+                console.error('Error loading model details:', error);
+            }
+        };
+
         const fetchBodies = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/bodies/${make}`, {
@@ -59,6 +69,7 @@ export default function EditGeneration() {
 
         fetchGenerationEntity();
         fetchBodies();
+        loadModelDetails();
     }, [generationId]);
 
     const options = bodyList.map(body => ({
@@ -138,11 +149,11 @@ export default function EditGeneration() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
+                <ol className="breadcrumb mt-2">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><a href={`/catalog/${make}`} className="text-decoration-none">{make}</a></li>
-                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</a></li>
                     <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit generation</li>
                 </ol>

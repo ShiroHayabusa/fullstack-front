@@ -18,8 +18,18 @@ export default function EditFacelift() {
     const [generationEntity, setGenerationEntity] = useState({
         name: ''
     });
+    const [modelDetails, setModelDetails] = useState(null);
 
     const { user } = useAuth();
+
+    const loadModelDetails = async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}`);
+            setModelDetails(result.data);
+        } catch (error) {
+            console.error('Error loading model details:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchFaceliftEntity = async () => {
@@ -40,10 +50,11 @@ export default function EditFacelift() {
 
         fetchFaceliftEntity();
         loadGenerationEntity();
+        loadModelDetails();
     }, [make, model, generationId, faceliftId]);
 
     const loadGenerationEntity = async () => {
-        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}`, {
+        const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${make}/${model}/${generationId}/editGeneration`, {
             headers: {
                 Authorization: `Bearer ${user.token}`,
             },
@@ -92,11 +103,11 @@ export default function EditFacelift() {
     return (
         <div className='container'>
             <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
+                <ol className="breadcrumb mt-2">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href='/catalog' className="text-decoration-none">Catalog</a></li>
                     <li className="breadcrumb-item"><a href={`/catalog/${make}/`} className="text-decoration-none">{make}</a></li>
-                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{model}</a></li>
+                    <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}`} className="text-decoration-none">{modelDetails?.name}</a></li>
                     <li className="breadcrumb-item"><a href={`/catalog/${make}/${model}/${generationId}`} className="text-decoration-none">{generationEntity.name}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Edit facelift</li>
                 </ol>

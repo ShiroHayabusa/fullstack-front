@@ -149,7 +149,7 @@ export default function EditSpot() {
                 response.data.make ? { value: response.data.make.name, label: response.data.make.name } : null
             );
             setSelectedModel(
-                response.data.model ? { value: response.data.model.name, label: response.data.model.name } : null
+                response.data.model ? { value: response.data.model.id, label: response.data.model.name } : null
             );
             setSelectedGeneration(
                 response.data.generation ? { value: response.data.generation.id, label: response.data.generation.name } : null
@@ -192,7 +192,7 @@ export default function EditSpot() {
 
     const optionsModel = useMemo(() =>
         models.map((model) => ({
-            value: model.name,
+            value: model.id,
             label: model.name,
         })), [models]);
 
@@ -247,7 +247,7 @@ export default function EditSpot() {
             const fetchGenerations = async () => {
                 try {
                     const response =
-                        await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}`, {
+                        await axios.get(`${process.env.REACT_APP_API_URL}/api/catalog/${selectedMake.value}/${selectedModel.value}/generations`, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`,
                             },

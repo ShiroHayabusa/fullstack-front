@@ -75,7 +75,7 @@ export default function AddEngine() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name || !selectedFile) {
+        if (!name) {
             setError('Please provide an engine name and upload photo.');
             return;
         }
@@ -113,7 +113,7 @@ export default function AddEngine() {
                 setError('');
                 setEngine({ name: "" });
                 setSelectedFile(null);
-                navigate(`/admin/engines/${make}`);
+                navigate(`/engines/${make}`);
             }
         } catch (error) {
             console.error('Error adding engine: ', error.message);
@@ -126,8 +126,8 @@ export default function AddEngine() {
                 <ol className="breadcrumb mt-3">
                     <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
                     <li className="breadcrumb-item"><a href='/admin' className="text-decoration-none">Administration</a></li>
-                    <li className="breadcrumb-item"><a href='/admin/engines' className="text-decoration-none">Engines</a></li>
-                    <li className="breadcrumb-item"><a href={`/admin/engines/${make}`} className="text-decoration-none">{make}</a></li>
+                    <li className="breadcrumb-item"><a href='/engines' className="text-decoration-none">Engines</a></li>
+                    <li className="breadcrumb-item"><a href={`/engines/${make}`} className="text-decoration-none">{make}</a></li>
                     <li className="breadcrumb-item active" aria-current="page">Add engine</li>
                 </ol>
             </nav>
