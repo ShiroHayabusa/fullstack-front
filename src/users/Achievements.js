@@ -5,18 +5,33 @@ import axios from 'axios';
 
 const Achievements = () => {
     const { type, userId } = useParams(); // type = city | country
+    const [currentUser, setCurrentUser] = useState(null);
     const [worldAchievements, setWorldAchievements] = useState([]);
     const [countryAchievements, setCountryAchievements] = useState([]);
     const [regionAchievements, setRegionAchievements] = useState([]);
     const [cityAchievements, setCityAchievements] = useState({});
     const { user } = useAuth();
 
+    const fetchUser = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
+            setCurrentUser(response.data);
+
+        } catch (err) {
+            console.error('Error loading user:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
     useEffect(() => {
         const loadFirstAchievements = async () => {
             try {
                 if (type === "world") {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_API_URL}/api/user/profile/first-achievements?type=world`,
+                        `${process.env.REACT_APP_API_URL}/api/user/${userId}/first-achievements?type=world`,
                         { headers: { Authorization: `Bearer ${user.token}` } }
                     );
                     setWorldAchievements(response.data);
@@ -24,7 +39,7 @@ const Achievements = () => {
 
                 if (type === "country") {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_API_URL}/api/user/profile/first-achievements?type=country`,
+                        `${process.env.REACT_APP_API_URL}/api/user/${userId}/first-achievements?type=country`,
                         { headers: { Authorization: `Bearer ${user.token}` } }
                     );
                     setCountryAchievements(response.data);
@@ -32,7 +47,7 @@ const Achievements = () => {
 
                 if (type === "region") {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_API_URL}/api/user/profile/first-achievements?type=region`,
+                        `${process.env.REACT_APP_API_URL}/api/user/${userId}/first-achievements?type=region`,
                         { headers: { Authorization: `Bearer ${user.token}` } }
                     );
                     setRegionAchievements(response.data);
@@ -40,7 +55,7 @@ const Achievements = () => {
 
                 if (type === "city") {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_API_URL}/api/user/profile/first-achievements?type=city`,
+                        `${process.env.REACT_APP_API_URL}/api/user/${userId}/first-achievements?type=city`,
                         { headers: { Authorization: `Bearer ${user.token}` } }
                     );
                     setCityAchievements(response.data);
@@ -115,7 +130,7 @@ const Achievements = () => {
                 <nav aria-label="breadcrumb" className='mt-3'>
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Home</a></li>
-                        <li className="breadcrumb-item"><a href="/user/profile" className="text-decoration-none">Profile</a></li>
+                        <li className="breadcrumb-item"><a href={`/users/${userId}`} className="text-decoration-none">{currentUser?.username}'s userpage</a></li>
                         <li className="breadcrumb-item active" aria-current="page">
                             {labels[type]}
                         </li>
@@ -178,6 +193,32 @@ const Achievements = () => {
 
                     {type === 'country' && countryAchievements.length > 0 && (() => {
                         const grouped = groupByCategory(countryAchievements);
+                        return (
+                            <div className="mt-3">
+                                {Object.entries(grouped).map(([category, items]) =>
+                                    items.length > 0 && (
+                                        <div key={category} className="mb-4">
+                                            <h5 className="text-capitalize text-start">
+                                                {category.replace('FIRST_', 'First ').toLowerCase()}
+                                            </h5>
+                                            <table className="table table-sm">
+                                                <tbody>
+                                                    {items.map((a, i) => (
+                                                        <tr key={i}>
+                                                            <td className="text-start">{a.achievement?.name}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        );
+                    })()}
+
+                    {type === 'region' && regionAchievements.length > 0 && (() => {
+                        const grouped = groupByCategory(regionAchievements);
                         return (
                             <div className="mt-3">
                                 {Object.entries(grouped).map(([category, items]) =>

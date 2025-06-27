@@ -11,27 +11,20 @@ export default function Footer() {
 
                     <section className="mb-4">
 
-                        <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button" style={{ border: "none" }}
+                        <a className="btn btn-outline-light btn-floating m-1" href="https://www.youtube.com/channel/UC6W8I94B5hwJeTKHn7J3WKQ" role="button" style={{ border: "none" }}
                         ><i className="bi bi-youtube" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
-                        <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button" style={{ border: "none" }}
+                        <a className="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/shiro.hayabusa?igsh=eWxseWNvemhuamRs&utm_source=qr" role="button" style={{ border: "none" }}
                         ><i className="bi bi-instagram" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
-                        <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button" style={{ border: "none" }}
+                        <a className="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/profile.php?id=61577371456722" role="button" style={{ border: "none" }}
                         ><i className="bi bi-facebook" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
 
 
                         <a className="btn btn-outline-light btn-floating m-1" href="https://x.com/LoripinInc" role="button" style={{ border: "none" }}
                         ><i className="bi bi-twitter-x" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
-
-
-                        <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button" style={{ border: "none" }}
-                        ><i className="bi bi-linkedin" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
-
-                        <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button" style={{ border: "none" }}
-                        ><i className="bi bi-reddit" style={{"fontSize": "1.5rem", "color": "currentColor"}}></i></a>
                     </section>
 
                 </div>

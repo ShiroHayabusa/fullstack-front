@@ -762,6 +762,7 @@ export default function AddSpot() {
                             isClearable
                             placeholder="Select make"
                             value={selectedMake}
+                            isDisabled={isLoading}
                         />
                         <Select className='text-start mt-3'
                             options={optionsModel}
@@ -770,7 +771,7 @@ export default function AddSpot() {
                             isClearable
                             placeholder="Select model"
                             value={selectedModel}
-                            isDisabled={!selectedMake}
+                            isDisabled={isLoading || !selectedMake}
                         />
 
                         <Select className='text-start mt-3'
@@ -779,7 +780,7 @@ export default function AddSpot() {
                             isSearchable
                             isClearable
                             placeholder="Select generation"
-                            isDisabled={!selectedModel}
+                            isDisabled={isLoading || !selectedModel}
                             value={selectedGeneration}
                         />
 
@@ -789,7 +790,7 @@ export default function AddSpot() {
                             isSearchable
                             isClearable
                             placeholder="Select facelift"
-                            isDisabled={!selectedGeneration}
+                            isDisabled={isLoading || !selectedGeneration}
                             value={selectedFacelift}
                         />
 
@@ -799,7 +800,7 @@ export default function AddSpot() {
                             isSearchable
                             isClearable
                             placeholder="Select bodystyle"
-                            isDisabled={!selectedFacelift}
+                            isDisabled={isLoading || !selectedFacelift}
                             value={selectedBodystyle}
                         />
 
@@ -809,7 +810,7 @@ export default function AddSpot() {
                             isSearchable
                             isClearable
                             placeholder="Select trim"
-                            isDisabled={!selectedBodystyle}
+                            isDisabled={isLoading || !selectedBodystyle}
                             value={selectedTrim}
                         />
                     </div>

@@ -29,7 +29,7 @@ export default function Leaderboard() {
                         <li className="breadcrumb-item active" aria-current="page">Leaderboard</li>
                     </ol>
                 </nav>
-                <div className="col-md-3 text-start mb-3">
+                <div className="col-md-5 text-start mb-3">
                     <h5 className="text-start">🏆 Leaderboard</h5>
                     <ul className="list-group list-group-flush">
                         {leaderboard.map((user, index) => (

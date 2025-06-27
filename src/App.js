@@ -271,7 +271,7 @@ function App() {
 
             <Route exact path="/profile/leaderboard" element={<Leaderboard />} />
             <Route exact path="/statistics" element={<Statistics />} />
-            <Route exact path="/profile/achievements/:type/:id" element={<Achievements />} />
+            <Route exact path="/achievements/:type/:userId" element={<Achievements />} />
 
             <Route exact path="/feed" element={<Feed />} />
 

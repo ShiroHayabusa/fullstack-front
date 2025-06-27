@@ -1,16 +1,28 @@
 .my-masonry-grid {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    margin-left: -1rem; /* gutter size offset */
-    width: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-left: -1rem;
+  /* gutter size offset */
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 1rem;
+  /* gutter size */
+  background-clip: padding-box;
+}
+
+.my-masonry-grid_column>.card {
+  margin-bottom: 1rem;
+}
+
+.border-bottom-mobile {
+  border-bottom: 1px solid #dee2e6;
+}
+
+@media (min-width: 992px) {
+  .border-bottom-mobile {
+    border-bottom: none;
   }
-  .my-masonry-grid_column {
-    padding-left: 1rem; /* gutter size */
-    background-clip: padding-box;
-  }
-  
-  .my-masonry-grid_column > .card {
-    margin-bottom: 1rem;
-  }
-  
+}

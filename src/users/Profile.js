@@ -596,7 +596,7 @@ const Profile = () => {
                             <div className="d-flex flex-wrap border-top pt-3">
                                 {firstInWorldCount > 0 && (
                                     <div className="text-center me-3 mb-3">
-                                        <Link to={`/profile/achievements/world/${currentUser.id}`} className="text-decoration-none text-dark">
+                                        <Link to={`/achievements/world/${currentUser.id}`} className="text-decoration-none text-dark">
                                             <div className="d-flex flex-column align-items-center">
                                                 <img
                                                     src={worldIconUrl}
@@ -611,7 +611,7 @@ const Profile = () => {
                                 )}
                                 {firstInCountryCount > 0 && (
                                     <div className="text-center me-3 mb-3">
-                                        <Link to={`/profile/achievements/country/${currentUser.id}`} className="text-decoration-none text-dark">
+                                        <Link to={`/achievements/country/${currentUser.id}`} className="text-decoration-none text-dark">
                                             <div className="d-flex flex-column align-items-center">
                                                 <img
                                                     src={countryIconUrl}
@@ -626,7 +626,7 @@ const Profile = () => {
                                 )}
                                 {firstInRegionCount > 0 && (
                                     <div className="text-center me-3 mb-3">
-                                        <Link to={`/profile/achievements/region/${currentUser.id}`} className="text-decoration-none text-dark">
+                                        <Link to={`/achievements/region/${currentUser.id}`} className="text-decoration-none text-dark">
                                             <div className="d-flex flex-column align-items-center">
                                                 <img
                                                     src={regionIconUrl}
@@ -641,7 +641,7 @@ const Profile = () => {
                                 )}
                                 {firstInCityCount > 0 && (
                                     <div className="text-center me-3 mb-3">
-                                        <Link to={`/profile/achievements/city/${currentUser.id}`} className="text-decoration-none text-dark">
+                                        <Link to={`/achievements/city/${currentUser.id}`} className="text-decoration-none text-dark">
                                             <div className="d-flex flex-column align-items-center">
                                                 <img
                                                     src={cityIconUrl}

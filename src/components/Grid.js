@@ -41,7 +41,7 @@ const ContributionGrid = ({ make, generations, spotsWithouPage, totalCells }) =>
 
             onClick={() => {
               if (currentGeneration && currentGeneration.id) {
-                navigate(`/catalog/${make}/${currentGeneration.model?.name}/${currentGeneration.id}`);
+                navigate(`/catalog/${make}/${currentGeneration.model?.id}/${currentGeneration.id}`);
               }
             }}
             style={{
